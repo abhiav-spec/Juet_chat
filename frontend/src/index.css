@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+html {
+	color-scheme: dark;
+}
+
+body {
+	min-height: 100vh;
+	margin: 0;
+	background: #060e20;
+}
+
+.glass-card {
+	background: rgba(31, 43, 73, 0.6);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+}
+
+.cinematic-bg {
+	background: radial-gradient(circle at 50% -20%, #141f38 0%, #060e20 100%);
+}
+
+.otp-input:focus {
+	outline: none;
+	border-color: rgba(163, 166, 255, 0.4);
+	box-shadow: 0 0 0 1px rgba(163, 166, 255, 0.4);
+}

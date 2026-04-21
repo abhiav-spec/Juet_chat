@@ -1,0 +1,347 @@
+import { useState, useRef, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { apiService } from '../services/api.service'
+import { socketService } from '../services/socket.service'
+
+function ChatRoomPage() {
+  const navigate = useNavigate()
+  const { roomId } = useParams()
+  
+  const [messages, setMessages] = useState([])
+  const [roomInfo, setRoomInfo] = useState(null)
+  const [inputValue, setInputValue] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [isHistoryLoading, setIsHistoryLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
+  const [passwordInput, setPasswordInput] = useState('')
+  
+  const messagesEndRef = useRef(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  // 1. Initial Load & Socket Connection
+  useEffect(() => {
+    let mounted = true;
+
+    async function init() {
+      try {
+        const data = await apiService.getRoom(roomId)
+        if (!mounted) return
+        setRoomInfo(data.room)
+
+        const token = apiService.getToken()
+        if (!token) {
+          navigate('/login')
+          return
+        }
+
+        // Connect but don't block history loading yet
+        await socketService.connect(token)
+        
+        // Setup handlers
+        socketService.on('history', (payload) => {
+          if (!mounted) return;
+          
+          setMessages(prev => {
+            const history = payload.messages.map(m => ({
+              id: m.id || m._id,
+              author: m.sender || 'Unknown',
+              text: m.content || m.message,
+              time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              createdAt: new Date(m.createdAt), // Store raw date for sorting
+              sent: m.senderId === JSON.parse(atob(token.split('.')[1])).id
+            }))
+
+            // Merge and deduplicate
+            const combined = [...history, ...prev]
+            const unique = Array.from(new Map(combined.map(m => [m.id, m])).values())
+            
+            // Re-sort chronologically just in case
+            return unique.sort((a, b) => a.createdAt - b.createdAt)
+          })
+
+          setIsHistoryLoading(false)
+          setShowPasswordPrompt(false)
+          setError(null)
+        })
+
+        socketService.on('message', (payload) => {
+          if (!mounted) return;
+          
+          setMessages((prev) => {
+            const newMessage = {
+              id: payload.id || Date.now(),
+              author: payload.sender,
+              text: payload.message,
+              time: new Date(payload.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              createdAt: new Date(payload.createdAt),
+              sent: payload.senderId === JSON.parse(atob(token.split('.')[1])).id || payload.sender === 'You'
+            };
+
+            // Prevent duplicates (e.g. if history arrives after live message)
+            if (prev.some(m => m.id === newMessage.id)) return prev;
+
+            const combined = [...prev, newMessage];
+            return combined.sort((a, b) => a.createdAt - b.createdAt);
+          })
+        })
+
+        socketService.on('error', (payload) => {
+          if (!mounted) return;
+          if (payload.status === 401 || (payload.message && payload.message.toLowerCase().includes('password'))) {
+            setShowPasswordPrompt(true)
+          } else {
+            setError(payload.message)
+          }
+          setIsLoading(false)
+          setIsHistoryLoading(false)
+        })
+
+        // Initial join attempt
+        socketService.joinRoom(roomId)
+        setIsLoading(false) // Ready to chat even if history is in flight
+
+      } catch (err) {
+        if (mounted) {
+          setError(err.message)
+          setIsLoading(false)
+          setIsHistoryLoading(false)
+        }
+      }
+    }
+
+    init()
+
+    return () => {
+      mounted = false;
+      socketService.disconnect()
+    }
+  }, [roomId, navigate])
+
+  const handleSendMessage = (e) => {
+    e.preventDefault()
+    if (inputValue.trim() === '') return
+
+    socketService.sendMessage(inputValue)
+    setInputValue('')
+  }
+
+  const handleJoinWithPassword = (e) => {
+    e.preventDefault()
+    setError(null)
+    socketService.joinRoom(roomId, passwordInput)
+  }
+
+  if (isLoading && !showPasswordPrompt) {
+    return (
+      <div className="min-h-screen bg-[#060e20] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#a3a6ff] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[#a3aac4] text-sm font-medium uppercase tracking-widest">Connecting to Stream...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-[#060e20] text-[#dee5ff] font-['Inter'] min-h-screen flex">
+      {/* Password Modal */}
+      {showPasswordPrompt && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#000000]/90 backdrop-blur-md px-6">
+          <div className="w-full max-w-sm bg-[#141f38] rounded-3xl p-8 border border-[#40485d]/20 shadow-2xl">
+            <div className="w-16 h-16 bg-[#192540] rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <span className="material-symbols-outlined text-[#a3a6ff] text-3xl">lock</span>
+            </div>
+            <h3 className="text-xl font-bold text-center mb-2">Private Room</h3>
+            <p className="text-[#a3aac4] text-sm text-center mb-8">This space requires an access code to enter.</p>
+            
+            <form onSubmit={handleJoinWithPassword} className="space-y-4">
+              <input 
+                type="password"
+                className="w-full bg-[#060e20] border border-[#40485d]/20 rounded-xl py-4 px-6 text-center text-[#dee5ff] focus:ring-2 focus:ring-[#a3a6ff]/40 outline-none transition-all font-mono tracking-widest"
+                placeholder="ENTER CODE"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                autoFocus
+              />
+              {error && <p className="text-red-400 text-xs text-center">{error}</p>}
+              <button 
+                type="submit"
+                className="w-full bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] font-bold py-4 rounded-xl active:scale-95 transition-transform"
+              >
+                ACCESS ROOM
+              </button>
+              <button 
+                type="button"
+                onClick={() => navigate('/dashboard')}
+                className="w-full text-[#a3aac4] text-xs font-bold uppercase tracking-widest pt-2"
+              >
+                Back to Dashboard
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Sidebar */}
+      <aside className="hidden md:flex fixed left-0 top-0 h-full z-40 flex-col py-8 bg-[#091328] w-72 rounded-r-none shadow-[12px_0_32px_rgba(25,37,64,0.08)]">
+        <div className="px-6 mb-10 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-[#a3a6ff] flex items-center justify-center text-[#0f00a4] font-black text-sm">
+            AR
+          </div>
+          <div>
+            <p className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">Alex Rivera</p>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <p className="text-[#a3aac4] text-xs">Online</p>
+            </div>
+          </div>
+        </div>
+        <nav className="flex-1 space-y-2 px-4">
+          <button onClick={() => navigate('/dashboard')} className="w-full flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white transition-all hover:bg-[#141f38] font-['Plus_Jakarta_Sans'] font-medium text-sm">
+            <span className="material-symbols-outlined">explore</span>
+            <span>Explore Rooms</span>
+          </button>
+          <a className="flex items-center gap-3 px-4 py-3 bg-[#49339d] text-white rounded-lg mx-2 font-['Plus_Jakarta_Sans'] font-medium text-sm" href="#">
+            <span className="material-symbols-outlined">chat_bubble</span>
+            <span>Direct Messages</span>
+          </a>
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col md:ml-72 relative min-h-screen bg-[#000000] overflow-hidden">
+        {/* Cinematic overlay */}
+        <div className="absolute inset-0 pointer-events-none opacity-50" style={{
+          backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 80%)'
+        }}></div>
+
+        {/* Top App Bar */}
+        <header className="sticky top-0 z-30 flex justify-between items-center w-full px-6 h-16 bg-[#091328] border-none shadow-none">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-[#141f38] overflow-hidden flex items-center justify-center">
+              <span className="material-symbols-outlined text-[#a3a6ff]">
+                {roomInfo?.type === 'private' ? 'lock' : 'forum'}
+              </span>
+            </div>
+            <div>
+              <h1 className="text-[#6366F1] font-['Plus_Jakarta_Sans'] font-bold text-lg tracking-tight">
+                {roomInfo?.name || 'Loading...'}
+              </h1>
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <p className="text-[#a3aac4] text-[11px] font-medium uppercase tracking-wider">Live Connection</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+             <button onClick={() => navigate('/dashboard')} className="md:hidden p-2 text-[#a3aac4]">
+                <span className="material-symbols-outlined">close</span>
+             </button>
+          </div>
+        </header>
+
+        {/* Chat Area */}
+        <div className="flex-1 overflow-y-auto px-6 py-8 space-y-8 relative z-10" style={{
+          scrollbarWidth: '4px',
+          scrollbarColor: '#192540 transparent'
+        }}>
+          {/* Skeleton Loader for History */}
+          {isHistoryLoading && (
+            <div className="space-y-8 opacity-50 pointer-events-none">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className={`flex items-end gap-3 ${i % 2 === 0 ? 'flex-row-reverse ml-auto w-[60%]' : 'w-[60%]'}`}>
+                  <div className="w-8 h-8 rounded-full bg-[#141f38] animate-pulse"></div>
+                  <div className="flex flex-col gap-1.5 w-full">
+                    <div className="h-3 w-20 bg-[#141f38] rounded-full animate-pulse"></div>
+                    <div className="h-12 w-full bg-[#141f38] rounded-lg animate-pulse"></div>
+                  </div>
+                </div>
+              ))}
+              <div className="text-center py-4 text-[#a3aac4] text-[10px] uppercase tracking-widest animate-pulse">
+                Fetching Previous Transmissions...
+              </div>
+            </div>
+          )}
+
+          {/* Messages */}
+          {messages.length === 0 && !isLoading && !isHistoryLoading && (
+            <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
+                <span className="material-symbols-outlined text-6xl mb-4">chat_bubble_outline</span>
+                <p className="text-sm">Safe and encrypted conversation started.</p>
+            </div>
+          )}
+
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex items-end gap-3 ${message.sent ? 'flex-row-reverse ml-auto max-w-[80%]' : 'max-w-[80%]'}`}
+            >
+              {!message.sent && (
+                <div className="w-8 h-8 rounded-full bg-[#141f38] flex-shrink-0 flex items-center justify-center border border-[#40485d]/20 text-[10px] font-bold text-[#a3a6ff]">
+                  {message.author.substring(0, 2).toUpperCase()}
+                </div>
+              )}
+              <div className={`flex flex-col ${message.sent ? 'items-end' : 'items-start'} gap-1.5`}>
+                <div className={`flex items-baseline gap-2 ${message.sent ? 'flex-row-reverse' : ''}`}>
+                  <span className="text-[#dee5ff] font-semibold text-xs">{message.author}</span>
+                  <span className="text-[#a3aac4] text-[10px]">{message.time}</span>
+                </div>
+                <div
+                  className={`px-5 py-3 rounded-lg text-sm leading-relaxed shadow-sm ${
+                    message.sent
+                      ? 'bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] font-medium shadow-lg shadow-indigo-500/10'
+                      : 'bg-[#141f38] text-[#dee5ff]'
+                  }`}
+                  style={{
+                    borderBottomLeftRadius: !message.sent ? '2px' : '12px',
+                    borderBottomRightRadius: message.sent ? '2px' : '12px'
+                  }}
+                >
+                  {message.text}
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input Area */}
+        <div className="p-6 bg-[#000000]/80 backdrop-blur-md relative z-20">
+          <div className="max-w-5xl mx-auto flex items-center gap-4">
+            <form onSubmit={handleSendMessage} className="flex-1 flex items-center gap-4">
+              <div className="flex-1 relative">
+                <input
+                  className="w-full bg-[#192540] text-[#dee5ff] border-none focus:ring-1 focus:ring-[#a3a6ff]/40 rounded-full py-4 px-6 text-sm placeholder:text-[#a3aac4] transition-all outline-none"
+                  placeholder="Type a message..."
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={!inputValue.trim()}
+                className="bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/20 active:scale-90 transition-transform flex-shrink-0 disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  send
+                </span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}
+
+export default ChatRoomPage
