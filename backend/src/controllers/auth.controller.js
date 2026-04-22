@@ -34,8 +34,8 @@ import Otp from '../models/otp.js';
             userAgent: req.headers['user-agent']
         });
 
-        const accesstoken = jwt.sign({
-            id: user._id, session_id: session._id }, process.env.JWT_SECRET, { expiresIn: '15m' });
+        const accessToken = jwt.sign({
+            id: user._id, session_id: session._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
         const otp = generateOTP();
         const otpHash = crypto.createHash('sha256').update(otp).digest('hex');
@@ -60,7 +60,7 @@ import Otp from '../models/otp.js';
                 username: user.username,
                 email: user.email,
                 verified: user.verified,
-                acesstoken: accesstoken,
+                accessToken: accessToken,
             },
         };
 
@@ -127,7 +127,7 @@ const refreshToken = async (req, res) => {
         if(!session){
             return res.status(400).json({ error: 'Session not found' });
         }   
-        const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '15m' });
+        const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
         const newRefreshToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         const newRefreshTokenHash = crypto.createHash('sha256').update(newRefreshToken).digest('hex');
         session.refreshToken = newRefreshTokenHash;
@@ -231,8 +231,8 @@ const login = async (req, res) => {
             userAgent: req.headers['user-agent']
         });
 
-        const accesstoken = jwt.sign({ 
-            id: user._id ,session_id:session._id}, process.env.JWT_SECRET, { expiresIn: '15m' });
+        const accessToken = jwt.sign({ 
+            id: user._id ,session_id:session._id}, process.env.JWT_SECRET, { expiresIn: '1d' });
 
         return res.status(200).json({ 
         message: 'Login successful' ,
@@ -240,7 +240,7 @@ const login = async (req, res) => {
             id: user._id,
             username: user.username,
             email: user.email,
-            acesstoken: accesstoken
+            accessToken: accessToken
         }
     });
 

@@ -41,7 +41,7 @@ function LoginPage() {
         throw new Error(data.error || 'Login failed')
       }
 
-      const token = data?.user?.acesstoken || data?.user?.accessToken || data?.accessToken || ''
+      const token = data?.user?.accessToken || data?.accessToken || ''
       if (token) {
         localStorage.setItem('accessToken', token)
       }
