@@ -52,6 +52,7 @@ const handleSendMessage = async (ws, payload) => {
             type: WS_SERVER_EVENTS.MESSAGE,
             message: message.content,
             sender: message.sender?.username ?? 'Unknown',
+            senderId: message.sender?._id,
             createdAt: message.createdAt,
             id: message._id,
         });

@@ -22,12 +22,35 @@ const roomSchema = new mongoose.Schema(
             required: [true, 'Room type is required'],
             default: ROOM_TYPES.PUBLIC,
         },
-        // Never expose this field — select: false ensures it is excluded by default
+        // The plain-text passkey stored for admin visibility (only for private rooms)
+        passkey: {
+            type: String,
+            default: null,
+        },
+        // Secure hash for validation
         passwordHash: {
             type: String,
             select: false,
             default: null,
         },
+        // Track room members (joined users)
+        members: [
+            {
+                user: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User',
+                    required: true,
+                },
+                isAdmin: {
+                    type: Boolean,
+                    default: false,
+                },
+                joinedAt: {
+                    type: Date,
+                    default: Date.now,
+                },
+            },
+        ],
     },
     { timestamps: true }
 );

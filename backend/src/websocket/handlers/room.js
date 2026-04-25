@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import Room from '../../models/Room.js';
+import Room from '../../models/room.js';
 import Message from '../../models/Message.js';
 import { addToRoom, removeFromRoom } from '../state/rooms.js';
 import { getUserContext, setUserRoom } from '../state/users.js';
@@ -36,7 +36,9 @@ const handleJoinRoom = async (ws, payload) => {
         }
 
         // ─── Access Control ───────────────────────────────────────────────────
-        if (room.type === ROOM_TYPES.PRIVATE) {
+        const isCreator = ws.user.id.toString() === room.creator.toString();
+
+        if (room.type === ROOM_TYPES.PRIVATE && !isCreator) {
             if (!password || typeof password !== 'string') {
                 return sendError(ws, 'A password is required to join this private room.');
             }

@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import Room from '../models/Room.js';
+import Room from '../models/room.js';
 import { ROOM_TYPES } from '../utils/constants.js';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -9,7 +9,7 @@ const hashPassword = (password) =>
     crypto.createHash('sha256').update(password).digest('hex');
 
 /** Safe room projection — never expose passwordHash. */
-const safeRoomFields = '_id name creator type createdAt updatedAt';
+const safeRoomFields = '_id name creator type members createdAt updatedAt';
 
 // ─── Controllers ─────────────────────────────────────────────────────────────
 
@@ -43,10 +43,12 @@ export const createRoom = async (req, res, next) => {
             name: name.trim(),
             creator: req.user.id,
             type,
+            members: [{ user: req.user.id, isAdmin: true }]
         };
 
         if (type === ROOM_TYPES.PRIVATE) {
             roomData.passwordHash = hashPassword(password);
+            roomData.passkey = password; // Save for admin visibility
         }
 
         const room = await Room.create(roomData);
@@ -59,6 +61,7 @@ export const createRoom = async (req, res, next) => {
                 name: room.name,
                 type: room.type,
                 creator: room.creator,
+                passkey: room.passkey,
                 createdAt: room.createdAt,
             },
         });
@@ -82,6 +85,9 @@ export const listRooms = async (req, res, next) => {
             .sort({ createdAt: -1 })
             .lean();
 
+        // Ensure passkey is NEVER sent in list
+        rooms.forEach(r => delete r.passkey);
+
         return res.status(200).json({ rooms });
     } catch (error) {
         next(error);
@@ -98,15 +104,51 @@ export const listRooms = async (req, res, next) => {
  */
 export const getRoomById = async (req, res, next) => {
     try {
-        const room = await Room.findById(req.params.id, safeRoomFields)
-            .populate('creator', 'username')
+        // Query passkey so we can decide whether to include it
+        const room = await Room.findById(req.params.id, safeRoomFields + ' passkey')
+            .populate('creator', 'username _id')
+            .populate('members.user', 'username')
             .lean();
 
         if (!room) {
             return res.status(404).json({ error: 'Room not found.' });
         }
 
+        // Only explicitly allow the creator to see the passkey
+        if (req.user.id !== room.creator._id.toString()) {
+            delete room.passkey;
+        }
+
         return res.status(200).json({ room });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * DELETE /api/rooms/:id
+ * Delete a chat room. Only the creator is authorized to perform this action.
+ *
+ * @param {import('express').Request} req - The Express request object.
+ * @param {import('express').Response} res - The Express response object.
+ * @param {import('express').NextFunction} next - The next middleware function.
+ */
+export const deleteRoom = async (req, res, next) => {
+    try {
+        const room = await Room.findById(req.params.id);
+
+        if (!room) {
+            return res.status(404).json({ error: 'Room not found.' });
+        }
+
+        // Authorization: Only the creator can delete the room
+        if (room.creator.toString() !== req.user.id) {
+            return res.status(403).json({ error: 'Only the room creator can delete this room.' });
+        }
+
+        await Room.findByIdAndDelete(req.params.id);
+
+        return res.status(200).json({ message: 'Room deleted successfully.' });
     } catch (error) {
         next(error);
     }

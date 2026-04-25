@@ -48,4 +48,20 @@ export const apiService = {
         method: 'POST',
         body: JSON.stringify(roomData),
     }),
+
+    deleteRoom: (roomId) => fetchWithAuth(`/api/rooms/${roomId}`, {
+        method: 'DELETE',
+    }),
+
+    // User Utils
+    getCurrentUserId: () => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) return null;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload.id;
+        } catch (e) {
+            return null;
+        }
+    }
 };

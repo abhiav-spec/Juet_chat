@@ -15,7 +15,9 @@ function ChatRoomPage() {
   const [error, setError] = useState(null)
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
   const [passwordInput, setPasswordInput] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
   
+  const currentUserId = apiService.getCurrentUserId()
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
@@ -25,6 +27,26 @@ function ChatRoomPage() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  const handleDeleteRoom = async (roomId, navigate) => {
+    if (!window.confirm('Are you sure you want to delete this room? This action cannot be undone.')) return;
+
+    try {
+        setIsDeleting(true)
+        const response = await apiService.deleteRoom(roomId);
+        if (response.error) {
+            alert(response.error);
+        } else {
+            alert('Room deleted successfully.');
+            navigate('/dashboard');
+        }
+    } catch (err) {
+        console.error('Delete error:', err);
+        alert('Failed to delete room.');
+    } finally {
+        setIsDeleting(false)
+    }
+  }
 
   // 1. Initial Load & Socket Connection
   useEffect(() => {
@@ -56,7 +78,7 @@ function ChatRoomPage() {
               text: m.content || m.message,
               time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               createdAt: new Date(m.createdAt), // Store raw date for sorting
-              sent: m.senderId === JSON.parse(atob(token.split('.')[1])).id
+              sent: m.senderId?.toString() === currentUserId
             }))
 
             // Merge and deduplicate
@@ -82,7 +104,7 @@ function ChatRoomPage() {
               text: payload.message,
               time: new Date(payload.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               createdAt: new Date(payload.createdAt),
-              sent: payload.senderId === JSON.parse(atob(token.split('.')[1])).id || payload.sender === 'You'
+              sent: payload.senderId?.toString() === currentUserId || payload.sender === 'You'
             };
 
             // Prevent duplicates (e.g. if history arrives after live message)
@@ -238,10 +260,25 @@ function ChatRoomPage() {
               <div className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <p className="text-[#a3aac4] text-[11px] font-medium uppercase tracking-wider">Live Connection</p>
+                {roomInfo?.type === 'private' && roomInfo?.passkey && (
+                    <div className="ml-4 flex items-center gap-1 bg-[#141f38] px-2 py-0.5 rounded border border-[#a3a6ff]/20">
+                        <span className="material-symbols-outlined text-[10px] text-[#a3a6ff]">key</span>
+                        <span className="text-[10px] text-[#a3a6ff] font-mono tracking-tighter uppercase">Code: {roomInfo.passkey}</span>
+                    </div>
+                )}
               </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
+             {roomInfo?.creator?._id === currentUserId && (
+                <button 
+                  onClick={() => handleDeleteRoom(roomId, navigate)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-colors text-xs font-semibold"
+                >
+                  <span className="material-symbols-outlined text-sm">delete</span>
+                  <span>Delete Room</span>
+                </button>
+             )}
              <button onClick={() => navigate('/dashboard')} className="md:hidden p-2 text-[#a3aac4]">
                 <span className="material-symbols-outlined">close</span>
              </button>
