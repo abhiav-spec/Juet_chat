@@ -1,4 +1,4 @@
-import User from '../../models/User.js';
+import User from '../../models/user.js';
 import { verifyToken } from '../../utils/jwt.js';
 import { WS_SERVER_EVENTS } from '../../utils/constants.js';
 

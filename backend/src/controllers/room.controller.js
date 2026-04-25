@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import Room from '../models/Room.js';
+import Room from '../models/room.js';
 import { ROOM_TYPES } from '../utils/constants.js';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 import crypto from 'crypto';
-import Room from '../../models/Room.js';
-import Message from '../../models/Message.js';
+import Room from '../../models/room.js';
+import Message from '../../models/message.js';
 import { addToRoom, removeFromRoom } from '../state/rooms.js';
 import { getUserContext, setUserRoom } from '../state/users.js';
 import { broadcastRoomUsers } from '../utils/broadcast.js';

@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+import User from '../models/user.js';
 import { getOnlineUserIds } from '../websocket/state/users.js';
 
 /**

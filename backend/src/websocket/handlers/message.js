@@ -1,4 +1,4 @@
-import Message from '../../models/Message.js';
+import Message from '../../models/message.js';
 import { getRoomClients } from '../state/rooms.js';
 import { getUserContext } from '../state/users.js';
 import { WS_SERVER_EVENTS } from '../../utils/constants.js';
