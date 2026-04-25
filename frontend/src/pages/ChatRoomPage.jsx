@@ -9,6 +9,7 @@ function ChatRoomPage() {
   
   const [messages, setMessages] = useState([])
   const [roomInfo, setRoomInfo] = useState(null)
+  const [roomUsers, setRoomUsers] = useState([])
   const [currentUser, setCurrentUser] = useState(null)
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -100,6 +101,13 @@ function ChatRoomPage() {
             return combined.sort((a, b) => a.createdAt - b.createdAt);
           })
         })
+
+        socketService.on('room_users', (payload) => {
+          if (!mounted) return;
+          if (payload.roomId === roomId) {
+            setRoomUsers(payload.members || []);
+          }
+        });
 
         socketService.on('error', (payload) => {
           if (!mounted) return;
@@ -217,16 +225,37 @@ function ChatRoomPage() {
             </div>
           </div>
         </div>
-        <nav className="flex-1 space-y-2 px-4">
-          <button onClick={() => navigate('/dashboard')} className="w-full flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white transition-all hover:bg-[#141f38] font-['Plus_Jakarta_Sans'] font-medium text-sm">
-            <span className="material-symbols-outlined">explore</span>
-            <span>Explore Rooms</span>
-          </button>
-          <a className="flex items-center gap-3 px-4 py-3 bg-[#49339d] text-white rounded-lg mx-2 font-['Plus_Jakarta_Sans'] font-medium text-sm" href="#">
-            <span className="material-symbols-outlined">chat_bubble</span>
-            <span>Direct Messages</span>
-          </a>
+        <nav className="flex-1 space-y-2 px-4 mt-4 overflow-y-auto">
+          <h4 className="px-4 text-[10px] text-[#a3aac4] font-bold uppercase tracking-[0.2em] mb-4">Active Participants</h4>
+          <div className="space-y-1">
+            {roomUsers.map(user => (
+              <div key={user.id} className="flex items-center gap-3 px-4 py-2 hover:bg-[#141f38] rounded-xl transition-all group cursor-default">
+                <div className="relative">
+                  <div className="w-8 h-8 rounded-full bg-[#192540] flex items-center justify-center text-[10px] font-bold text-[#a3a6ff] border border-[#40485d]/20">
+                    {user.username.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#091328]"></div>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold text-[#dee5ff]">{user.username}</span>
+                  <span className="text-[9px] text-emerald-500 font-medium">In Room</span>
+                </div>
+              </div>
+            ))}
+            {roomUsers.length === 0 && (
+              <p className="px-4 text-[10px] text-[#a3aac4]/40 italic">Syncing participants...</p>
+            )}
+          </div>
         </nav>
+        <div className="px-4 mt-auto">
+          <button 
+            onClick={() => navigate('/dashboard')} 
+            className="w-full flex items-center justify-center gap-2 bg-[#192540] text-[#a3aac4] hover:text-[#dee5ff] py-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest border border-[#40485d]/10"
+          >
+            <span className="material-symbols-outlined text-sm">arrow_back</span>
+            Dashboard
+          </button>
+        </div>
       </aside>
 
       {/* Main Content */}

@@ -3,6 +3,7 @@ import Room from '../../models/Room.js';
 import Message from '../../models/Message.js';
 import { addToRoom, removeFromRoom } from '../state/rooms.js';
 import { getUserContext, setUserRoom } from '../state/users.js';
+import { broadcastRoomUsers } from '../utils/broadcast.js';
 import { WS_SERVER_EVENTS, ROOM_TYPES, CHAT_HISTORY_LIMIT } from '../../utils/constants.js';
 
 /** Send a structured error event to a single client. */
@@ -45,14 +46,17 @@ const handleJoinRoom = async (ws, payload) => {
 
         // ─── Leave current room if already in one ─────────────────────────────
         const ctx = getUserContext(ws);
-        if (ctx && ctx.currentRoomId && ctx.currentRoomId !== roomId) {
-            removeFromRoom(ctx.currentRoomId, ws);
+        const oldRoomId = ctx?.currentRoomId;
+        if (oldRoomId && oldRoomId !== roomId) {
+            removeFromRoom(oldRoomId, ws);
+            broadcastRoomUsers(oldRoomId);
         }
 
         // ─── Join new room ────────────────────────────────────────────────────
         const roomIdStr = room._id.toString();
         addToRoom(roomIdStr, ws);
         setUserRoom(ws, roomIdStr);
+        broadcastRoomUsers(roomIdStr);
 
         // ─── Send Chat History (This signals success in the new contract) ──────
         const history = await Message.find({ room: room._id })
