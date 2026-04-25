@@ -82,7 +82,16 @@ function ChatRoomPage() {
 
         if (!mounted) return;
 
-        setMessages(messagesData.messages || []);
+        const formattedMessages = (messagesData.messages || []).map(m => ({
+          id: m.id || m._id,
+          author: m.sender || 'Unknown',
+          text: m.content || m.message,
+          time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          createdAt: new Date(m.createdAt),
+          sent: String(m.senderId) === String(user.id)
+        }));
+
+        setMessages(formattedMessages);
         setRoomUsers(membersData.members || []);
         setIsHistoryLoading(false);
 
