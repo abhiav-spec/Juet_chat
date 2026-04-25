@@ -28,16 +28,12 @@ function ChatRoomPage() {
     scrollToBottom()
   }, [messages])
 
-  // 1. Initial Load & Socket Connection
+  // 1. Initial Load & Entrance Logic
   useEffect(() => {
     let mounted = true;
 
     async function init() {
       try {
-        const data = await apiService.getRoom(roomId)
-        if (!mounted) return
-        setRoomInfo(data.room)
-
         const user = apiService.getCurrentUser()
         if (!user) {
           navigate('/login')
@@ -45,96 +41,78 @@ function ChatRoomPage() {
         }
         setCurrentUser(user)
 
-        const token = apiService.getToken()
-        if (!token) {
-          navigate('/login')
+        const data = await apiService.getRoom(roomId)
+        if (!mounted) return
+        setRoomInfo(data.room)
+
+        // ─── Private Room Entrance Logic ─────────────────────────────────────
+        const isCreator = data.room.creator?._id === user.id || data.room.creator === user.id;
+        const isMember = data.room.members?.some(m => (m.user?._id || m.user) === user.id);
+
+        if (data.room.type === 'private' && !isMember && !isCreator) {
+          setShowPasswordPrompt(true)
+          setIsLoading(false)
           return
         }
 
-        // Connect but don't block history loading yet
-        await socketService.connect(token)
-        
-        // Setup handlers
-        socketService.on('history', (payload) => {
-          if (!mounted) return;
-          
-          setMessages(prev => {
-            const history = payload.messages.map(m => ({
-              id: m.id || m._id,
-              author: m.sender || 'Unknown',
-              text: m.content || m.message,
-              time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              createdAt: new Date(m.createdAt), // Store raw date for sorting
-              sent: String(m.senderId) === String(user.id)
-            }))
-
-            // Merge and deduplicate
-            const combined = [...history, ...prev]
-            const unique = Array.from(new Map(combined.map(m => [m.id, m])).values())
-            
-            // Re-sort chronologically just in case
-            return unique.sort((a, b) => a.createdAt - b.createdAt)
-          })
-
-          setIsHistoryLoading(false)
-          setShowPasswordPrompt(false)
-          setError(null)
-        })
-
-        socketService.on('message', (payload) => {
-          if (!mounted) return;
-          
-          setMessages((prev) => {
-            const newMessage = {
-              id: payload.id || Date.now(),
-              author: payload.sender,
-              text: payload.message,
-              time: new Date(payload.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              createdAt: new Date(payload.createdAt),
-              sent: String(payload.senderId) === String(user.id)
-            };
-
-            // Prevent duplicates (e.g. if history arrives after live message)
-            if (prev.some(m => m.id === newMessage.id)) return prev;
-
-            const combined = [...prev, newMessage];
-            return combined.sort((a, b) => a.createdAt - b.createdAt);
-          })
-        })
-
-        socketService.on('room_users', (payload) => {
-          if (!mounted) return;
-          if (payload.roomId === roomId) {
-            setRoomUsers(payload.members || []);
-          }
-        });
-
-        socketService.on('error', (payload) => {
-          if (!mounted) return;
-          
-          const isCreator = data.room.creator?._id === user.id || data.room.creator === user.id;
-          
-          if (payload.status === 401 || (payload.message && payload.message.toLowerCase().includes('passkey'))) {
-            if (!isCreator) {
-              setShowPasswordPrompt(true)
-            }
-          } else {
-            setError(payload.message)
-          }
-          setIsLoading(false)
-          setIsHistoryLoading(false)
-        })
-
-        // Initial join attempt
-        socketService.joinRoom(roomId)
-        setIsLoading(false) // Ready to chat even if history is in flight
-
+        // Allowed to enter
+        await enterRoom(user)
       } catch (err) {
         if (mounted) {
           setError(err.message)
           setIsLoading(false)
           setIsHistoryLoading(false)
         }
+      }
+    }
+
+    async function enterRoom(user) {
+      if (!mounted) return;
+      setIsLoading(false);
+      setIsHistoryLoading(true);
+
+      const token = apiService.getToken();
+      
+      try {
+        // Parallel non-blocking fetches
+        const [messagesData, membersData] = await Promise.all([
+          apiService.getRoomMessages(roomId),
+          apiService.getRoomMembers(roomId)
+        ]);
+
+        if (!mounted) return;
+
+        setMessages(messagesData.messages || []);
+        setRoomUsers(membersData.members || []);
+        setIsHistoryLoading(false);
+
+        // Connect Socket for LIVE updates only
+        await socketService.connect(token);
+        
+        socketService.on('message', (payload) => {
+          if (!mounted) return;
+          setMessages((prev) => {
+            if (prev.some(m => m.id === payload.id)) return prev;
+            const combined = [...prev, {
+              id: payload.id || Date.now(),
+              author: payload.sender,
+              text: payload.message,
+              time: new Date(payload.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              createdAt: new Date(payload.createdAt),
+              sent: String(payload.senderId) === String(user.id)
+            }];
+            return combined.sort((a, b) => a.createdAt - b.createdAt);
+          })
+        });
+
+        socketService.on('room_users', (payload) => {
+          if (!mounted && payload.roomId === roomId) return;
+          setRoomUsers(payload.members || []);
+        });
+
+        socketService.joinRoom(roomId);
+      } catch (err) {
+        if (mounted) setError(err.message);
       }
     }
 
@@ -154,10 +132,27 @@ function ChatRoomPage() {
     setInputValue('')
   }
 
-  const handleJoinWithPassword = (e) => {
+  const handleJoinWithPassword = async (e) => {
     e.preventDefault()
     setError(null)
-    socketService.joinRoom(roomId, passwordInput)
+    try {
+      await apiService.joinRoom(roomId, passwordInput)
+      setShowPasswordPrompt(false)
+      // Force a re-init or just call enterRoom
+      window.location.reload() 
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  const handleLeaveRoom = async () => {
+    if (!window.confirm('Are you sure you want to leave this room? You will need the passkey to rejoin.')) return;
+    try {
+      await apiService.leaveRoom(roomId);
+      navigate('/dashboard');
+    } catch (err) {
+      alert('Failed to leave room: ' + err.message);
+    }
   }
 
   if (isLoading && !showPasswordPrompt) {
@@ -247,7 +242,16 @@ function ChatRoomPage() {
             )}
           </div>
         </nav>
-        <div className="px-4 mt-auto">
+        <div className="px-4 mt-auto space-y-2">
+          {roomInfo?.type === 'private' && (
+            <button 
+              onClick={handleLeaveRoom}
+              className="w-full flex items-center justify-center gap-2 bg-[#a70138]/10 text-[#d73357] hover:bg-[#a70138]/20 py-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest border border-[#d73357]/20"
+            >
+              <span className="material-symbols-outlined text-sm">logout</span>
+              Leave Room
+            </button>
+          )}
           <button 
             onClick={() => navigate('/dashboard')} 
             className="w-full flex items-center justify-center gap-2 bg-[#192540] text-[#a3aac4] hover:text-[#dee5ff] py-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest border border-[#40485d]/10"

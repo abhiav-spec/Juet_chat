@@ -33,15 +33,11 @@ const handleJoinRoom = async (ws, payload) => {
         }
 
         // ─── Access Control ───────────────────────────────────────────────────
-        const isCreator = room.creator.toString() === ws.user.id;
+        const userId = ws.user.id;
+        const isMemberOrCreator = room.members.some(m => m.user.toString() === userId) || room.creator.toString() === userId;
 
-        if (room.type === ROOM_TYPES.PRIVATE && !isCreator) {
-            if (!password || typeof password !== 'string') {
-                return sendError(ws, 'A passkey is required to join this private room.');
-            }
-            if (password !== room.passkey) {
-                return sendError(ws, 'Incorrect room passkey.');
-            }
+        if (room.type === ROOM_TYPES.PRIVATE && !isMemberOrCreator) {
+            return sendError(ws, 'Access denied. You must join this private room via the passkey entry first.');
         }
 
         // ─── Leave current room if already in one ─────────────────────────────

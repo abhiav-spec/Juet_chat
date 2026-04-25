@@ -14,6 +14,9 @@ export class ChatSocket {
      * @returns {Promise<void>} Resolves when the connection is successfully opened.
      */
     connect(token) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            return Promise.resolve();
+        }
         const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:3000';
         this.ws = new WebSocket(`${wsUrl}?token=${token}`);
 

@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import Room from '../models/room.js';
-import { ROOM_TYPES } from '../utils/constants.js';
+import Message from '../models/message.js';
+import { ROOM_TYPES, CHAT_HISTORY_LIMIT } from '../utils/constants.js';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -110,6 +111,131 @@ export const getRoomById = async (req, res, next) => {
         }
 
         return res.status(200).json({ room });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * POST /api/rooms/:id/join
+ * Join a room. For private rooms, requires a passkey.
+ * Adds user to members array on success.
+ */
+export const joinRoom = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { passkey } = req.body;
+        const userId = req.user.id;
+
+        const room = await Room.findById(id).select('+passkey');
+        if (!room) return res.status(404).json({ error: 'Room not found.' });
+
+        // Check if already a member
+        const isMember = room.members.some(m => m.user.toString() === userId);
+        if (isMember) {
+            return res.status(200).json({ message: 'Already a member.', room });
+        }
+
+        // Private room validation
+        if (room.type === ROOM_TYPES.PRIVATE) {
+            if (passkey !== room.passkey) {
+                return res.status(401).json({ error: 'Invalid passkey.' });
+            }
+        }
+
+        // Add to members
+        room.members.push({ user: userId, isAdmin: false });
+        await room.save();
+
+        return res.status(200).json({ message: 'Joined successfully.', room });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * POST /api/rooms/:id/leave
+ * Remove user from room members list.
+ */
+export const leaveRoom = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        const room = await Room.findById(id);
+        if (!room) return res.status(404).json({ error: 'Room not found.' });
+
+        // Admins/creators cannot leave their own room via this method in some apps, 
+        // but the requirement is to remove from members.
+        room.members = room.members.filter(m => m.user.toString() !== userId);
+        await room.save();
+
+        return res.status(200).json({ message: 'Left room successfully.' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * GET /api/rooms/:id/members
+ * Retrieve list of active members in the room.
+ */
+export const getRoomMembers = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const room = await Room.findById(id).populate('members.user', 'username');
+        if (!room) return res.status(404).json({ error: 'Room not found.' });
+
+        // Optional: Check if requester is a member for private rooms
+        if (room.type === ROOM_TYPES.PRIVATE && !room.members.some(m => m.user._id.toString() === req.user.id)) {
+            return res.status(403).json({ error: 'Access denied. You must be a member.' });
+        }
+
+        const members = room.members.map(m => ({
+            id: m.user._id,
+            username: m.user.username,
+            isAdmin: m.isAdmin,
+            joinedAt: m.joinedAt
+        }));
+
+        return res.status(200).json({ members });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * GET /api/rooms/:id/messages
+ * Retrieve chat history for the room.
+ */
+export const getRoomMessages = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        
+        // Ensure room exists
+        const room = await Room.findById(id);
+        if (!room) return res.status(404).json({ error: 'Room not found.' });
+
+        // Private room access check
+        if (room.type === ROOM_TYPES.PRIVATE && !room.members.some(m => m.user.toString() === req.user.id)) {
+            return res.status(403).json({ error: 'Access denied. You must be a member.' });
+        }
+
+        const messages = await Message.find({ room: id })
+            .sort({ createdAt: -1 })
+            .limit(CHAT_HISTORY_LIMIT)
+            .populate('sender', 'username')
+            .lean();
+
+        return res.status(200).json({ 
+            messages: messages.reverse().map(m => ({
+                id: m._id,
+                sender: m.sender?.username ?? 'Unknown',
+                senderId: m.sender?._id,
+                content: m.content,
+                createdAt: m.createdAt
+            }))
+        });
     } catch (error) {
         next(error);
     }
