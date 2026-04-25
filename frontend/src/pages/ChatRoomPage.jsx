@@ -46,8 +46,8 @@ function ChatRoomPage() {
         setRoomInfo(data.room)
 
         // ─── Private Room Entrance Logic ─────────────────────────────────────
-        const isCreator = data.room.creator?._id === user.id || data.room.creator === user.id;
-        const isMember = data.room.members?.some(m => (m.user?._id || m.user) === user.id);
+        const isCreator = String(data.room.creator?._id || data.room.creator) === String(user.id);
+        const isMember = data.room.members?.some(m => String(m.user?._id || m.user) === String(user.id));
 
         if (data.room.type === 'private' && !isMember && !isCreator) {
           setShowPasswordPrompt(true)
@@ -106,7 +106,7 @@ function ChatRoomPage() {
         });
 
         socketService.on('room_users', (payload) => {
-          if (!mounted && payload.roomId === roomId) return;
+          if (!mounted || String(payload.roomId) !== String(roomId)) return;
           setRoomUsers(payload.members || []);
         });
 

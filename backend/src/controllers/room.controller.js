@@ -130,10 +130,12 @@ export const joinRoom = async (req, res, next) => {
         const room = await Room.findById(id).select('+passkey');
         if (!room) return res.status(404).json({ error: 'Room not found.' });
 
-        // Check if already a member
+        // Check if already a member or creator
         const isMember = room.members.some(m => m.user.toString() === userId);
-        if (isMember) {
-            return res.status(200).json({ message: 'Already a member.', room });
+        const isCreator = room.creator.toString() === userId;
+        
+        if (isMember || isCreator) {
+            return res.status(200).json({ message: 'Already a member or admin.', room });
         }
 
         // Private room validation
@@ -183,11 +185,15 @@ export const leaveRoom = async (req, res, next) => {
 export const getRoomMembers = async (req, res, next) => {
     try {
         const { id } = req.params;
+        const userId = req.user.id;
         const room = await Room.findById(id).populate('members.user', 'username');
         if (!room) return res.status(404).json({ error: 'Room not found.' });
 
-        // Optional: Check if requester is a member for private rooms
-        if (room.type === ROOM_TYPES.PRIVATE && !room.members.some(m => m.user._id.toString() === req.user.id)) {
+        // Access check for private rooms: must be member OR creator
+        const isCreator = room.creator.toString() === userId;
+        const isMember = room.members.some(m => m.user._id.toString() === userId);
+        
+        if (room.type === ROOM_TYPES.PRIVATE && !isMember && !isCreator) {
             return res.status(403).json({ error: 'Access denied. You must be a member.' });
         }
 
@@ -212,12 +218,14 @@ export const getRoomMessages = async (req, res, next) => {
     try {
         const { id } = req.params;
         
-        // Ensure room exists
         const room = await Room.findById(id);
         if (!room) return res.status(404).json({ error: 'Room not found.' });
 
-        // Private room access check
-        if (room.type === ROOM_TYPES.PRIVATE && !room.members.some(m => m.user.toString() === req.user.id)) {
+        // Private room access check: member or creator
+        const isMember = room.members.some(m => m.user.toString() === req.user.id);
+        const isCreator = room.creator.toString() === req.user.id;
+
+        if (room.type === ROOM_TYPES.PRIVATE && !isMember && !isCreator) {
             return res.status(403).json({ error: 'Access denied. You must be a member.' });
         }
 
