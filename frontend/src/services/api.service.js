@@ -50,6 +50,7 @@ export const apiService = {
     }),
 
     // User Info
+    getUsers: () => fetchWithAuth('/api/users'),
     getCurrentUser: () => {
         const token = localStorage.getItem('accessToken');
         if (!token) return null;
