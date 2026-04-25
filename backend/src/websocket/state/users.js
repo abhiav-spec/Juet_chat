@@ -6,8 +6,8 @@
  * Using WeakMap so entries are garbage-collected when the ws object is destroyed.
  */
 
-/** @type {Map<import('ws').WebSocket, { userId: string, currentRoomId: string|null }>} */
-const userContextMap = new Map();
+/** @type {WeakMap<import('ws').WebSocket, { userId: string, currentRoomId: string|null }>} */
+const userContextMap = new WeakMap();
 
 /**
  * Register a user context when they connect.
@@ -43,16 +43,4 @@ export const setUserRoom = (ws, roomId) => {
  */
 export const unregisterUser = (ws) => {
     userContextMap.delete(ws);
-};
-
-/**
- * Get unique online user IDs.
- * @returns {string[]}
- */
-export const getOnlineUserIds = () => {
-    const userIds = new Set();
-    for (const ctx of userContextMap.values()) {
-        userIds.add(ctx.userId);
-    }
-    return Array.from(userIds);
 };

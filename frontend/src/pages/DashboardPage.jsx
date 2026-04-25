@@ -6,31 +6,22 @@ function DashboardPage() {
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [rooms, setRooms] = useState([])
-  const [users, setUsers] = useState([])
-  const [currentUser, setCurrentUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    async function init() {
+    async function loadRooms() {
       try {
-        const user = apiService.getCurrentUser()
-        setCurrentUser(user)
-
-        const [roomsData, usersData] = await Promise.all([
-          apiService.getRooms(),
-          apiService.getUsers()
-        ])
-        
-        setRooms(roomsData.rooms || [])
-        setUsers(usersData.users || [])
+        const data = await apiService.getRooms()
+        // Extract the rooms array from the wrapper object { rooms: [...] }
+        setRooms(data.rooms || [])
       } catch (err) {
         setError(err.message)
       } finally {
         setIsLoading(false)
       }
     }
-    init()
+    loadRooms()
   }, [])
 
   const handleLogout = () => {
@@ -43,11 +34,11 @@ function DashboardPage() {
       {/* Sidebar */}
       <aside className="hidden md:flex fixed left-0 top-0 h-full z-40 flex-col py-8 bg-[#091328] w-72 rounded-r-none shadow-[12px_0_32px_rgba(25,37,64,0.08)]">
         <div className="px-6 mb-8 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#a3a6ff] flex items-center justify-center text-[#0f00a4] font-black text-sm shadow-lg shadow-indigo-500/20">
-            {currentUser?.username?.substring(0, 2).toUpperCase() || '??'}
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-[#9396ff] flex items-center justify-center">
+            <img alt="Alex Rivera" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCi0IUFcIJds8khme5oXyPBzwFVgueGkAD9JmxxmGWyRm3O_MGQkfCgSBLmLcykRffYQPTrYEC1aOnuQuJIX2ZUoZzUXeA_62XHmJvr_oOw5oacBv4HBUu_ld4BO0d9qXCfTtwnx9ZEc0zdIWjFB9GQT51GqXPXpmjNKH5XCnbFGz7zI94JtPt_MRNFaiZ9kuZjXhqMiXo1r35dGG_AcFSBKzJqRAHN5fRTupVvb6jNkR3FL35IMvQQPHSagBVZS2WKRJcWgQjDpMQ" />
           </div>
           <div>
-            <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">{currentUser?.username || 'Guest'}</h3>
+            <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">Alex Rivera</h3>
             <div className="flex items-center gap-1">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
               <span className="text-[10px] text-[#a3aac4] uppercase tracking-widest font-semibold">Online</span>
@@ -67,38 +58,11 @@ function DashboardPage() {
             <span className="material-symbols-outlined">auto_awesome</span>
             <span>Saved Moments</span>
           </a>
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-[#d73357] mx-2 duration-300 ease-in-out hover:bg-[#a70138]/10 transition-all font-['Plus_Jakarta_Sans'] font-medium text-sm rounded-lg">
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white mx-2 duration-300 ease-in-out hover:bg-[#141f38] transition-all font-['Plus_Jakarta_Sans'] font-medium text-sm">
             <span className="material-symbols-outlined">logout</span>
             <span>Logout</span>
           </button>
         </nav>
-
-        <div className="flex-1 overflow-y-auto px-4 mt-8 space-y-6">
-          <div>
-            <h4 className="px-4 text-[10px] text-[#a3aac4] font-bold uppercase tracking-[0.2em] mb-4">Active Transmissions</h4>
-            <div className="space-y-1">
-              {users.filter(u => u.id !== currentUser?.id).map(user => (
-                <div key={user.id} className="flex items-center justify-between px-4 py-2 hover:bg-[#141f38] rounded-xl transition-all group cursor-default">
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <div className="w-8 h-8 rounded-full bg-[#192540] flex items-center justify-center text-[10px] font-bold text-[#a3a6ff] border border-[#40485d]/20 transition-transform group-hover:scale-110">
-                        {user.username.substring(0, 2).toUpperCase()}
-                      </div>
-                      {user.isOnline && (
-                        <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#091328]"></div>
-                      )}
-                    </div>
-                    <span className="text-xs font-medium text-[#dee5ff] group-hover:text-white transition-colors">{user.username}</span>
-                  </div>
-                  <span className="material-symbols-outlined text-[#a3aac4] text-xs opacity-0 group-hover:opacity-100 transition-opacity">more_vert</span>
-                </div>
-              ))}
-              {users.length <= 1 && (
-                <p className="px-4 text-[10px] text-[#a3aac4]/40 italic">Waiting for more connections...</p>
-              )}
-            </div>
-          </div>
-        </div>
         <div className="px-8 mt-auto">
           <div className="bg-[#192540]/30 rounded-xl p-4 border border-[#40485d]/10">
             <span className="text-[10px] text-[#a3a6ff] font-bold uppercase tracking-widest block mb-1">Premium</span>

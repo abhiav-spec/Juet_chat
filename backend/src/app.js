@@ -5,7 +5,6 @@ import cors from 'cors';
 
 import authRoutes from './routes/auth.routes.js';
 import roomRoutes from './routes/room.routes.js';
-import userRoutes from './routes/user.routes.js';
 import healthRouter from './routes/health.routes.js';
 import errorHandler from './middleware/error.middleware.js';
 
@@ -36,7 +35,6 @@ app.use(morgan('dev'));
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
-app.use('/api/users', userRoutes);
 
 // Health routes (must be mounted before error handler, no auth required)
 app.use('/', healthRouter);

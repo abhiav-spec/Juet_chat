@@ -9,8 +9,6 @@ function ChatRoomPage() {
   
   const [messages, setMessages] = useState([])
   const [roomInfo, setRoomInfo] = useState(null)
-  const [roomUsers, setRoomUsers] = useState([])
-  const [currentUser, setCurrentUser] = useState(null)
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isHistoryLoading, setIsHistoryLoading] = useState(true)
@@ -38,13 +36,6 @@ function ChatRoomPage() {
         if (!mounted) return
         setRoomInfo(data.room)
 
-        const user = apiService.getCurrentUser()
-        if (!user) {
-          navigate('/login')
-          return
-        }
-        setCurrentUser(user)
-
         const token = apiService.getToken()
         if (!token) {
           navigate('/login')
@@ -65,7 +56,7 @@ function ChatRoomPage() {
               text: m.content || m.message,
               time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               createdAt: new Date(m.createdAt), // Store raw date for sorting
-              sent: String(m.senderId) === String(user.id)
+              sent: m.senderId === JSON.parse(atob(token.split('.')[1])).id
             }))
 
             // Merge and deduplicate
@@ -91,7 +82,7 @@ function ChatRoomPage() {
               text: payload.message,
               time: new Date(payload.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               createdAt: new Date(payload.createdAt),
-              sent: String(payload.senderId) === String(user.id)
+              sent: payload.senderId === JSON.parse(atob(token.split('.')[1])).id || payload.sender === 'You'
             };
 
             // Prevent duplicates (e.g. if history arrives after live message)
@@ -102,22 +93,10 @@ function ChatRoomPage() {
           })
         })
 
-        socketService.on('room_users', (payload) => {
-          if (!mounted) return;
-          if (payload.roomId === roomId) {
-            setRoomUsers(payload.members || []);
-          }
-        });
-
         socketService.on('error', (payload) => {
           if (!mounted) return;
-          
-          const isCreator = data.room.creator?._id === user.id || data.room.creator === user.id;
-          
-          if (payload.status === 401 || (payload.message && payload.message.toLowerCase().includes('passkey'))) {
-            if (!isCreator) {
-              setShowPasswordPrompt(true)
-            }
+          if (payload.status === 401 || (payload.message && payload.message.toLowerCase().includes('password'))) {
+            setShowPasswordPrompt(true)
           } else {
             setError(payload.message)
           }
@@ -215,47 +194,26 @@ function ChatRoomPage() {
       <aside className="hidden md:flex fixed left-0 top-0 h-full z-40 flex-col py-8 bg-[#091328] w-72 rounded-r-none shadow-[12px_0_32px_rgba(25,37,64,0.08)]">
         <div className="px-6 mb-10 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-[#a3a6ff] flex items-center justify-center text-[#0f00a4] font-black text-sm">
-            {currentUser?.username?.substring(0, 2).toUpperCase() || '??'}
+            AR
           </div>
           <div>
-            <p className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">{currentUser?.username || 'Guest'}</p>
+            <p className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">Alex Rivera</p>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
               <p className="text-[#a3aac4] text-xs">Online</p>
             </div>
           </div>
         </div>
-        <nav className="flex-1 space-y-2 px-4 mt-4 overflow-y-auto">
-          <h4 className="px-4 text-[10px] text-[#a3aac4] font-bold uppercase tracking-[0.2em] mb-4">Active Participants</h4>
-          <div className="space-y-1">
-            {roomUsers.map(user => (
-              <div key={user.id} className="flex items-center gap-3 px-4 py-2 hover:bg-[#141f38] rounded-xl transition-all group cursor-default">
-                <div className="relative">
-                  <div className="w-8 h-8 rounded-full bg-[#192540] flex items-center justify-center text-[10px] font-bold text-[#a3a6ff] border border-[#40485d]/20">
-                    {user.username.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#091328]"></div>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-semibold text-[#dee5ff]">{user.username}</span>
-                  <span className="text-[9px] text-emerald-500 font-medium">In Room</span>
-                </div>
-              </div>
-            ))}
-            {roomUsers.length === 0 && (
-              <p className="px-4 text-[10px] text-[#a3aac4]/40 italic">Syncing participants...</p>
-            )}
-          </div>
-        </nav>
-        <div className="px-4 mt-auto">
-          <button 
-            onClick={() => navigate('/dashboard')} 
-            className="w-full flex items-center justify-center gap-2 bg-[#192540] text-[#a3aac4] hover:text-[#dee5ff] py-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest border border-[#40485d]/10"
-          >
-            <span className="material-symbols-outlined text-sm">arrow_back</span>
-            Dashboard
+        <nav className="flex-1 space-y-2 px-4">
+          <button onClick={() => navigate('/dashboard')} className="w-full flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white transition-all hover:bg-[#141f38] font-['Plus_Jakarta_Sans'] font-medium text-sm">
+            <span className="material-symbols-outlined">explore</span>
+            <span>Explore Rooms</span>
           </button>
-        </div>
+          <a className="flex items-center gap-3 px-4 py-3 bg-[#49339d] text-white rounded-lg mx-2 font-['Plus_Jakarta_Sans'] font-medium text-sm" href="#">
+            <span className="material-symbols-outlined">chat_bubble</span>
+            <span>Direct Messages</span>
+          </a>
+        </nav>
       </aside>
 
       {/* Main Content */}
@@ -280,15 +238,6 @@ function ChatRoomPage() {
               <div className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <p className="text-[#a3aac4] text-[11px] font-medium uppercase tracking-wider">Live Connection</p>
-                {roomInfo?.passkey && (
-                  <>
-                    <span className="w-1 h-1 rounded-full bg-[#40485d]/40"></span>
-                    <div className="flex items-center gap-1 bg-[#a3a6ff]/10 px-2 py-0.5 rounded-md border border-[#a3a6ff]/20">
-                      <span className="material-symbols-outlined text-[10px] text-[#a3a6ff]">key</span>
-                      <p className="text-[#a3a6ff] text-[10px] font-bold uppercase tracking-wider">Passkey: {roomInfo.passkey}</p>
-                    </div>
-                  </>
-                )}
               </div>
             </div>
           </div>

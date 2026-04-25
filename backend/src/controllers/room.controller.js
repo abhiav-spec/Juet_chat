@@ -1,11 +1,15 @@
 import crypto from 'crypto';
-import Room from '../models/room.js';
+import Room from '../models/Room.js';
 import { ROOM_TYPES } from '../utils/constants.js';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-/** Safe room projection — never expose passkey by default. */
-const safeRoomFields = '_id name creator type createdAt updatedAt members';
+/** Hash a plain-text password using SHA-256 (same approach as user passwords). */
+const hashPassword = (password) =>
+    crypto.createHash('sha256').update(password).digest('hex');
+
+/** Safe room projection — never expose passwordHash. */
+const safeRoomFields = '_id name creator type createdAt updatedAt';
 
 // ─── Controllers ─────────────────────────────────────────────────────────────
 
@@ -39,11 +43,10 @@ export const createRoom = async (req, res, next) => {
             name: name.trim(),
             creator: req.user.id,
             type,
-            members: [{ user: req.user.id, isAdmin: true }],
         };
 
         if (type === ROOM_TYPES.PRIVATE) {
-            roomData.passkey = password;
+            roomData.passwordHash = hashPassword(password);
         }
 
         const room = await Room.create(roomData);
@@ -101,12 +104,6 @@ export const getRoomById = async (req, res, next) => {
 
         if (!room) {
             return res.status(404).json({ error: 'Room not found.' });
-        }
-
-        // ─── ADMIN PRIVILEGE: Creator can see the passkey ─────────────────────
-        if (room.creator?._id.toString() === req.user.id && room.type === ROOM_TYPES.PRIVATE) {
-            const privateData = await Room.findById(req.params.id).select('passkey').lean();
-            room.passkey = privateData.passkey;
         }
 
         return res.status(200).json({ room });

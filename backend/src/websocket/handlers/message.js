@@ -1,4 +1,4 @@
-import Message from '../../models/message.js';
+import Message from '../../models/Message.js';
 import { getRoomClients } from '../state/rooms.js';
 import { getUserContext } from '../state/users.js';
 import { WS_SERVER_EVENTS } from '../../utils/constants.js';
@@ -52,7 +52,6 @@ const handleSendMessage = async (ws, payload) => {
             type: WS_SERVER_EVENTS.MESSAGE,
             message: message.content,
             sender: message.sender?.username ?? 'Unknown',
-            senderId: message.sender?._id,
             createdAt: message.createdAt,
             id: message._id,
         });

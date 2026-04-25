@@ -9,8 +9,6 @@ export const WS_SERVER_EVENTS = {
     HISTORY: 'history',
     MESSAGE: 'message',
     ERROR: 'error',
-    ROOM_USERS: 'room_users',
-    CONNECTED: 'connected',
 };
 
 // Room types
