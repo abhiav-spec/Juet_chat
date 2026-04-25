@@ -10,10 +10,6 @@ const sendError = (ws, message) => {
     ws.send(JSON.stringify({ type: WS_SERVER_EVENTS.ERROR, message }));
 };
 
-/** Hash a plain-text password (same algorithm used in room creation). */
-const hashPassword = (password) =>
-    crypto.createHash('sha256').update(password).digest('hex');
-
 /**
  * Handle the `join_room` event. Validates the roomId, checks password for private rooms,
  * tracks the user's room state, and sends the chat history back to the client.
@@ -29,19 +25,21 @@ const handleJoinRoom = async (ws, payload) => {
             return sendError(ws, 'roomId is required.');
         }
 
-        // Fetch room — include passwordHash only if needed for comparison
-        const room = await Room.findById(roomId).select('+passwordHash');
+        // Fetch room — include passkey only if needed for comparison
+        const room = await Room.findById(roomId).select('+passkey');
         if (!room) {
             return sendError(ws, 'Room not found.');
         }
 
         // ─── Access Control ───────────────────────────────────────────────────
-        if (room.type === ROOM_TYPES.PRIVATE) {
+        const isCreator = room.creator.toString() === ws.user.id;
+
+        if (room.type === ROOM_TYPES.PRIVATE && !isCreator) {
             if (!password || typeof password !== 'string') {
-                return sendError(ws, 'A password is required to join this private room.');
+                return sendError(ws, 'A passkey is required to join this private room.');
             }
-            if (hashPassword(password) !== room.passwordHash) {
-                return sendError(ws, 'Incorrect room password.');
+            if (password !== room.passkey) {
+                return sendError(ws, 'Incorrect room passkey.');
             }
         }
 

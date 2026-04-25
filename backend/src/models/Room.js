@@ -22,12 +22,28 @@ const roomSchema = new mongoose.Schema(
             required: [true, 'Room type is required'],
             default: ROOM_TYPES.PUBLIC,
         },
-        // Never expose this field — select: false ensures it is excluded by default
-        passwordHash: {
+        // Stored as passkey for admin visibility
+        passkey: {
             type: String,
-            select: false,
             default: null,
         },
+        members: [
+            {
+                user: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User',
+                    required: true,
+                },
+                isAdmin: {
+                    type: Boolean,
+                    default: false,
+                },
+                joinedAt: {
+                    type: Date,
+                    default: Date.now,
+                },
+            },
+        ],
     },
     { timestamps: true }
 );

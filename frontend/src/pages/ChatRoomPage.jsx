@@ -103,8 +103,13 @@ function ChatRoomPage() {
 
         socketService.on('error', (payload) => {
           if (!mounted) return;
-          if (payload.status === 401 || (payload.message && payload.message.toLowerCase().includes('password'))) {
-            setShowPasswordPrompt(true)
+          
+          const isCreator = data.room.creator?._id === user.id || data.room.creator === user.id;
+          
+          if (payload.status === 401 || (payload.message && payload.message.toLowerCase().includes('passkey'))) {
+            if (!isCreator) {
+              setShowPasswordPrompt(true)
+            }
           } else {
             setError(payload.message)
           }
@@ -246,6 +251,15 @@ function ChatRoomPage() {
               <div className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <p className="text-[#a3aac4] text-[11px] font-medium uppercase tracking-wider">Live Connection</p>
+                {roomInfo?.passkey && (
+                  <>
+                    <span className="w-1 h-1 rounded-full bg-[#40485d]/40"></span>
+                    <div className="flex items-center gap-1 bg-[#a3a6ff]/10 px-2 py-0.5 rounded-md border border-[#a3a6ff]/20">
+                      <span className="material-symbols-outlined text-[10px] text-[#a3a6ff]">key</span>
+                      <p className="text-[#a3a6ff] text-[10px] font-bold uppercase tracking-wider">Passkey: {roomInfo.passkey}</p>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
