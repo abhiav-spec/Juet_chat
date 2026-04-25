@@ -1,14 +1,6 @@
 import { Router } from 'express';
 import authenticate from '../middleware/auth.middleware.js';
-import { 
-    createRoom, 
-    listRooms, 
-    getRoomById, 
-    joinRoom, 
-    leaveRoom, 
-    getRoomMembers, 
-    getRoomMessages 
-} from '../controllers/room.controller.js';
+import { createRoom, listRooms, getRoomById } from '../controllers/room.controller.js';
 
 const router = Router();
 
@@ -28,9 +20,5 @@ router.use(authenticate);
 router.post('/', createRoom);
 router.get('/', listRooms);
 router.get('/:id', getRoomById);
-router.post('/:id/join', joinRoom);
-router.post('/:id/leave', leaveRoom);
-router.get('/:id/members', getRoomMembers);
-router.get('/:id/messages', getRoomMessages);
 
 export default router;

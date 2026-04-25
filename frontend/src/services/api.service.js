@@ -48,15 +48,6 @@ export const apiService = {
         method: 'POST',
         body: JSON.stringify(roomData),
     }),
-    joinRoom: (id, passkey) => fetchWithAuth(`/api/rooms/${id}/join`, {
-        method: 'POST',
-        body: JSON.stringify({ passkey }),
-    }),
-    leaveRoom: (id) => fetchWithAuth(`/api/rooms/${id}/leave`, {
-        method: 'POST',
-    }),
-    getRoomMembers: (id) => fetchWithAuth(`/api/rooms/${id}/members`),
-    getRoomMessages: (id) => fetchWithAuth(`/api/rooms/${id}/messages`),
 
     // User Info
     getUsers: () => fetchWithAuth('/api/users'),
