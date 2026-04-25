@@ -9,6 +9,7 @@ function ChatRoomPage() {
   
   const [messages, setMessages] = useState([])
   const [roomInfo, setRoomInfo] = useState(null)
+  const [currentUser, setCurrentUser] = useState(null)
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isHistoryLoading, setIsHistoryLoading] = useState(true)
@@ -36,6 +37,13 @@ function ChatRoomPage() {
         if (!mounted) return
         setRoomInfo(data.room)
 
+        const user = apiService.getCurrentUser()
+        if (!user) {
+          navigate('/login')
+          return
+        }
+        setCurrentUser(user)
+
         const token = apiService.getToken()
         if (!token) {
           navigate('/login')
@@ -56,7 +64,7 @@ function ChatRoomPage() {
               text: m.content || m.message,
               time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               createdAt: new Date(m.createdAt), // Store raw date for sorting
-              sent: m.senderId === JSON.parse(atob(token.split('.')[1])).id
+              sent: String(m.senderId) === String(user.id)
             }))
 
             // Merge and deduplicate
@@ -82,7 +90,7 @@ function ChatRoomPage() {
               text: payload.message,
               time: new Date(payload.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               createdAt: new Date(payload.createdAt),
-              sent: payload.senderId === JSON.parse(atob(token.split('.')[1])).id || payload.sender === 'You'
+              sent: String(payload.senderId) === String(user.id)
             };
 
             // Prevent duplicates (e.g. if history arrives after live message)
@@ -194,10 +202,10 @@ function ChatRoomPage() {
       <aside className="hidden md:flex fixed left-0 top-0 h-full z-40 flex-col py-8 bg-[#091328] w-72 rounded-r-none shadow-[12px_0_32px_rgba(25,37,64,0.08)]">
         <div className="px-6 mb-10 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-[#a3a6ff] flex items-center justify-center text-[#0f00a4] font-black text-sm">
-            AR
+            {currentUser?.username?.substring(0, 2).toUpperCase() || '??'}
           </div>
           <div>
-            <p className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">Alex Rivera</p>
+            <p className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">{currentUser?.username || 'Guest'}</p>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
               <p className="text-[#a3aac4] text-xs">Online</p>
