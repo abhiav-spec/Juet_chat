@@ -3,15 +3,6 @@ import { WS_SERVER_EVENTS } from '../../utils/constants.js';
 
 /**
  * Authenticate a WebSocket upgrade request.
- *
- * Expects the JWT as a query parameter: ws://host/?token=<jwt>
- *
- * On success:  attaches `ws.user = { id, session_id }` and calls next().
- * On failure:  sends an error event and closes the connection.
- *
- * @param {import('ws').WebSocket} ws
- * @param {import('http').IncomingMessage} req
- * @param {() => void} next
  */
 const wsAuth = (ws, req, next) => {
     try {
@@ -19,7 +10,7 @@ const wsAuth = (ws, req, next) => {
         const token = url.searchParams.get('token');
 
         if (!token) {
-            ws.send(JSON.stringify({ event: WS_SERVER_EVENTS.ERROR, message: 'Authentication required. Provide ?token=<jwt>.' }));
+            ws.send(JSON.stringify({ type: WS_SERVER_EVENTS.ERROR, message: 'Authentication required.' }));
             ws.terminate();
             return;
         }
@@ -29,9 +20,9 @@ const wsAuth = (ws, req, next) => {
         next();
     } catch (error) {
         const message = error.name === 'TokenExpiredError'
-            ? 'Token expired. Please refresh your session.'
+            ? 'Token expired.'
             : 'Invalid token.';
-        ws.send(JSON.stringify({ event: WS_SERVER_EVENTS.ERROR, message }));
+        ws.send(JSON.stringify({ type: WS_SERVER_EVENTS.ERROR, message }));
         ws.terminate();
     }
 };

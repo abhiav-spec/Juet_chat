@@ -1,4 +1,4 @@
-import Message from '../../models/Message.js';
+import Message from '../../models/message.js';
 import { getRoomClients } from '../state/rooms.js';
 import { getUserContext } from '../state/users.js';
 import { WS_SERVER_EVENTS } from '../../utils/constants.js';
@@ -37,22 +37,22 @@ const handleSendMessage = async (ws, payload) => {
         const senderId = ws.user.id;
         const roomId = ctx.currentRoomId;
 
-        // ─── Persist to MongoDB ───────────────────────────────────────────────
+        // ─── 1. PERSIST TO DATABASE (Wait for confirmation) ─────────────────
         const message = await Message.create({
             room: roomId,
             sender: senderId,
             content: content.trim(),
         });
 
-        // Populate sender username for the broadcast payload
+        // Ensure we have the latest sender info for the UI
         await message.populate('sender', 'username');
 
-        // ─── Broadcast to all clients in the room ─────────────────────────────
+        // ─── 2. BROADCAST TO ROOM ────────────────────────────────────────────
         const outboundPayload = JSON.stringify({
             type: WS_SERVER_EVENTS.MESSAGE,
             message: message.content,
             sender: message.sender?.username ?? 'Unknown',
-            senderId: message.sender?._id,
+            senderId: message.sender?._id, // Add this for precise alignment
             createdAt: message.createdAt,
             id: message._id,
         });

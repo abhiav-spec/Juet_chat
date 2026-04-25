@@ -53,6 +53,10 @@ export const apiService = {
         method: 'DELETE',
     }),
 
+    leaveRoom: (roomId) => fetchWithAuth(`/api/rooms/${roomId}/leave`, {
+        method: 'POST',
+    }),
+
     // User Utils
     getCurrentUserId: () => {
         const token = localStorage.getItem('accessToken');

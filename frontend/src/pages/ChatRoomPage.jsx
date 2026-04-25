@@ -48,6 +48,26 @@ function ChatRoomPage() {
     }
   }
 
+  const handleLeaveRoom = async () => {
+    if (!window.confirm('Are you sure you want to leave this chat room? You will need to enter the passkey again to re-join.')) return;
+
+    try {
+        setIsDeleting(true)
+        const response = await apiService.leaveRoom(roomId);
+        if (response.error) {
+            alert(response.error);
+        } else {
+            alert('You have left the room.');
+            navigate('/dashboard');
+        }
+    } catch (err) {
+        console.error('Leave error:', err);
+        alert('Failed to leave room.');
+    } finally {
+        setIsDeleting(false)
+    }
+  }
+
   // 1. Initial Load & Socket Connection
   useEffect(() => {
     let mounted = true;
@@ -107,7 +127,7 @@ function ChatRoomPage() {
               sent: payload.senderId?.toString() === currentUserId || payload.sender === 'You'
             };
 
-            // Prevent duplicates (e.g. if history arrives after live message)
+            // Prevent duplicates
             if (prev.some(m => m.id === newMessage.id)) return prev;
 
             const combined = [...prev, newMessage];
@@ -277,6 +297,15 @@ function ChatRoomPage() {
                 >
                   <span className="material-symbols-outlined text-sm">delete</span>
                   <span>Delete Room</span>
+                </button>
+             )}
+             {roomInfo?.creator?._id !== currentUserId && roomInfo?.type === 'private' && (
+                <button 
+                  onClick={handleLeaveRoom}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-500 hover:bg-orange-500/20 transition-colors text-xs font-semibold"
+                >
+                  <span className="material-symbols-outlined text-sm">exit_to_app</span>
+                  <span>Leave Room</span>
                 </button>
              )}
              <button onClick={() => navigate('/dashboard')} className="md:hidden p-2 text-[#a3aac4]">

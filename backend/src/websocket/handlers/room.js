@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import Room from '../../models/room.js';
-import Message from '../../models/Message.js';
+import Message from '../../models/message.js';
 import { addToRoom, removeFromRoom } from '../state/rooms.js';
 import { getUserContext, setUserRoom } from '../state/users.js';
 import { WS_SERVER_EVENTS, ROOM_TYPES, CHAT_HISTORY_LIMIT } from '../../utils/constants.js';
@@ -37,14 +37,19 @@ const handleJoinRoom = async (ws, payload) => {
 
         // ─── Access Control ───────────────────────────────────────────────────
         const isCreator = ws.user.id.toString() === room.creator.toString();
+        const isMember = room.members.some(m => m.user.toString() === ws.user.id);
 
-        if (room.type === ROOM_TYPES.PRIVATE && !isCreator) {
+        if (room.type === ROOM_TYPES.PRIVATE && !isCreator && !isMember) {
             if (!password || typeof password !== 'string') {
                 return sendError(ws, 'A password is required to join this private room.');
             }
             if (hashPassword(password) !== room.passwordHash) {
                 return sendError(ws, 'Incorrect room password.');
             }
+
+            // Successfully entered for the first time -> Add to persistent members
+            room.members.push({ user: ws.user.id, isAdmin: false });
+            await room.save();
         }
 
         // ─── Leave current room if already in one ─────────────────────────────

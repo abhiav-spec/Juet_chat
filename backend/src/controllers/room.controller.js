@@ -153,3 +153,34 @@ export const deleteRoom = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * POST /api/rooms/:id/leave
+ * Remove the current user from the room's members list.
+ *
+ * @param {import('express').Request} req - The Express request object.
+ * @param {import('express').Response} res - The Express response object.
+ * @param {import('express').NextFunction} next - The next middleware function.
+ */
+export const leaveRoom = async (req, res, next) => {
+    try {
+        const room = await Room.findById(req.params.id);
+
+        if (!room) {
+            return res.status(404).json({ error: 'Room not found.' });
+        }
+
+        // Admins/Creators should not "leave" using this method (they should delete instead)
+        if (room.creator.toString() === req.user.id) {
+            return res.status(400).json({ error: 'Admins cannot leave their own room. Use Delete instead.' });
+        }
+
+        // Remove user from members array
+        room.members = room.members.filter(m => m.user.toString() !== req.user.id);
+        await room.save();
+
+        return res.status(200).json({ message: 'You have left the room successfully.' });
+    } catch (error) {
+        next(error);
+    }
+};

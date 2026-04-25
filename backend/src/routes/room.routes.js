@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import authenticate from '../middleware/auth.middleware.js';
-import { createRoom, listRooms, getRoomById, deleteRoom } from '../controllers/room.controller.js';
+import { createRoom, listRooms, getRoomById, deleteRoom, leaveRoom } from '../controllers/room.controller.js';
 
 const router = Router();
 
@@ -20,6 +20,7 @@ router.use(authenticate);
 router.post('/', createRoom);
 router.get('/', listRooms);
 router.get('/:id', getRoomById);
+router.post('/:id/leave', leaveRoom);
 router.delete('/:id', deleteRoom);
 
 export default router;
