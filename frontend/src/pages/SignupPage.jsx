@@ -320,20 +320,14 @@ function SignupPage() {
                   <div className="h-px w-full bg-[#40485d]/30" />
                 </div>
 
-                <div className="flex justify-center gap-4">
-                  <button className="flex flex-1 items-center justify-center gap-2 rounded-full border border-[#40485d]/10 bg-[#141f38] py-3 transition-colors hover:bg-[#1f2b49]" type="button">
-                    <img
-                      alt="Google"
-                      className="h-5 w-5"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhU15sdn7QO6dsExyXPm52kG8XXbXVSRMWv54pQWx16bv2dFIrgERWwYa46f7UherTrOJlpMlPv8YgcBLODSQYLmf9-mrAXDY9Mu-LOFRZvPN02fAKc_y4V9_TzeTHjwVRMsGwAw8JemLFw1aVplvsD2uf-FfzLguaQrjWTZ1XQ9P71V3slAum71bdQUXQseh3pKlUzm5U6BXGkO-zjLY7z-gEi0wvp9_UDC5g6h2YV-mpR9QoO6dpNS6G1EsO-u8OfbTxJKntsGs"
-                    />
-                    <span className="text-sm font-medium">Google</span>
-                  </button>
-                  <button className="flex flex-1 items-center justify-center gap-2 rounded-full border border-[#40485d]/10 bg-[#141f38] py-3 transition-colors hover:bg-[#1f2b49]" type="button">
-                    <span className="material-symbols-outlined text-xl">ios</span>
-                    <span className="text-sm font-medium">Apple</span>
-                  </button>
-                </div>
+                <button className="flex w-full items-center justify-center gap-3 rounded-full border border-[#40485d]/10 bg-[#141f38] py-4 transition-all hover:bg-[#1f2b49] hover:border-[#a3a6ff]/30 shadow-lg shadow-black/20" type="button">
+                  <img
+                    alt="Google"
+                    className="h-5 w-5"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhU15sdn7QO6dsExyXPm52kG8XXbXVSRMWv54pQWx16bv2dFIrgERWwYa46f7UherTrOJlpMlPv8YgcBLODSQYLmf9-mrAXDY9Mu-LOFRZvPN02fAKc_y4V9_TzeTHjwVRMsGwAw8JemLFw1aVplvsD2uf-FfzLguaQrjWTZ1XQ9P71V3slAum71bdQUXQseh3pKlUzm5U6BXGkO-zjLY7z-gEi0wvp9_UDC5g6h2YV-mpR9QoO6dpNS6G1EsO-u8OfbTxJKntsGs"
+                  />
+                  <span className="text-sm font-bold tracking-tight text-[#dee5ff]">Continue with Google</span>
+                </button>
 
                 <p className="text-sm text-[#a3aac4]">
                   Already part of the stream?
