@@ -8,14 +8,21 @@ import Otp from '../models/otp.js';
 
  const registerUser = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, gender, location, about } = req.body;
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
             return res.status(400).json({ error: 'Username or email already exists' });
         }
 
         const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-        const user = await User.create({ username, email, password: hashedPassword });
+        const user = await User.create({ 
+            username, 
+            email, 
+            password: hashedPassword,
+            gender: gender || 'other',
+            location: location || '',
+            about: about || ''
+        });
 
         const refreshtoken=jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         res.cookie('refreshToken', refreshtoken, { 
@@ -60,6 +67,9 @@ import Otp from '../models/otp.js';
                 username: user.username,
                 email: user.email,
                 verified: user.verified,
+                gender: user.gender,
+                location: user.location,
+                about: user.about,
                 accessToken: accessToken,
             },
         };

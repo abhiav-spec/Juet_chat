@@ -368,6 +368,28 @@ function DashboardPage() {
                             </div>
                           </div>
                         </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Gender</label>
+                            <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium capitalize">
+                              {currentUser?.gender || 'Not specified'}
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Location</label>
+                            <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium">
+                              {currentUser?.location || 'Undisclosed'}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">About Me</label>
+                          <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium min-h-[80px]">
+                            {currentUser?.about || 'No bio provided.'}
+                          </div>
+                        </div>
                       </div>
                     </div>
 
