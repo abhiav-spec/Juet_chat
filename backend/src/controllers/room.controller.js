@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import Room from '../models/room.js';
+import Message from '../models/message.js';
 import { ROOM_TYPES } from '../utils/constants.js';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -148,6 +149,9 @@ export const deleteRoom = async (req, res, next) => {
             return res.status(403).json({ error: 'Only the room creator can delete this room.' });
         }
 
+        // Cascading delete: Remove all messages associated with this room
+        await Message.deleteMany({ room: req.params.id });
+        
         await Room.findByIdAndDelete(req.params.id);
 
         return res.status(200).json({ message: 'Room deleted successfully.' });
