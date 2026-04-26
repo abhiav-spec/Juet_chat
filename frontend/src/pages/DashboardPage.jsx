@@ -6,22 +6,34 @@ function DashboardPage() {
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [rooms, setRooms] = useState([])
+  const [featuredRooms, setFeaturedRooms] = useState([])
+  const [activeView, setActiveView] = useState('explore')
+  const [currentUser, setCurrentUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    async function loadRooms() {
+    async function loadData() {
       try {
-        const data = await apiService.getRooms()
-        // Extract the rooms array from the wrapper object { rooms: [...] }
-        setRooms(data.rooms || [])
+        const [roomsData, profileData] = await Promise.all([
+          apiService.getRooms(),
+          apiService.getProfile()
+        ])
+        const allRooms = roomsData.rooms || []
+        setRooms(allRooms)
+        
+        // Pick 3 random rooms for highlights
+        const shuffled = [...allRooms].sort(() => 0.5 - Math.random())
+        setFeaturedRooms(shuffled.slice(0, 3))
+        
+        setCurrentUser(profileData.user || null)
       } catch (err) {
         setError(err.message)
       } finally {
         setIsLoading(false)
       }
     }
-    loadRooms()
+    loadData()
   }, [])
 
   const handleLogout = () => {
@@ -34,11 +46,11 @@ function DashboardPage() {
       {/* Sidebar */}
       <aside className="hidden md:flex fixed left-0 top-0 h-full z-40 flex-col py-8 bg-[#091328] w-72 rounded-r-none shadow-[12px_0_32px_rgba(25,37,64,0.08)]">
         <div className="px-6 mb-8 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-[#9396ff] flex items-center justify-center">
-            <img alt="Alex Rivera" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCi0IUFcIJds8khme5oXyPBzwFVgueGkAD9JmxxmGWyRm3O_MGQkfCgSBLmLcykRffYQPTrYEC1aOnuQuJIX2ZUoZzUXeA_62XHmJvr_oOw5oacBv4HBUu_ld4BO0d9qXCfTtwnx9ZEc0zdIWjFB9GQT51GqXPXpmjNKH5XCnbFGz7zI94JtPt_MRNFaiZ9kuZjXhqMiXo1r35dGG_AcFSBKzJqRAHN5fRTupVvb6jNkR3FL35IMvQQPHSagBVZS2WKRJcWgQjDpMQ" />
+          <div className="w-10 h-10 rounded-full bg-[#192540] flex items-center justify-center border border-[#40485d]/20 text-[#a3a6ff] font-bold">
+            {currentUser?.username?.substring(0, 2).toUpperCase() || '??'}
           </div>
           <div>
-            <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">Alex Rivera</h3>
+            <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">{currentUser?.username || 'Loading...'}</h3>
             <div className="flex items-center gap-1">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
               <span className="text-[10px] text-[#a3aac4] uppercase tracking-widest font-semibold">Online</span>
@@ -46,17 +58,23 @@ function DashboardPage() {
           </div>
         </div>
         <nav className="flex-1 space-y-1 px-4">
-          <Link className="flex items-center gap-3 px-4 py-3 bg-[#49339d] text-white rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm" to="/dashboard">
+          <button 
+            onClick={() => setActiveView('explore')}
+            className={`w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm ${activeView === 'explore' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4] hover:text-white hover:bg-[#141f38]'}`}
+          >
             <span className="material-symbols-outlined">explore</span>
-            <span>Explore Rooms</span>
-          </Link>
+            <span>Dashboard</span>
+          </button>
+          <button 
+            onClick={() => setActiveView('rooms')}
+            className={`w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm ${activeView === 'rooms' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4] hover:text-white hover:bg-[#141f38]'}`}
+          >
+            <span className="material-symbols-outlined">meeting_room</span>
+            <span>Rooms</span>
+          </button>
           <a className="flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white mx-2 duration-300 ease-in-out hover:bg-[#141f38] transition-all font-['Plus_Jakarta_Sans'] font-medium text-sm" href="#">
             <span className="material-symbols-outlined">chat_bubble</span>
             <span>Direct Messages</span>
-          </a>
-          <a className="flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white mx-2 duration-300 ease-in-out hover:bg-[#141f38] transition-all font-['Plus_Jakarta_Sans'] font-medium text-sm" href="#">
-            <span className="material-symbols-outlined">auto_awesome</span>
-            <span>Saved Moments</span>
           </a>
           <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white mx-2 duration-300 ease-in-out hover:bg-[#141f38] transition-all font-['Plus_Jakarta_Sans'] font-medium text-sm">
             <span className="material-symbols-outlined">logout</span>
@@ -92,75 +110,129 @@ function DashboardPage() {
           )}
 
           {/* Hero Bento Header */}
-          <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-            <div className="lg:col-span-2 relative overflow-hidden rounded-lg bg-gradient-to-br from-[#49339d] to-[#0f1930] h-64 flex flex-col justify-end p-8">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#a3a6ff]/20 blur-[100px] -mr-32 -mt-32"></div>
-              <div className="relative z-10">
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#a3a6ff] mb-2 block">Featured</span>
-                <h2 className="text-4xl font-['Plus_Jakarta_Sans'] font-extrabold text-white mb-4 leading-tight">
-                  Join the Live <br />
-                  Conversation
-                </h2>
-                <div className="flex items-center gap-4">
-                  <Link to="/create-room" className="bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] px-6 py-2.5 rounded-full font-['Inter'] font-bold text-sm uppercase tracking-wider shadow-lg shadow-[#a3a6ff]/20 active:scale-95 transition-transform">
-                    Start Yours
+          {activeView === 'explore' ? (
+            <>
+              <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+                <div className="lg:col-span-2 relative overflow-hidden rounded-lg bg-gradient-to-br from-[#49339d] to-[#0f1930] h-64 flex flex-col justify-end p-8">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-[#a3a6ff]/20 blur-[100px] -mr-32 -mt-32"></div>
+                  <div className="relative z-10">
+                    <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#a3a6ff] mb-2 block">Welcome Back</span>
+                    <h2 className="text-4xl font-['Plus_Jakarta_Sans'] font-extrabold text-white mb-4 leading-tight">
+                      Hey {currentUser?.username || 'there'}, <br />
+                      Ready to chat?
+                    </h2>
+                    <div className="flex items-center gap-4">
+                      <button onClick={() => setActiveView('rooms')} className="bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] px-6 py-2.5 rounded-full font-['Inter'] font-bold text-sm uppercase tracking-wider shadow-lg shadow-[#a3a6ff]/20 active:scale-95 transition-transform">
+                        Explore Rooms
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-[#0f1930] rounded-lg p-8 flex flex-col justify-center border border-[#40485d]/5">
+                  <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-xl text-[#dee5ff] mb-2">Live Status</h3>
+                  <p className="text-[#a3aac4] text-sm mb-6 leading-relaxed">There are currently {rooms.length} active rooms available to join right now.</p>
+                  <button onClick={() => setActiveView('rooms')} className="w-full flex items-center justify-center gap-2 bg-[#1f2b49] text-[#dee5ff] px-6 py-4 rounded-xl font-['Inter'] font-bold text-xs uppercase tracking-widest border border-[#40485d]/20 hover:bg-[#192540] transition-colors group">
+                    View All Rooms
+                  </button>
+                </div>
+              </section>
+
+              {/* Featured Highlight Section */}
+              <section className="mb-12">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-[#dee5ff]">Popular Rooms</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {featuredRooms.map((room) => (
+                    <div key={room._id} className="relative group overflow-hidden bg-gradient-to-b from-[#091328] to-[#060e20] p-6 rounded-2xl border border-[#40485d]/10 hover:border-[#a3a6ff]/30 transition-all duration-300">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-[#192540] flex items-center justify-center text-[#a3a6ff]">
+                          <span className="material-symbols-outlined">{room.type === 'private' ? 'lock' : 'rocket_launch'}</span>
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-[#dee5ff] group-hover:text-[#a3a6ff] transition-colors line-clamp-1">{room.name}</h4>
+                          <span className="text-[10px] text-[#a3aac4] uppercase tracking-tighter">{room.type} room</span>
+                        </div>
+                      </div>
+                      {room.description && (
+                        <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2 min-h-[40px]">
+                          {room.description}
+                        </p>
+                      )}
+                      <Link to={`/chat/${room._id}`} className="w-full flex items-center justify-center py-3 bg-[#192540] hover:bg-[#a3a6ff] hover:text-[#0a0081] text-[#dee5ff] rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
+                        Step Inside
+                      </Link>
+                    </div>
+                  ))}
+                  {rooms.length === 0 && (
+                    <div className="md:col-span-3 py-12 text-center bg-[#091328]/30 rounded-2xl border border-dashed border-[#40485d]/20">
+                      <p className="text-[#a3aac4] text-sm italic">No rooms populated yet. Create the first highlight!</p>
+                    </div>
+                  )}
+                </div>
+              </section>
+            </>
+          ) : (
+            <>
+              {/* Rooms Management Section */}
+              <section className="mb-12">
+                <div className="bg-[#0f1930] rounded-lg p-8 flex flex-col md:flex-row items-center justify-between border border-[#40485d]/5 gap-6">
+                  <div>
+                    <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-xl text-[#dee5ff] mb-2">Create your space</h3>
+                    <p className="text-[#a3aac4] text-sm leading-relaxed">Design a custom room for your community with unique roles and permissions.</p>
+                  </div>
+                  <Link to="/create-room" className="whitespace-nowrap flex items-center justify-center gap-2 bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] px-8 py-4 rounded-xl font-['Inter'] font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all group">
+                    <span className="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform">add</span>
+                    Create New Room
                   </Link>
                 </div>
-              </div>
-            </div>
-            <div className="bg-[#0f1930] rounded-lg p-8 flex flex-col justify-center border border-[#40485d]/5">
-              <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-xl text-[#dee5ff] mb-2">Create your space</h3>
-              <p className="text-[#a3aac4] text-sm mb-6 leading-relaxed">Design a custom room for your community with unique roles and permissions.</p>
-              <Link to="/create-room" className="w-full flex items-center justify-center gap-2 bg-[#1f2b49] text-[#dee5ff] px-6 py-4 rounded-xl font-['Inter'] font-bold text-xs uppercase tracking-widest border border-[#40485d]/20 hover:bg-[#192540] transition-colors group">
-                <span className="material-symbols-outlined text-[#a3a6ff] group-hover:rotate-90 transition-transform">add</span>
-                Create Room
-              </Link>
-            </div>
-          </section>
+              </section>
 
-          {/* Room List Grid */}
-          <section>
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-[#dee5ff]">Available Rooms</h3>
-              {isLoading && <span className="text-xs text-[#a3aac4] animate-pulse">Loading rooms...</span>}
-            </div>
-            
-            {!isLoading && rooms.length === 0 && (
-              <div className="text-center py-20 bg-[#091328] rounded-2xl border border-dashed border-[#40485d]/20">
-                <p className="text-[#a3aac4] mb-4">No rooms found. Be the first to create one!</p>
-                <Link to="/create-room" className="text-[#a3a6ff] font-bold uppercase tracking-widest text-xs hover:underline">Create Room Now</Link>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {rooms.map((room) => (
-                <div key={room._id} className="group bg-[#091328] hover:bg-[#0f1930] transition-all duration-500 rounded-lg p-6 border border-[#40485d]/5">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-14 h-14 rounded-lg bg-[#192540] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#a3a6ff] text-3xl">
-                        {room.type === 'private' ? 'lock' : 'public'}
-                      </span>
-                    </div>
-                    <span className="text-[10px] font-black text-[#a3aac4] bg-[#141f38] px-2 py-1 rounded">
-                      {room.type.toUpperCase()}
-                    </span>
-                  </div>
-                  <h4 className="font-['Plus_Jakarta_Sans'] font-bold text-lg text-[#dee5ff] mb-2 group-hover:text-[#a3a6ff] transition-colors">
-                    {room.name}
-                  </h4>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-[#a3aac4]">By {room.creator?.username || 'User'}</span>
-                    <Link 
-                      to={`/chat/${room._id}`}
-                      className="text-[#a3a6ff] font-bold text-xs uppercase tracking-widest group-hover:underline"
-                    >
-                      Enter Room
-                    </Link>
-                  </div>
+              {/* Room List Grid */}
+              <section>
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-[#dee5ff]">Available Rooms</h3>
+                  {isLoading && <span className="text-xs text-[#a3aac4] animate-pulse">Loading rooms...</span>}
                 </div>
-              ))}
-            </div>
-          </section>
+                
+                {!isLoading && rooms.length === 0 && (
+                  <div className="text-center py-20 bg-[#091328] rounded-2xl border border-dashed border-[#40485d]/20">
+                    <p className="text-[#a3aac4] mb-4">No rooms found. Be the first to create one!</p>
+                    <Link to="/create-room" className="text-[#a3a6ff] font-bold uppercase tracking-widest text-xs hover:underline">Create Room Now</Link>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 text-left">
+                  {rooms.map((room) => (
+                    <div key={room._id} className="group bg-[#091328] hover:bg-[#0f1930] transition-all duration-500 rounded-lg p-6 border border-[#40485d]/5">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="w-14 h-14 rounded-lg bg-[#192540] flex items-center justify-center">
+                          <span className="material-symbols-outlined text-[#a3a6ff] text-3xl">
+                            {room.type === 'private' ? 'lock' : 'public'}
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-black text-[#a3aac4] bg-[#141f38] px-2 py-1 rounded">
+                          {room.type.toUpperCase()}
+                        </span>
+                      </div>
+                      <h4 className="font-['Plus_Jakarta_Sans'] font-bold text-lg text-[#dee5ff] mb-2 group-hover:text-[#a3a6ff] transition-colors">
+                        {room.name}
+                      </h4>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-[#a3aac4]">By {room.creator?.username || 'User'}</span>
+                        <Link 
+                          to={`/chat/${room._id}`}
+                          className="text-[#a3a6ff] font-bold text-xs uppercase tracking-widest group-hover:underline"
+                        >
+                          Enter Room
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
         </div>
 
         {/* Floating Action Button */}

@@ -58,6 +58,7 @@ export const apiService = {
     }),
 
     // User Utils
+    getProfile: () => fetchWithAuth('/api/auth/profile'),
     getCurrentUserId: () => {
         const token = localStorage.getItem('accessToken');
         if (!token) return null;

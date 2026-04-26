@@ -23,7 +23,7 @@ const safeRoomFields = '_id name creator type members createdAt updatedAt';
  */
 export const createRoom = async (req, res, next) => {
     try {
-        const { name, type = ROOM_TYPES.PUBLIC, password } = req.body;
+        const { name, type = ROOM_TYPES.PUBLIC, password, description } = req.body;
 
         if (!name || typeof name !== 'string' || name.trim().length < 2) {
             return res.status(400).json({ error: 'Room name must be at least 2 characters.' });
@@ -43,6 +43,7 @@ export const createRoom = async (req, res, next) => {
             name: name.trim(),
             creator: req.user.id,
             type,
+            description: description || '',
             members: [{ user: req.user.id, isAdmin: true }]
         };
 

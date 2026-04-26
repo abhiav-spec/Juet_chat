@@ -23,9 +23,8 @@ function CreateChatroomPage() {
 
   const canCreate = useMemo(() => 
     roomName.trim().length > 0 && 
-    description.trim().length > 0 &&
     !isSubmitting, 
-  [roomName, description, isSubmitting])
+  [roomName, isSubmitting])
 
   const handleCopyCode = async () => {
     try {
@@ -47,6 +46,7 @@ function CreateChatroomPage() {
     try {
       const payload = {
         name: roomName,
+        description: description,
         type: privacy,
       }
 
