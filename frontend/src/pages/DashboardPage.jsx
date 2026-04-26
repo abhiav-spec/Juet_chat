@@ -83,39 +83,18 @@ function DashboardPage() {
             <span className="material-symbols-outlined">chat_bubble</span>
             <span>Direct Messages</span>
           </a>
+          <button 
+            onClick={() => setActiveView('settings')}
+            className={`w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm ${activeView === 'settings' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4] hover:text-white hover:bg-[#141f38]'}`}
+          >
+            <span className="material-symbols-outlined">settings</span>
+            <span>Settings</span>
+          </button>
           <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white mx-2 duration-300 ease-in-out hover:bg-[#141f38] transition-all font-['Plus_Jakarta_Sans'] font-medium text-sm">
             <span className="material-symbols-outlined">logout</span>
             <span>Logout</span>
           </button>
         </nav>
-        <div className="px-6 mt-auto">
-          <div className="bg-gradient-to-br from-[#192540]/40 to-[#091328]/40 rounded-2xl p-5 border border-[#40485d]/20 backdrop-blur-sm group hover:border-[#a3a6ff]/30 transition-all duration-500">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] text-[#a3a6ff] font-bold uppercase tracking-widest">User Profile</span>
-              <span className="material-symbols-outlined text-[14px] text-[#a3aac4] group-hover:rotate-45 transition-transform">verified_user</span>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <p className="text-[9px] text-[#6d758c] uppercase tracking-[0.1em] mb-0.5">Email Reference</p>
-                <p className="text-[11px] text-[#dee5ff] font-semibold truncate leading-tight">{currentUser?.email || 'Loading...'}</p>
-              </div>
-              <div>
-                <p className="text-[9px] text-[#6d758c] uppercase tracking-[0.1em] mb-0.5">Account Status</p>
-                <div className="flex items-center gap-1.5">
-                  <span className={`w-1.5 h-1.5 rounded-full ${currentUser?.verified ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
-                  <p className="text-[10px] text-[#dee5ff] font-medium uppercase tracking-tighter">
-                    {currentUser?.verified ? 'Verified Citizen' : 'Pending Verification'}
-                  </p>
-                </div>
-              </div>
-              <div className="pt-2 border-t border-[#40485d]/10">
-                <p className="text-[9px] text-[#6d758c] uppercase tracking-[0.1em] mb-0.5">Member Since</p>
-                <p className="text-[10px] text-[#a3aac4] font-medium italic">
-                  {currentUser?.createdAt ? new Date(currentUser.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '...'}
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </aside>
 
@@ -202,7 +181,7 @@ function DashboardPage() {
             </>
           ) : activeView === 'rooms' ? (
             <>
-              {/* Rooms Management Section */}
+              {/* ... existing rooms view ... */}
               <section className="mb-12">
                 <div className="bg-[#0f1930] rounded-lg p-8 flex flex-col md:flex-row items-center justify-between border border-[#40485d]/5 gap-6">
                   <div>
@@ -260,7 +239,7 @@ function DashboardPage() {
                 </div>
               </section>
             </>
-          ) : (
+          ) : activeView === 'my-rooms' ? (
             <>
               {/* My Rooms Section */}
               <section>
@@ -320,6 +299,82 @@ function DashboardPage() {
                     ))}
                   </div>
                 )}
+              </section>
+            </>
+          ) : (
+            <>
+              {/* Profile Settings View */}
+              <section className="max-w-4xl mx-auto">
+                <div className="mb-10">
+                  <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-3xl text-[#dee5ff] mb-2">Profile Settings</h3>
+                  <p className="text-[#a3aac4]">Manage your digital identity in the cinematic stream.</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {/* Profile Overview Card */}
+                  <div className="md:col-span-1">
+                    <div className="bg-[#091328] rounded-2xl p-8 border border-[#40485d]/10 text-center">
+                      <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] mx-auto mb-6 flex items-center justify-center text-[#0f00a4] text-4xl font-black">
+                        {currentUser?.username?.substring(0, 2).toUpperCase() || '??'}
+                      </div>
+                      <h4 className="text-xl font-bold text-[#dee5ff] mb-1">{currentUser?.username}</h4>
+                      <p className="text-xs text-[#a3aac4] uppercase tracking-widest mb-6">Verified Streamer</p>
+                      <div className="flex items-center justify-center gap-2 py-2 px-4 bg-[#141f38] rounded-full text-[10px] font-bold text-[#a3a6ff] border border-[#a3a6ff]/20">
+                        <span className="material-symbols-outlined text-sm">verified</span>
+                        Status: Active
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Details Form Area */}
+                  <div className="md:col-span-2 space-y-6">
+                    <div className="bg-[#091328] rounded-2xl p-8 border border-[#40485d]/10">
+                      <h5 className="text-sm font-bold uppercase tracking-widest text-[#a3a6ff] mb-6 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[20px]">badge</span>
+                        Account Details
+                      </h5>
+                      
+                      <div className="space-y-6">
+                        <div className="space-y-2">
+                          <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Username</label>
+                          <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium">
+                            {currentUser?.username}
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Email Address</label>
+                          <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium">
+                            {currentUser?.email}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Identity Status</label>
+                            <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium flex items-center gap-2">
+                              <span className={`w-2 h-2 rounded-full ${currentUser?.verified ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+                              {currentUser?.verified ? 'Verified' : 'Unverified'}
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Member Since</label>
+                            <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium">
+                              {currentUser?.createdAt ? new Date(currentUser.createdAt).toLocaleDateString() : 'Loading...'}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-6 flex gap-4">
+                      <span className="material-symbols-outlined text-amber-500">info</span>
+                      <p className="text-xs text-[#a3aac4] leading-relaxed">
+                        To change your username or email address, please contact support. For security reasons, identity updates require manual verification.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </section>
             </>
           )}
