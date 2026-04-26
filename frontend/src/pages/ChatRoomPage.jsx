@@ -279,6 +279,35 @@ function ChatRoomPage() {
             <span>Direct Messages</span>
           </a>
         </nav>
+        <div className="px-6 mt-auto">
+          <div className="bg-gradient-to-br from-[#192540]/40 to-[#091328]/40 rounded-2xl p-5 border border-[#40485d]/20 backdrop-blur-sm group hover:border-[#a3a6ff]/30 transition-all duration-500">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[10px] text-[#a3a6ff] font-bold uppercase tracking-widest">User Profile</span>
+              <span className="material-symbols-outlined text-[14px] text-[#a3aac4] group-hover:rotate-45 transition-transform">verified_user</span>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <p className="text-[9px] text-[#6d758c] uppercase tracking-[0.1em] mb-0.5">Email Reference</p>
+                <p className="text-[11px] text-[#dee5ff] font-semibold truncate leading-tight">{currentUser?.email || 'Loading...'}</p>
+              </div>
+              <div>
+                <p className="text-[9px] text-[#6d758c] uppercase tracking-[0.1em] mb-0.5">Account Status</p>
+                <div className="flex items-center gap-1.5">
+                  <span className={`w-1.5 h-1.5 rounded-full ${currentUser?.verified ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+                  <p className="text-[10px] text-[#dee5ff] font-medium uppercase tracking-tighter">
+                    {currentUser?.verified ? 'Verified Citizen' : 'Pending Verification'}
+                  </p>
+                </div>
+              </div>
+              <div className="pt-2 border-t border-[#40485d]/10">
+                <p className="text-[9px] text-[#6d758c] uppercase tracking-[0.1em] mb-0.5">Member Since</p>
+                <p className="text-[10px] text-[#a3aac4] font-medium italic">
+                  {currentUser?.createdAt ? new Date(currentUser.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '...'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </aside>
 
       {/* Main Content */}
