@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import sendEmail from '../services/email.service.js';
 import { generateOTP, getOtpHtml } from '../utils/otp.util.js';
 import Otp from '../models/otp.js';
+import Room from '../models/room.js';
 
  const registerUser = async (req, res) => {
     try {
@@ -327,6 +328,36 @@ const resendOtp = async (req, res) => {
     } catch (error) {
         console.error('Error resending OTP:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export const deleteAccount = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        // Check if user has any active rooms they created
+        const createdRoomsCount = await Room.countDocuments({ creator: userId });
+        
+        if (createdRoomsCount > 0) {
+            return res.status(400).json({ 
+                error: `You have ${createdRoomsCount} active room(s). Please delete all your created rooms before deleting your account.` 
+            });
+        }
+
+        // Delete user sessions
+        await Session.deleteMany({ user: userId });
+        
+        // Delete user
+        await User.findByIdAndDelete(userId);
+
+        // Clear cookies
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+
+        return res.status(200).json({ message: 'Account deleted successfully' });
+    } catch (error) {
+        console.error('Delete Account Error:', error);
+        return res.status(500).json({ error: 'Internal server error while deleting account' });
     }
 };
 

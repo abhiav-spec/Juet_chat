@@ -60,6 +60,9 @@ export const apiService = {
 
     // User Utils
     getProfile: () => fetchWithAuth('/api/auth/profile'),
+    deleteAccount: () => fetchWithAuth('/api/auth/profile', {
+        method: 'DELETE',
+    }),
     getCurrentUserId: () => {
         const token = localStorage.getItem('accessToken');
         if (!token) return null;

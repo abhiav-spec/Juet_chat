@@ -41,6 +41,21 @@ function DashboardPage() {
     navigate('/login')
   }
 
+  const handleDeleteAccount = async () => {
+    const isConfirmed = window.confirm("CAUTION: Are you sure you want to delete your account? This action is permanent and cannot be undone. You must delete all rooms you created first.")
+    
+    if (!isConfirmed) return
+
+    try {
+      await apiService.deleteAccount()
+      alert("Your account has been deleted successfully.")
+      localStorage.removeItem('accessToken')
+      navigate('/')
+    } catch (err) {
+      alert(err.message || "Failed to delete account. Ensure all your created rooms are deleted.")
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#060e20] text-[#dee5ff]">
       {/* Sidebar */}
@@ -398,6 +413,25 @@ function DashboardPage() {
                       <p className="text-xs text-[#a3aac4] leading-relaxed">
                         To change your username or email address, please contact support. For security reasons, identity updates require manual verification.
                       </p>
+                    </div>
+
+                    <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-8 space-y-6">
+                      <div className="flex items-center gap-3 text-red-500">
+                        <span className="material-symbols-outlined">warning</span>
+                        <h5 className="text-sm font-black uppercase tracking-widest">Danger Zone</h5>
+                      </div>
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div>
+                          <p className="text-[#dee5ff] font-bold text-sm mb-1">Delete Account</p>
+                          <p className="text-[#a3aac4] text-xs">Permanently remove your account and data. This action is irreversible.</p>
+                        </div>
+                        <button 
+                          onClick={handleDeleteAccount}
+                          className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-red-500/20 whitespace-nowrap"
+                        >
+                          Delete Account
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

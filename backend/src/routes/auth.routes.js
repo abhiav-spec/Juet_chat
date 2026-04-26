@@ -1,5 +1,6 @@
 import {Router} from 'express';
-import {registerUser, getUserProfile,refreshToken,logout,logoutAll,login,verifyEmail,resendOtp} from '../controllers/auth.controller.js';
+import {registerUser, getUserProfile,refreshToken,logout,logoutAll,login,verifyEmail,resendOtp, deleteAccount} from '../controllers/auth.controller.js';
+import authenticate from '../middleware/auth.middleware.js';
 
 const router = Router();
 
@@ -11,6 +12,7 @@ router.get('/logout-all', logoutAll);
 router.post('/login', login);
 router.post('/verify-email', verifyEmail);
 router.post('/resend-otp', resendOtp);
+router.delete('/profile', authenticate, deleteAccount);
 
 
 
