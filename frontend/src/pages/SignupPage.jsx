@@ -14,6 +14,8 @@ function SignupPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
@@ -245,14 +247,23 @@ function SignupPage() {
                       lock
                     </span>
                     <input
-                      className="w-full rounded-full border border-[#40485d]/20 bg-[#192540] py-4 pl-14 pr-6 text-[#dee5ff] outline-none transition-all placeholder:text-[#6d758c] focus:ring-2 focus:ring-[#a3a6ff]/40"
+                      className="w-full rounded-full border border-[#40485d]/20 bg-[#192540] py-4 pl-14 pr-12 text-[#dee5ff] outline-none transition-all placeholder:text-[#6d758c] focus:ring-2 focus:ring-[#a3a6ff]/40"
                       id="password"
                       name="password"
                       onChange={handleChange}
                       placeholder="••••••••"
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       value={formData.password}
                     />
+                    <button
+                      className="absolute right-5 top-1/2 -translate-y-1/2 text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
+                      onClick={() => setShowPassword(!showPassword)}
+                      type="button"
+                    >
+                      <span className="material-symbols-outlined text-[20px]">
+                        {showPassword ? 'visibility_off' : 'visibility'}
+                      </span>
+                    </button>
                   </div>
                 </div>
 
@@ -265,14 +276,23 @@ function SignupPage() {
                       verified_user
                     </span>
                     <input
-                      className="w-full rounded-full border border-[#40485d]/20 bg-[#192540] py-4 pl-14 pr-6 text-[#dee5ff] outline-none transition-all placeholder:text-[#6d758c] focus:ring-2 focus:ring-[#a3a6ff]/40"
+                      className="w-full rounded-full border border-[#40485d]/20 bg-[#192540] py-4 pl-14 pr-12 text-[#dee5ff] outline-none transition-all placeholder:text-[#6d758c] focus:ring-2 focus:ring-[#a3a6ff]/40"
                       id="confirm-password"
                       name="confirmPassword"
                       onChange={handleChange}
                       placeholder="••••••••"
-                      type="password"
+                      type={showConfirmPassword ? 'text' : 'password'}
                       value={formData.confirmPassword}
                     />
+                    <button
+                      className="absolute right-5 top-1/2 -translate-y-1/2 text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      type="button"
+                    >
+                      <span className="material-symbols-outlined text-[20px]">
+                        {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                      </span>
+                    </button>
                   </div>
                 </div>
               </div>
