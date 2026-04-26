@@ -4,7 +4,7 @@ import { createRoom, listRooms, getRoomById, deleteRoom, leaveRoom } from '../co
 
 const router = Router();
 
-// ─── Health check (no auth required) ─────────────────────────────────────────
+// ─── Public Room Routes ───────────────────────────────────────────────────────
 router.get('/health', (req, res) => {
     res.status(200).json({
         service: 'rooms-service',
@@ -12,6 +12,21 @@ router.get('/health', (req, res) => {
         uptime: Math.floor(process.uptime()),
         timestamp: new Date().toISOString(),
     });
+});
+
+// GET /api/rooms/featured — Public list for landing page
+import Room from '../models/room.js';
+router.get('/featured', async (req, res) => {
+    try {
+        const rooms = await Room.find({ type: 'public' }, '_id name description members')
+            .limit(10)
+            .lean();
+        // Shuffle and take 3
+        const featured = rooms.sort(() => 0.5 - Math.random()).slice(0, 3);
+        res.status(200).json({ rooms: featured });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch rooms' });
+    }
 });
 
 // ─── All other room routes require authentication ─────────────────────────────

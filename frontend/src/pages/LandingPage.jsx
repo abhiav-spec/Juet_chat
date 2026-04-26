@@ -1,9 +1,29 @@
 import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { apiService } from '../services/api.service'
 
 function LandingPage() {
+  const [featuredRooms, setFeaturedRooms] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadFeatured() {
+      try {
+        const data = await apiService.getFeaturedRooms()
+        setFeaturedRooms(data.rooms || [])
+      } catch (err) {
+        console.error('Error loading featured rooms:', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadFeatured()
+  }, [])
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#060e20] text-[#dee5ff] [font-family:_'Inter',sans-serif]">
       <main>
+        {/* ... existing hero section ... */}
         <section
           id="hero"
           className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#000000] pt-20"
@@ -48,6 +68,7 @@ function LandingPage() {
           </div>
         </section>
 
+        {/* ... existing experience section ... */}
         <section id="experience" className="mx-auto max-w-7xl px-6 py-24">
           <div className="mb-16 text-left md:text-center">
             <span className="mb-4 block text-sm font-semibold uppercase tracking-widest text-[#a3a6ff]">
@@ -155,6 +176,43 @@ function LandingPage() {
           </div>
         </section>
 
+        {/* Popular Rooms Section */}
+        {!isLoading && featuredRooms.length > 0 && (
+          <section id="popular-rooms" className="mx-auto max-w-7xl px-6 py-24 border-t border-[#40485d]/10">
+            <div className="mb-16 text-center">
+              <span className="mb-4 block text-sm font-semibold uppercase tracking-widest text-[#a3a6ff]">
+                Live Communities
+              </span>
+              <h2 className="mb-4 text-4xl font-bold text-[#dee5ff] md:text-5xl [font-family:_'Plus_Jakarta_Sans',sans-serif]">
+                Popular Rooms
+              </h2>
+              <div className="mx-auto h-1 w-24 rounded-full bg-[#6063ee]" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {featuredRooms.map((room) => (
+                <div key={room._id} className="relative group overflow-hidden bg-gradient-to-b from-[#091328] to-[#060e20] p-8 rounded-2xl border border-[#40485d]/10 hover:border-[#a3a6ff]/30 transition-all duration-300">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-[#141f38] flex items-center justify-center text-[#a3a6ff]">
+                      <span className="material-symbols-outlined text-2xl">rocket_launch</span>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#dee5ff] group-hover:text-[#a3a6ff] transition-colors">{room.name}</h4>
+                      <span className="text-[10px] text-[#a3aac4] uppercase tracking-widest">Public Space</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-[#a3aac4] mb-8 line-clamp-2 min-h-[40px] leading-relaxed">
+                    {room.description || "Join this community to start sharing moments and chatting with members."}
+                  </p>
+                  <Link to="/login" className="w-full flex items-center justify-center py-4 bg-[#192540] hover:bg-[#a3a6ff] hover:text-[#0a0081] text-[#dee5ff] rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
+                    Step Inside
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         <section className="px-6 py-24">
           <div className="relative mx-auto max-w-4xl overflow-hidden rounded-2xl border border-[#40485d]/10 bg-[rgba(31,43,73,0.6)] p-12 text-center backdrop-blur-md">
             <div className="absolute left-0 top-0 h-32 w-32 bg-[#a3a6ff]/20 blur-[100px]" />
@@ -179,3 +237,4 @@ function LandingPage() {
 }
 
 export default LandingPage
+
