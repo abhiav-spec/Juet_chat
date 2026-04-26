@@ -72,6 +72,13 @@ function DashboardPage() {
             <span className="material-symbols-outlined">meeting_room</span>
             <span>Rooms</span>
           </button>
+          <button 
+            onClick={() => setActiveView('my-rooms')}
+            className={`w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm ${activeView === 'my-rooms' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4] hover:text-white hover:bg-[#141f38]'}`}
+          >
+            <span className="material-symbols-outlined">person_pin</span>
+            <span>My Rooms</span>
+          </button>
           <a className="flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white mx-2 duration-300 ease-in-out hover:bg-[#141f38] transition-all font-['Plus_Jakarta_Sans'] font-medium text-sm" href="#">
             <span className="material-symbols-outlined">chat_bubble</span>
             <span>Direct Messages</span>
@@ -170,7 +177,7 @@ function DashboardPage() {
                 </div>
               </section>
             </>
-          ) : (
+          ) : activeView === 'rooms' ? (
             <>
               {/* Rooms Management Section */}
               <section className="mb-12">
@@ -228,6 +235,68 @@ function DashboardPage() {
                     </div>
                   ))}
                 </div>
+              </section>
+            </>
+          ) : (
+            <>
+              {/* My Rooms Section */}
+              <section>
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-[#dee5ff]">My Rooms</h3>
+                    <p className="text-[#a3aac4] text-sm">Rooms created and managed by you</p>
+                  </div>
+                  <Link to="/create-room" className="bg-[#1f2b49] text-[#a3a6ff] px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest border border-[#40485d]/20 hover:bg-[#192540] transition-colors">
+                    New Room
+                  </Link>
+                </div>
+                
+                {rooms.filter(r => r.creator?._id === currentUser?._id).length === 0 ? (
+                  <div className="text-center py-20 bg-[#091328] rounded-2xl border border-dashed border-[#40485d]/20">
+                    <div className="w-16 h-16 rounded-full bg-[#141f38] flex items-center justify-center mx-auto mb-4 text-[#a3aac4]">
+                      <span className="material-symbols-outlined text-4xl">inventory_2</span>
+                    </div>
+                    <p className="text-[#a3aac4] mb-4">You haven't created any rooms yet.</p>
+                    <Link to="/create-room" className="text-[#a3a6ff] font-bold uppercase tracking-widest text-xs hover:underline">Start Creating</Link>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 text-left">
+                    {rooms.filter(r => r.creator?._id === currentUser?._id).map((room) => (
+                      <div key={room._id} className="group bg-gradient-to-br from-[#141f38] to-[#091328] hover:from-[#192540] hover:to-[#0f1930] transition-all duration-500 rounded-lg p-6 border border-[#a3a6ff]/10">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="w-14 h-14 rounded-lg bg-[#091328] flex items-center justify-center text-[#a3a6ff] border border-[#a3a6ff]/10">
+                            <span className="material-symbols-outlined text-3xl">
+                              {room.type === 'private' ? 'lock' : 'shield_person'}
+                            </span>
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <span className="text-[9px] font-black text-[#a3a6ff] bg-[#a3a6ff]/10 px-2 py-1 rounded-full uppercase">
+                              Admin
+                            </span>
+                          </div>
+                        </div>
+                        <h4 className="font-['Plus_Jakarta_Sans'] font-bold text-lg text-[#dee5ff] mb-2 group-hover:text-[#a3a6ff] transition-colors">
+                          {room.name}
+                        </h4>
+                        <p className="text-xs text-[#a3aac4] mb-6 line-clamp-2">
+                          {room.description || "You haven't set a description for this room yet."}
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-[#40485d]/10">
+                          <span className="text-[10px] text-[#a3aac4] flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[14px]">public</span>
+                            {room.type.toUpperCase()}
+                          </span>
+                          <Link 
+                            to={`/chat/${room._id}`}
+                            className="bg-[#a3a6ff] text-[#0f00a4] px-4 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:scale-105 transition-transform"
+                          >
+                            Manage
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </section>
             </>
           )}
