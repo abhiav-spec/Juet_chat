@@ -90,11 +90,15 @@ function DashboardPage() {
             <span className="material-symbols-outlined">settings</span>
             <span>Settings</span>
           </button>
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white mx-2 duration-300 ease-in-out hover:bg-[#141f38] transition-all font-['Plus_Jakarta_Sans'] font-medium text-sm">
-            <span className="material-symbols-outlined">logout</span>
-            <span>Logout</span>
-          </button>
         </nav>
+        <div className="mt-auto px-4 pb-4">
+          <button 
+            onClick={handleLogout} 
+            className="w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 text-[#ff7b7b] hover:bg-red-500/10 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm group"
+          >
+            <span className="material-symbols-outlined text-[#ff7b7b] group-hover:rotate-180 transition-transform duration-500">logout</span>
+            <span>Sign Out</span>
+          </button>
         </div>
       </aside>
 
