@@ -68,6 +68,12 @@ function ChatRoomPage() {
     }
   }
 
+  const handleDeleteMessage = (messageId) => {
+    if (window.confirm('Delete this message?')) {
+        socketService.deleteMessage(messageId);
+    }
+  }
+
   // 1. Initial Load & Socket Connection
   useEffect(() => {
     let mounted = true;
@@ -124,7 +130,8 @@ function ChatRoomPage() {
               text: payload.message,
               time: new Date(payload.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               createdAt: new Date(payload.createdAt),
-              sent: payload.senderId?.toString() === currentUserId || payload.sender === 'You'
+              sent: payload.senderId?.toString() === currentUserId || payload.sender === 'You',
+              isDeleted: payload.isDeleted || false
             };
 
             // Prevent duplicates
@@ -134,6 +141,17 @@ function ChatRoomPage() {
             return combined.sort((a, b) => a.createdAt - b.createdAt);
           })
         })
+
+        socketService.on('message_deleted', (payload) => {
+          if (!mounted) return;
+          setMessages((prev) => 
+            prev.map((msg) => 
+              msg.id === payload.messageId 
+                ? { ...msg, text: 'This message was deleted', isDeleted: true } 
+                : msg
+            )
+          );
+        });
 
         socketService.on('error', (payload) => {
           if (!mounted) return;
@@ -348,7 +366,7 @@ function ChatRoomPage() {
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex items-end gap-3 ${message.sent ? 'flex-row-reverse ml-auto max-w-[80%]' : 'max-w-[80%]'}`}
+              className={`flex items-end gap-3 group ${message.sent ? 'flex-row-reverse ml-auto max-w-[80%]' : 'max-w-[80%]'}`}
             >
               {!message.sent && (
                 <div className="w-8 h-8 rounded-full bg-[#141f38] flex-shrink-0 flex items-center justify-center border border-[#40485d]/20 text-[10px] font-bold text-[#a3a6ff]">
@@ -371,7 +389,18 @@ function ChatRoomPage() {
                     borderBottomRightRadius: message.sent ? '2px' : '12px'
                   }}
                 >
-                  {message.text}
+                   <div className="flex items-start gap-3">
+                    <span className={message.isDeleted ? 'italic opacity-60' : ''}>{message.text}</span>
+                    {message.sent && !message.isDeleted && (
+                        <button 
+                            onClick={() => handleDeleteMessage(message.id)}
+                            className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-black/10 rounded transition-all"
+                            title="Delete message"
+                        >
+                            <span className="material-symbols-outlined text-[16px] leading-none">delete</span>
+                        </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

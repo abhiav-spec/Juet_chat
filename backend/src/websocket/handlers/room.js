@@ -79,6 +79,7 @@ const handleJoinRoom = async (ws, payload) => {
                     sender: m.sender?.username ?? 'Unknown',
                     senderId: m.sender?._id,
                     content: m.content,
+                    isDeleted: m.isDeleted || false,
                     createdAt: m.createdAt,
                 })),
             })

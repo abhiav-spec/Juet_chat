@@ -100,6 +100,16 @@ export class ChatSocket {
     }
 
     /**
+     * Request to delete a specific message.
+     * Only the sender of the message can perform this action.
+     * 
+     * @param {string} messageId - The unique ID of the message to delete.
+     */
+    deleteMessage(messageId) {
+        this.send('delete_message', { messageId });
+    }
+
+    /**
      * Explicitly close the WebSocket connection and clean up.
      */
     disconnect() {

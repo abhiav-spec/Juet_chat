@@ -3,6 +3,7 @@ import wsAuth from './middleware/wsAuth.js';
 import handleConnection from './handlers/connection.js';
 import handleJoinRoom from './handlers/room.js';
 import handleSendMessage from './handlers/message.js';
+import handleDeleteMessage from './handlers/delete.js';
 import handleDisconnect from './handlers/disconnect.js';
 import { WS_EVENTS } from '../utils/constants.js';
 import { getTotalConnections } from './state/rooms.js';
@@ -40,6 +41,9 @@ const createWebSocketServer = (httpServer, app) => {
                         break;
                     case WS_EVENTS.MESSAGE:
                         handleSendMessage(ws, payload);
+                        break;
+                    case WS_EVENTS.DELETE_MESSAGE:
+                        handleDeleteMessage(ws, payload);
                         break;
                     default:
                         // Ignore unknown events
