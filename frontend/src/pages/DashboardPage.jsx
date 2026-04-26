@@ -154,11 +154,9 @@ function DashboardPage() {
                           <span className="text-[10px] text-[#a3aac4] uppercase tracking-tighter">{room.type} room</span>
                         </div>
                       </div>
-                      {room.description && (
-                        <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2 min-h-[40px]">
-                          {room.description}
-                        </p>
-                      )}
+                      <p className="text-sm text-[#a3aac4] mb-6 line-clamp-2 min-h-[40px]">
+                        {room.description || `Welcome to ${room.name}! A great place to connect and share moments.`}
+                      </p>
                       <Link to={`/chat/${room._id}`} className="w-full flex items-center justify-center py-3 bg-[#192540] hover:bg-[#a3a6ff] hover:text-[#0a0081] text-[#dee5ff] rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
                         Step Inside
                       </Link>

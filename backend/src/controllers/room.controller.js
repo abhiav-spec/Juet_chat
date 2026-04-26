@@ -9,7 +9,7 @@ const hashPassword = (password) =>
     crypto.createHash('sha256').update(password).digest('hex');
 
 /** Safe room projection — never expose passwordHash. */
-const safeRoomFields = '_id name creator type members createdAt updatedAt';
+const safeRoomFields = '_id name creator type description members createdAt updatedAt';
 
 // ─── Controllers ─────────────────────────────────────────────────────────────
 
@@ -43,7 +43,7 @@ export const createRoom = async (req, res, next) => {
             name: name.trim(),
             creator: req.user.id,
             type,
-            description: description || '',
+            description: description ? description.trim() : `A community for enthusiasts of ${name.trim()}. Join us to discuss and share ideas!`,
             members: [{ user: req.user.id, isAdmin: true }]
         };
 
@@ -62,6 +62,7 @@ export const createRoom = async (req, res, next) => {
                 name: room.name,
                 type: room.type,
                 creator: room.creator,
+                description: room.description,
                 passkey: room.passkey,
                 createdAt: room.createdAt,
             },

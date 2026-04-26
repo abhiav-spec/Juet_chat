@@ -16,6 +16,7 @@ function ChatRoomPage() {
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
   const [passwordInput, setPasswordInput] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
   
   const currentUserId = apiService.getCurrentUserId()
   const messagesEndRef = useRef(null)
@@ -164,6 +165,10 @@ function ChatRoomPage() {
           setIsHistoryLoading(false)
         })
 
+        // Fetch user profile for sidebar
+        const profileData = await apiService.getProfile()
+        if (mounted) setCurrentUser(profileData.user)
+
         // Initial join attempt
         socketService.joinRoom(roomId)
         setIsLoading(false) // Ready to chat even if history is in flight
@@ -253,11 +258,11 @@ function ChatRoomPage() {
       {/* Sidebar */}
       <aside className="hidden md:flex fixed left-0 top-0 h-full z-40 flex-col py-8 bg-[#091328] w-72 rounded-r-none shadow-[12px_0_32px_rgba(25,37,64,0.08)]">
         <div className="px-6 mb-10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#a3a6ff] flex items-center justify-center text-[#0f00a4] font-black text-sm">
-            AR
+          <div className="w-10 h-10 rounded-full bg-[#a3a6ff] flex items-center justify-center text-[#0f00a4] font-black text-sm uppercase">
+            {currentUser?.username?.substring(0, 2) || '...'}
           </div>
           <div>
-            <p className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">Alex Rivera</p>
+            <p className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">{currentUser?.username || 'Loading...'}</p>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
               <p className="text-[#a3aac4] text-xs">Online</p>
