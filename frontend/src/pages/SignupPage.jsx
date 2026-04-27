@@ -345,9 +345,9 @@ function SignupPage() {
               <Link className="transition-colors hover:text-[#dee5ff]" to="/terms">
                 Terms
               </Link>
-              <a className="transition-colors hover:text-[#dee5ff]" href="#">
+              <Link className="transition-colors hover:text-[#dee5ff]" to="/support">
                 Support
-              </a>
+              </Link>
             </div>
           </div>
         </section>
