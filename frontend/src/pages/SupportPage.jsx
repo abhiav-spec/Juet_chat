@@ -68,7 +68,7 @@ function SupportPage() {
               Our direct support team is active 24/7. Drop us a digital message and we'll get back to you within 4 cinematic hours.
             </p>
             <a 
-              href="mailto:support@stream.com" 
+              href="mailto:kumarabhinav6649@gmail.com" 
               className="inline-flex items-center gap-3 px-8 py-4 bg-[#a3a6ff] text-[#0f00a4] rounded-full font-black uppercase tracking-widest text-xs hover:scale-[1.05] active:scale-95 transition-all shadow-lg shadow-[#a3a6ff]/20"
             >
               Contact Support
