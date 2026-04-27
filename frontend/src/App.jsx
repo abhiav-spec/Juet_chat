@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage'
 import ChatRoomPage from './pages/ChatRoomPage'
 import CreateChatroomPage from './pages/CreateChatroomPage'
 import TermsPage from './pages/TermsPage'
+import PrivacyPage from './pages/PrivacyPage'
 import './App.css'
 
 /**
@@ -29,6 +30,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
         
         {/* Protected Routes */}
         <Route path="/dashboard" element={
