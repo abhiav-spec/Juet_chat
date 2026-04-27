@@ -20,10 +20,24 @@ function LandingPage() {
     loadFeatured()
   }, [])
 
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#060e20] text-[#dee5ff] [font-family:_'Inter',sans-serif]">
-      <nav className="fixed top-0 left-0 right-0 z-[100] border-b border-[#40485d]/10 bg-[rgba(6,14,32,0.8)] backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-6 h-20 flex items-center justify-between">
+      <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
+        isScrolled 
+          ? 'py-4 bg-[rgba(6,14,32,0.8)] backdrop-blur-xl border-b border-[#40485d]/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)]' 
+          : 'py-8 bg-transparent border-b border-transparent'
+      }`}>
+        <div className="mx-auto max-w-7xl px-6 flex items-center justify-between transition-all duration-500">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#a3a6ff] to-[#6063ee] flex items-center justify-center text-[#0f00a4] shadow-lg shadow-[#a3a6ff]/20">
               <span className="material-symbols-outlined text-xl font-bold">forum</span>
