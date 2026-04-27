@@ -67,13 +67,13 @@ function SupportPage() {
             <p className="text-[#a3aac4] mb-8 max-w-xl">
               Our direct support team is active 24/7. Drop us a digital message and we'll get back to you within 4 cinematic hours.
             </p>
-            <button 
-              onClick={() => window.location.href = 'mailto:kumarabhinav6649@gmail.com'}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-[#a3a6ff] text-[#0f00a4] rounded-full font-black uppercase tracking-widest text-xs hover:scale-[1.05] active:scale-95 transition-all shadow-lg shadow-[#a3a6ff]/20 cursor-pointer"
+            <a 
+              href="mailto:kumarabhinav6649@gmail.com?subject=Support%20Request%20-%20Cinematic%20Stream"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-[#a3a6ff] text-[#0f00a4] rounded-full font-black uppercase tracking-widest text-xs hover:scale-[1.05] active:scale-95 transition-all shadow-lg shadow-[#a3a6ff]/20"
             >
               Contact Support
               <span className="material-symbols-outlined">send</span>
-            </button>
+            </a>
           </div>
         </section>
 
