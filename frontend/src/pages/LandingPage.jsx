@@ -22,6 +22,35 @@ function LandingPage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#060e20] text-[#dee5ff] [font-family:_'Inter',sans-serif]">
+      <nav className="fixed top-0 left-0 right-0 z-[100] border-b border-[#40485d]/10 bg-[rgba(6,14,32,0.8)] backdrop-blur-xl">
+        <div className="mx-auto max-w-7xl px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#a3a6ff] to-[#6063ee] flex items-center justify-center text-[#0f00a4] shadow-lg shadow-[#a3a6ff]/20">
+              <span className="material-symbols-outlined text-xl font-bold">forum</span>
+            </div>
+            <span className="font-black italic text-[#a3a6ff] tracking-tighter text-xl [font-family:_'Plus_Jakarta_Sans',sans-serif]">
+              STREAM.
+            </span>
+          </div>
+
+          <div className="hidden md:flex items-center gap-10 text-[11px] uppercase font-bold tracking-[0.2em] text-[#a3aac4]">
+            <a href="#hero" className="hover:text-[#dee5ff] transition-colors">Home</a>
+            <a href="#experience" className="hover:text-[#dee5ff] transition-colors">Experience</a>
+            <a href="#popular-rooms" className="hover:text-[#dee5ff] transition-colors">Communities</a>
+            <Link to="/support" className="hover:text-[#dee5ff] transition-colors">Support</Link>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Link to="/login" className="hidden sm:block text-[11px] uppercase font-bold tracking-[0.2em] text-[#a3aac4] hover:text-[#dee5ff] transition-colors px-4">
+              Login
+            </Link>
+            <Link to="/signup" className="px-6 py-2.5 bg-[#a3a6ff] text-[#0f00a4] rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-[1.05] active:scale-95 transition-all shadow-lg shadow-[#a3a6ff]/10">
+              Join Stream
+            </Link>
+          </div>
+        </div>
+      </nav>
+
       <main>
         {/* ... existing hero section ... */}
         <section
