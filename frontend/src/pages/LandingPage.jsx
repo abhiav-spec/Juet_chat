@@ -232,6 +232,29 @@ function LandingPage() {
           </div>
         </section>
       </main>
+
+      <footer className="mx-auto max-w-7xl px-6 py-12 border-t border-[#40485d]/10">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#141f38] flex items-center justify-center text-[#a3a6ff] border border-[#a3a6ff]/20">
+              <span className="material-symbols-outlined text-lg">forum</span>
+            </div>
+            <span className="font-black italic text-[#a3a6ff] tracking-tighter [font-family:_'Plus_Jakarta_Sans',sans-serif]">
+              THE CINEMATIC STREAM
+            </span>
+          </div>
+
+          <div className="flex items-center gap-8 text-[10px] uppercase font-bold tracking-[0.2em] text-[#6d758c]">
+            <Link className="hover:text-[#dee5ff] transition-colors" to="/privacy">Privacy</Link>
+            <Link className="hover:text-[#dee5ff] transition-colors" to="/terms">Terms</Link>
+            <Link className="hover:text-[#dee5ff] transition-colors" to="/support">Support</Link>
+          </div>
+
+          <div className="text-[10px] uppercase font-bold tracking-widest text-[#40485d]">
+            Juet Chat © 2026
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
