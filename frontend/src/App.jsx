@@ -6,6 +6,7 @@ import VerifyEmailPage from './pages/VerifyEmailPage'
 import DashboardPage from './pages/DashboardPage'
 import ChatRoomPage from './pages/ChatRoomPage'
 import CreateChatroomPage from './pages/CreateChatroomPage'
+import TermsPage from './pages/TermsPage'
 import './App.css'
 
 /**
@@ -27,6 +28,7 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/terms" element={<TermsPage />} />
         
         {/* Protected Routes */}
         <Route path="/dashboard" element={

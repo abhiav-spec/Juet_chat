@@ -173,6 +173,14 @@ function LoginPage() {
               Create an account
             </Link>
           </p>
+          <div className="mt-8 flex justify-center gap-6 text-[10px] uppercase tracking-[0.2em] text-[#40485d]">
+            <Link className="transition-colors hover:text-[#dee5ff]" to="/terms">
+              Privacy
+            </Link>
+            <Link className="transition-colors hover:text-[#dee5ff]" to="/terms">
+              Terms
+            </Link>
+          </div>
         </footer>
       </main>
 

@@ -339,12 +339,12 @@ function SignupPage() {
             </form>
 
             <div className="mt-12 flex justify-center gap-6 text-[10px] uppercase tracking-[0.2em] text-[#40485d]">
-              <a className="transition-colors hover:text-[#dee5ff]" href="#">
+              <Link className="transition-colors hover:text-[#dee5ff]" to="/terms">
                 Privacy
-              </a>
-              <a className="transition-colors hover:text-[#dee5ff]" href="#">
+              </Link>
+              <Link className="transition-colors hover:text-[#dee5ff]" to="/terms">
                 Terms
-              </a>
+              </Link>
               <a className="transition-colors hover:text-[#dee5ff]" href="#">
                 Support
               </a>
