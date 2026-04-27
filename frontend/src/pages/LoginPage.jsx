@@ -180,6 +180,9 @@ function LoginPage() {
             <Link className="transition-colors hover:text-[#dee5ff]" to="/terms">
               Terms
             </Link>
+            <Link className="transition-colors hover:text-[#dee5ff]" to="/support">
+              Support
+            </Link>
           </div>
         </footer>
       </main>
