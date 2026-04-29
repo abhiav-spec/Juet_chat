@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authTranslations } from '../locales/auth'
 import { useLanguage } from '../hooks/useLanguage'
@@ -21,6 +21,33 @@ function SignupPage() {
 
   const { language, setLanguage } = useLanguage()
   const t = authTranslations[language] || authTranslations['en']
+
+  const [displayText, setDisplayText] = useState('');
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const phrases = language === 'hi' 
+    ? ["जहाँ हर शब्द मायने रखता है...", "संस्कृतियों को जोड़ें।", "डिजिटल संवाद की कला।", "कनेक्शन के लिए आपका अभयारण्य।"]
+    : ["Where every word counts...", "Connect across cultures.", "The art of digital dialogue.", "Your sanctuary for connection."];
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const currentPhrase = phrases[phraseIndex];
+      if (!isDeleting) {
+        setDisplayText(currentPhrase.substring(0, displayText.length + 1));
+        if (displayText.length === currentPhrase.length) {
+          setTimeout(() => setIsDeleting(true), 2000);
+        }
+      } else {
+        setDisplayText(currentPhrase.substring(0, displayText.length - 1));
+        if (displayText.length === 0) {
+          setIsDeleting(false);
+          setPhraseIndex((phraseIndex + 1) % phrases.length);
+        }
+      }
+    }, isDeleting ? 50 : 100);
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, phraseIndex, language]);
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
@@ -128,7 +155,15 @@ function SignupPage() {
             </p>
           </div>
 
-
+          <div className="relative z-10 mt-auto">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-8 bg-[#a3a6ff] rounded-full animate-pulse"></div>
+              <p className="text-2xl lg:text-3xl font-medium text-[#a3aac4] [font-family:_'Plus_Jakarta_Sans',sans-serif] min-h-[40px]">
+                {displayText}
+                <span className="inline-block w-1 h-8 ml-1 bg-[#a3a6ff] animate-blink"></span>
+              </p>
+            </div>
+          </div>
         </section>
 
         <section className="col-span-1 flex items-center justify-center bg-[#060e20] p-6 lg:col-span-5 lg:p-12">
