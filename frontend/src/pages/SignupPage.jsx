@@ -128,24 +128,7 @@ function SignupPage() {
             </p>
           </div>
 
-          <div className="relative z-10 flex gap-12">
-            <div className="flex flex-col gap-2">
-              <span className="text-3xl font-extrabold text-[#dee5ff] [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-                12M+
-              </span>
-              <span className="text-sm uppercase tracking-widest text-[#a3aac4] [font-family:_'Inter',sans-serif]">
-                {t.stats.users}
-              </span>
-            </div>
-            <div className="flex flex-col gap-2">
-              <span className="text-3xl font-extrabold text-[#dee5ff] [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-                50k+
-              </span>
-              <span className="text-sm uppercase tracking-widest text-[#a3aac4] [font-family:_'Inter',sans-serif]">
-                {t.stats.rooms}
-              </span>
-            </div>
-          </div>
+
         </section>
 
         <section className="col-span-1 flex items-center justify-center bg-[#060e20] p-6 lg:col-span-5 lg:p-12">
