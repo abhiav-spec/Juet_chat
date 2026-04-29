@@ -17,7 +17,7 @@ function SupportPage() {
       <main className="relative max-w-4xl mx-auto px-6 py-24 lg:py-32">
         <header className="mb-16">
           <h1 className="text-4xl lg:text-6xl font-black italic tracking-tighter text-[#a3a6ff] hover:scale-[1.01] transition-transform duration-500 [font-family:_'Plus_Jakarta_Sans',sans-serif] mb-6">
-            Stream <span className="text-[#dee5ff]">Support.</span>
+            BolChal <span className="text-[#dee5ff]">Support.</span>
           </h1>
           <p className="text-[#a3aac4] text-lg max-w-2xl leading-relaxed">
             Encountered a glitch in the stream? Our dedicated support unit is here to help you navigate back to perfect clarity.
@@ -68,7 +68,7 @@ function SupportPage() {
               Our direct support team is active 24/7. Drop us a digital message and we'll get back to you within 4 cinematic hours.
             </p>
             <a 
-              href="mailto:kumarabhinav6649@gmail.com?subject=Support%20Request%20-%20Cinematic%20Stream"
+              href="mailto:kumarabhinav6649@gmail.com?subject=Support%20Request%20-%20BolChal"
               className="inline-flex items-center gap-3 px-8 py-4 bg-[#a3a6ff] text-[#0f00a4] rounded-full font-black uppercase tracking-widest text-xs hover:scale-[1.05] active:scale-95 transition-all shadow-lg shadow-[#a3a6ff]/20"
             >
               Contact Support
@@ -78,7 +78,7 @@ function SupportPage() {
         </section>
 
         <footer className="mt-24 pt-12 border-t border-[#40485d]/10 text-center">
-          <p className="text-[#6d758c] text-sm">Juet Chat © 2026 Cinematic Stream</p>
+          <p className="text-[#6d758c] text-sm">BolChal © 2026</p>
         </footer>
       </main>
     </div>

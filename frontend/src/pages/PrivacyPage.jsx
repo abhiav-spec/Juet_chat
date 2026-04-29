@@ -20,7 +20,7 @@ function PrivacyPage() {
             Privacy <span className="text-[#dee5ff]">Policy.</span>
           </h1>
           <p className="text-[#a3aac4] text-lg max-w-2xl leading-relaxed">
-            Your privacy is the foundation of the Cinematic Stream. We protect your data as carefully as we curate our conversations.
+            Your privacy is the foundation of BolChal. We protect your data as carefully as we curate our conversations.
           </p>
         </header>
 
@@ -54,7 +54,7 @@ function PrivacyPage() {
               <h2 className="text-xl font-bold [font-family:_'Plus_Jakarta_Sans',sans-serif]">Zero Sharing Policy</h2>
             </div>
             <p className="text-[#a3aac4] leading-relaxed ml-10">
-              The Cinematic Stream does not sell or lease your personal data to advertisers or third-party digital brokers. Your stream remains yours alone.
+              BolChal does not sell or lease your personal data to advertisers or third-party digital brokers. Your chat remains yours alone.
             </p>
           </div>
 

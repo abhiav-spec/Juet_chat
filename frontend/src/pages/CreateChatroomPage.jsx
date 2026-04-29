@@ -83,7 +83,7 @@ function CreateChatroomPage() {
             <span className="material-symbols-outlined">menu</span>
           </button>
           <h1 className="text-[#a3a6ff] [font-family:_'Plus_Jakarta_Sans',sans-serif] font-extrabold tracking-tighter text-lg">
-            The Cinematic Stream
+            BolChal
           </h1>
         </div>
       </header>

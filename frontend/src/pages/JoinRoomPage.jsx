@@ -54,7 +54,7 @@ function JoinRoomPage() {
         <div className="w-full max-w-md z-10">
           <div className="bg-[rgba(31,43,73,0.6)] backdrop-blur-[12px] rounded-lg p-8 md:p-10 shadow-[0_12px_32px_rgba(25,37,64,0.08)] border border-[rgba(64,72,93,0.2)]">
             <div className="mb-10 text-center">
-              <h2 className="font-['Plus_Jakarta_Sans'] text-3xl font-extrabold tracking-tight mb-3 text-[#dee5ff]">Join a Stream</h2>
+              <h2 className="font-['Plus_Jakarta_Sans'] text-3xl font-extrabold tracking-tight mb-3 text-[#dee5ff]">Join a Room</h2>
               <p className="text-[#a3aac4] text-sm font-medium">Enter your details to join the conversation.</p>
             </div>
 

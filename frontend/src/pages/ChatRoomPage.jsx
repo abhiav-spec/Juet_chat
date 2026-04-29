@@ -209,7 +209,7 @@ function ChatRoomPage() {
       <div className="min-h-screen bg-[#060e20] flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-[#a3a6ff] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-[#a3aac4] text-sm font-medium uppercase tracking-widest">Connecting to Stream...</p>
+          <p className="text-[#a3aac4] text-sm font-medium uppercase tracking-widest">Connecting to BolChal...</p>
         </div>
       </div>
     )

@@ -1,6 +1,6 @@
-# The Cinematic Stream - Frontend
+# BolChal - Frontend
 
-Welcome to the frontend of **The Cinematic Stream**, a modern, premium real-time chat application. This project is built with a focus on immersive aesthetics, smooth transitions, and high-performance real-time communication.
+Welcome to the frontend of **BolChal**, a modern, premium real-time chat application. This project is built with a focus on immersive aesthetics, smooth transitions, and high-performance real-time communication.
 
 ## 🚀 Technology Stack
 
@@ -79,4 +79,4 @@ The application implements security at the routing level. Internal pages (Dashbo
     ```
 
 ---
-*Created with ❤️ for The Cinematic Stream Community.*
+*Created with ❤️ for the BolChal Community.*

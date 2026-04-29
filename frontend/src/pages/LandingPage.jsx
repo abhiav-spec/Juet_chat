@@ -59,7 +59,7 @@ function LandingPage() {
               Login
             </Link>
             <Link to="/signup" className="px-6 py-2.5 bg-[#a3a6ff] text-[#0f00a4] rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-[1.05] active:scale-95 transition-all shadow-lg shadow-[#a3a6ff]/10">
-              Join Stream
+              Join BolChal
             </Link>
           </div>
         </div>
@@ -93,7 +93,7 @@ function LandingPage() {
                 className="w-full rounded-full bg-gradient-to-r from-[#a3a6ff] to-[#6063ee] px-10 py-4 text-lg font-bold text-[#0f00a4] transition-opacity hover:opacity-90 sm:w-auto"
                 to="/login"
               >
-                Enter the Stream
+                Enter BolChal
               </Link>
               <a
                 className="w-full rounded-full border border-[#40485d]/40 px-10 py-4 text-lg font-bold text-[#dee5ff] transition-colors hover:bg-white/5 sm:w-auto"
@@ -270,7 +270,7 @@ function LandingPage() {
               className="rounded-full bg-gradient-to-r from-[#a3a6ff] to-[#6063ee] px-12 py-5 text-xl font-bold text-[#0f00a4] transition-transform active:scale-95"
               to="/login"
             >
-              Enter the Stream
+              Enter BolChal
             </Link>
           </div>
         </section>
@@ -294,7 +294,7 @@ function LandingPage() {
           </div>
 
           <div className="text-[10px] uppercase font-bold tracking-widest text-[#40485d]">
-            Juet Chat © 2026
+            BolChal © 2026
           </div>
         </div>
       </footer>

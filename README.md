@@ -1,8 +1,8 @@
-# JUET Chat — High-Performance Real-Time Messaging Platform
+# BolChal — High-Performance Real-Time Messaging Platform
 
-## 🚀 Introduction
+![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg) ![Express](https://img.shields.io/badge/Express-4.x-lightgrey.svg) ![Socket.io](https://img.shields.io/badge/WebSocket-WS-blue.svg) ![MongoDB](https://img.shields.io/badge/MongoDB-6.x-green.svg)
 
-JUET Chat is a modern, high-performance real-time messaging application designed to provide a seamless, WhatsApp-style communication experience. Built with a focus on speed, security, and user experience, the platform supports both public and private chat rooms, secure password-protected access, and advanced real-time synchronization.
+BolChal is a modern, high-performance real-time messaging application designed to provide a seamless, WhatsApp-style communication experience. Built with a focus on speed, security, and user experience, the platform supports both public and private chat rooms, secure password-protected access, and advanced real-time synchronization.
 
 The application features a hybrid architecture that separates live messaging (via WebSockets) from persistent storage (via MongoDB), ensuring zero-latency interaction while maintaining a reliable record of all conversations.
 

@@ -20,7 +20,7 @@ function TermsPage() {
             Terms of <span className="text-[#dee5ff]">Service.</span>
           </h1>
           <p className="text-[#a3aac4] text-lg max-w-2xl leading-relaxed">
-            Welcome to the Cinematic Stream. Your presence here signifies your agreement to these digital covenants.
+            Welcome to BolChal. Your presence here signifies your agreement to these digital covenants.
           </p>
         </header>
 

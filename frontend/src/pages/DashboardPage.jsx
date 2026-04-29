@@ -355,7 +355,7 @@ function DashboardPage() {
               <section className="max-w-4xl mx-auto">
                 <div className="mb-10">
                   <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-3xl text-[#dee5ff] mb-2">Profile Settings</h3>
-                  <p className="text-[#a3aac4]">Manage your digital identity in the cinematic stream.</p>
+                  <p className="text-[#a3aac4]">Manage your digital identity in the BolChal platform.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -366,7 +366,7 @@ function DashboardPage() {
                         {currentUser?.username?.substring(0, 2).toUpperCase() || '??'}
                       </div>
                       <h4 className="text-xl font-bold text-[#dee5ff] mb-1">{currentUser?.username}</h4>
-                      <p className="text-xs text-[#a3aac4] uppercase tracking-widest mb-6">Verified Streamer</p>
+                      <p className="text-xs text-[#a3aac4] uppercase tracking-widest mb-6">Verified User</p>
                       <div className="flex items-center justify-center gap-2 py-2 px-4 bg-[#141f38] rounded-full text-[10px] font-bold text-[#a3a6ff] border border-[#a3a6ff]/20">
                         <span className="material-symbols-outlined text-sm">verified</span>
                         Status: Active

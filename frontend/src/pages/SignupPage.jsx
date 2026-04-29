@@ -92,7 +92,7 @@ function SignupPage() {
 
           <div className="relative z-10">
             <h1 className="mb-4 text-4xl font-black italic tracking-tighter text-[#a3a6ff] [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-              The Cinematic Stream
+              BolChal
             </h1>
             <p className="max-w-xl text-6xl font-bold leading-[1.1] tracking-tighter text-[#dee5ff] [font-family:_'Plus_Jakarta_Sans',sans-serif]">
               Where Every <span className="text-[#9396ff]">Conversation</span> is the Hero.

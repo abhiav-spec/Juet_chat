@@ -75,7 +75,7 @@ function LoginPage() {
             </span>
           </div>
           <h1 className="font-extrabold text-4xl tracking-tight italic text-[#a3a6ff] mb-2 [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-            The Cinematic Stream
+            BolChal
           </h1>
           <p className="text-[#a3aac4] font-medium text-lg">Your digital sanctuary for deep conversation.</p>
         </header>
@@ -148,7 +148,7 @@ function LoginPage() {
                 disabled={isLoading}
                 type="submit"
               >
-                {isLoading ? 'Logging In...' : 'Login to Stream'}
+                {isLoading ? 'Logging In...' : 'Login to BolChal'}
               </button>
             </div>
           </form>
