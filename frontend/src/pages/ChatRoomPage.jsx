@@ -287,24 +287,61 @@ function ChatRoomPage() {
       )}
 
       {/* Sidebar */}
-      <aside className="hidden md:flex fixed left-0 top-0 h-full z-40 flex-col py-8 bg-[#091328] w-72 rounded-r-none shadow-[12px_0_32px_rgba(25,37,64,0.08)]">
-        <div className="px-6 mb-10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#a3a6ff] flex items-center justify-center text-[#0f00a4] font-black text-sm uppercase">
-            {currentUser?.username?.substring(0, 2) || '...'}
-          </div>
-          <div>
-            <p className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">{currentUser?.username || 'Loading...'}</p>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <p className="text-[#a3aac4] text-xs">{t.chatroom.online}</p>
+      <aside className={`${isMembersOpen ? 'flex' : 'hidden'} md:flex fixed left-0 top-0 h-full z-40 flex-col py-8 bg-[#091328] w-72 rounded-r-none shadow-[12px_0_32px_rgba(25,37,64,0.08)]`}>
+        <div className="flex items-center justify-between px-6 mb-10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#a3a6ff] flex items-center justify-center text-[#0f00a4] font-black text-sm uppercase">
+              {currentUser?.username?.substring(0, 2) || '...'}
+            </div>
+            <div>
+              <p className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">{currentUser?.username || 'Loading...'}</p>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <p className="text-[#a3aac4] text-xs">{t.chatroom.online}</p>
+              </div>
             </div>
           </div>
+          <button onClick={() => setIsMembersOpen(false)} className="md:hidden text-[#a3aac4] hover:text-white">
+            <span className="material-symbols-outlined">close</span>
+          </button>
         </div>
-        <nav className="flex-1 space-y-2 px-4">
-          <button onClick={() => navigate('/dashboard')} className="w-full flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white transition-all hover:bg-[#141f38] font-['Plus_Jakarta_Sans'] font-medium text-sm">
+        <nav className="flex-1 space-y-2 px-4 overflow-y-auto">
+          <button onClick={() => navigate('/dashboard')} className="w-full flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white transition-all hover:bg-[#141f38] rounded-xl font-['Plus_Jakarta_Sans'] font-medium text-sm">
             <span className="material-symbols-outlined">explore</span>
             <span>{t.explore.allRooms}</span>
           </button>
+
+          <div className="pt-6 pb-2 px-4">
+            <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-[#a3a6ff] text-[10px] tracking-[0.2em] uppercase opacity-60">
+              {language === 'hi' ? 'रूम सदस्य' : 'Room Members'}
+            </h3>
+          </div>
+
+          <div className="space-y-1">
+            {roomMembers.map(member => (
+              <div 
+                key={member.userId}
+                className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-[#141f38] transition-colors group cursor-default"
+              >
+                <div className="relative">
+                  <div className="w-8 h-8 rounded-full bg-[#192540] border border-[#40485d]/20 flex items-center justify-center text-[10px] font-bold text-[#a3a6ff]">
+                    {member.username.substring(0, 2).toUpperCase()}
+                  </div>
+                  {onlineUsers.has(member.userId) && (
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#091328] rounded-full animate-pulse"></span>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-medium truncate ${onlineUsers.has(member.userId) ? 'text-[#dee5ff]' : 'text-[#a3aac4]'}`}>
+                    {member.username}
+                  </p>
+                  {member.isAdmin && (
+                    <p className="text-[9px] font-black uppercase tracking-widest text-[#a3a6ff]/60">Admin</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </nav>
       </aside>
 
@@ -345,7 +382,7 @@ function ChatRoomPage() {
           <div className="flex items-center gap-2">
              <button 
                onClick={() => setIsMembersOpen(!isMembersOpen)}
-               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all text-xs font-semibold ${isMembersOpen ? 'bg-[#a3a6ff] text-[#0f00a4]' : 'bg-[#141f38] text-[#a3aac4] hover:text-white'}`}
+               className={`md:hidden flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all text-xs font-semibold ${isMembersOpen ? 'bg-[#a3a6ff] text-[#0f00a4]' : 'bg-[#141f38] text-[#a3aac4] hover:text-white'}`}
              >
                <span className="material-symbols-outlined text-sm">groups</span>
                <span>{roomMembers.length}</span>
@@ -475,41 +512,6 @@ function ChatRoomPage() {
           </div>
         </div>
       </main>
-
-      {/* Right Sidebar: Member List */}
-      <aside className={`${isMembersOpen ? 'flex' : 'hidden'} lg:flex fixed lg:relative right-0 top-0 h-full z-40 flex-col py-8 bg-[#091328] w-72 border-l border-[#40485d]/10 shadow-[-12px_0_32px_rgba(0,0,0,0.2)]`}>
-        <div className="px-6 mb-6 flex items-center justify-between">
-          <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm tracking-tight uppercase">{language === 'hi' ? 'सदस्य' : 'Members'} — {roomMembers.length}</h3>
-          <button onClick={() => setIsMembersOpen(false)} className="lg:hidden text-[#a3aac4] hover:text-white">
-            <span className="material-symbols-outlined text-xl">close</span>
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto px-4 space-y-1">
-          {roomMembers.map(member => (
-            <div 
-              key={member.userId}
-              className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#141f38] transition-colors group cursor-default"
-            >
-              <div className="relative">
-                <div className="w-9 h-9 rounded-full bg-[#192540] border border-[#40485d]/20 flex items-center justify-center text-[10px] font-bold text-[#a3a6ff]">
-                  {member.username.substring(0, 2).toUpperCase()}
-                </div>
-                {onlineUsers.has(member.userId) && (
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#091328] rounded-full animate-pulse"></span>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className={`text-sm font-medium truncate ${onlineUsers.has(member.userId) ? 'text-[#dee5ff]' : 'text-[#a3aac4]'}`}>
-                  {member.username}
-                </p>
-                {member.isAdmin && (
-                  <p className="text-[9px] font-black uppercase tracking-widest text-[#a3a6ff]/60">Admin</p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </aside>
     </div>
   )
 }
