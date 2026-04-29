@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { apiService } from '../services/api.service'
+import { translations } from '../locales/landing'
 
 function LandingPage() {
   const [featuredRooms, setFeaturedRooms] = useState([])
@@ -32,6 +33,8 @@ function LandingPage() {
 
   const [isScrolled, setIsScrolled] = useState(false)
 
+  const t = translations[language] || translations['en']
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
@@ -56,10 +59,10 @@ function LandingPage() {
           </div>
 
           <div className="hidden md:flex items-center gap-10 text-[11px] uppercase font-bold tracking-[0.2em] text-[#a3aac4]">
-            <a href="#hero" className="hover:text-[#dee5ff] transition-colors">Home</a>
-            <a href="#experience" className="hover:text-[#dee5ff] transition-colors">Experience</a>
-            <a href="#popular-rooms" className="hover:text-[#dee5ff] transition-colors">Communities</a>
-            <Link to="/support" className="hover:text-[#dee5ff] transition-colors">Support</Link>
+            <a href="#hero" className="hover:text-[#dee5ff] transition-colors">{t.nav.home}</a>
+            <a href="#experience" className="hover:text-[#dee5ff] transition-colors">{t.nav.experience}</a>
+            <a href="#popular-rooms" className="hover:text-[#dee5ff] transition-colors">{t.nav.communities}</a>
+            <Link to="/support" className="hover:text-[#dee5ff] transition-colors">{t.nav.support}</Link>
           </div>
 
           <div className="flex items-center gap-4">
@@ -86,10 +89,10 @@ function LandingPage() {
             </div>
 
             <Link to="/login" className="hidden sm:block text-[11px] uppercase font-bold tracking-[0.2em] text-[#a3aac4] hover:text-[#dee5ff] transition-colors px-4">
-              Login
+              {t.nav.login}
             </Link>
             <Link to="/signup" className="px-6 py-2.5 bg-[#a3a6ff] text-[#0f00a4] rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-[1.05] active:scale-95 transition-all shadow-lg shadow-[#a3a6ff]/10">
-              Join BolChal
+              {t.nav.join}
             </Link>
           </div>
         </div>
@@ -112,24 +115,23 @@ function LandingPage() {
 
           <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
             <h1 className="mb-6 text-5xl font-extrabold leading-tight tracking-tighter text-[#dee5ff] drop-shadow-[0_0_20px_rgba(163,166,255,0.3)] md:text-8xl [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-              Where Every Conversation is a Masterpiece
+              {t.hero.title}
             </h1>
             <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-[#a3aac4] md:text-2xl [font-family:_'Inter',sans-serif]">
-              Experience deep connection in a sanctuary of modern communication.
-              A digital canvas designed for the art of dialogue.
+              {t.hero.subtitle}
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 className="w-full rounded-full bg-gradient-to-r from-[#a3a6ff] to-[#6063ee] px-10 py-4 text-lg font-bold text-[#0f00a4] transition-opacity hover:opacity-90 sm:w-auto"
                 to="/login"
               >
-                Enter BolChal
+                {t.hero.enter}
               </Link>
               <a
                 className="w-full rounded-full border border-[#40485d]/40 px-10 py-4 text-lg font-bold text-[#dee5ff] transition-colors hover:bg-white/5 sm:w-auto"
                 href="#experience"
               >
-                Learn More
+                {t.hero.learnMore}
               </a>
             </div>
           </div>
@@ -145,10 +147,10 @@ function LandingPage() {
         <section id="experience" className="mx-auto max-w-7xl px-6 py-24">
           <div className="mb-16 text-left md:text-center">
             <span className="mb-4 block text-sm font-semibold uppercase tracking-widest text-[#a3a6ff]">
-              The Experience
+              {t.experience.tag}
             </span>
             <h2 className="mb-4 text-4xl font-bold text-[#dee5ff] md:text-5xl [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-              Crafted with Intention
+              {t.experience.title}
             </h2>
             <div className="mx-auto h-1 w-24 rounded-full bg-[#6063ee]" />
           </div>
@@ -169,20 +171,18 @@ function LandingPage() {
                   </span>
                 </div>
                 <h3 className="mb-4 text-3xl font-bold [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-                  Luminous Depth
+                  {t.experience.feat1Title}
                 </h3>
                 <p className="max-w-md leading-relaxed text-[#a3aac4] [font-family:_'Inter',sans-serif]">
-                  Treating the interface as high-end editorial. No rigid grid lines,
-                  only tonal layering that makes every message feel essential and
-                  visually distinct.
+                  {t.experience.feat1Desc}
                 </p>
               </div>
               <div className="relative z-10 mt-8 flex gap-2">
                 <span className="rounded-sm bg-[#49339d]/40 px-4 py-1 text-xs font-semibold text-[#d4c9ff]">
-                  Adaptive UI
+                  {t.experience.feat1Tag1}
                 </span>
                 <span className="rounded-sm bg-[#49339d]/40 px-4 py-1 text-xs font-semibold text-[#d4c9ff]">
-                  Tonal Contrast
+                  {t.experience.feat1Tag2}
                 </span>
               </div>
             </div>
@@ -195,11 +195,10 @@ function LandingPage() {
                   </span>
                 </div>
                 <h3 className="mb-4 text-2xl font-bold [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-                  Encrypted Sanctuary
+                  {t.experience.feat2Title}
                 </h3>
                 <p className="leading-relaxed text-[#a3aac4] [font-family:_'Inter',sans-serif]">
-                  Privacy isn't a feature; it's the foundation. Every stream is
-                  end-to-end encrypted within our digital sanctuary.
+                  {t.experience.feat2Desc}
                 </p>
               </div>
               <div className="mt-8 flex h-32 w-full items-center justify-center overflow-hidden rounded-2xl bg-[#0f1930]">
@@ -207,7 +206,7 @@ function LandingPage() {
                   <span className="material-symbols-outlined text-green-400" style={{ fontVariationSettings: "'FILL' 1" }}>
                     lock
                   </span>
-                  <span className="font-mono text-xs opacity-60">AES-256 SECURED</span>
+                  <span className="font-mono text-xs opacity-60">{t.experience.feat2Tag}</span>
                 </div>
               </div>
             </div>
@@ -230,11 +229,10 @@ function LandingPage() {
                   </span>
                 </div>
                 <h3 className="mb-4 text-2xl font-bold [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-                  Real-time Pulse
+                  {t.experience.feat3Title}
                 </h3>
                 <p className="mx-auto max-w-xs text-[#a3aac4] [font-family:_'Inter',sans-serif]">
-                  Experience zero-latency interactions. Our global stream keeps your
-                  community in perfect sync, across every device.
+                  {t.experience.feat3Desc}
                 </p>
               </div>
             </div>
@@ -254,10 +252,10 @@ function LandingPage() {
           <section id="popular-rooms" className="mx-auto max-w-7xl px-6 py-24 border-t border-[#40485d]/10">
             <div className="mb-16 text-center">
               <span className="mb-4 block text-sm font-semibold uppercase tracking-widest text-[#a3a6ff]">
-                Live Communities
+                {t.communities.tag}
               </span>
               <h2 className="mb-4 text-4xl font-bold text-[#dee5ff] md:text-5xl [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-                Popular Rooms
+                {t.communities.title}
               </h2>
               <div className="mx-auto h-1 w-24 rounded-full bg-[#6063ee]" />
             </div>
@@ -271,14 +269,14 @@ function LandingPage() {
                     </div>
                     <div>
                       <h4 className="font-bold text-[#dee5ff] group-hover:text-[#a3a6ff] transition-colors">{room.name}</h4>
-                      <span className="text-[10px] text-[#a3aac4] uppercase tracking-widest">Public Space</span>
+                      <span className="text-[10px] text-[#a3aac4] uppercase tracking-widest">{t.communities.publicSpace}</span>
                     </div>
                   </div>
                   <p className="text-sm text-[#a3aac4] mb-8 line-clamp-2 min-h-[40px] leading-relaxed">
-                    {room.description || "Join this community to start sharing moments and chatting with members."}
+                    {room.description || t.communities.defaultDesc}
                   </p>
                   <Link to="/login" className="w-full flex items-center justify-center py-4 bg-[#192540] hover:bg-[#a3a6ff] hover:text-[#0a0081] text-[#dee5ff] rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
-                    Step Inside
+                    {t.communities.stepInside}
                   </Link>
                 </div>
               ))}
@@ -291,16 +289,16 @@ function LandingPage() {
             <div className="absolute left-0 top-0 h-32 w-32 bg-[#a3a6ff]/20 blur-[100px]" />
             <div className="absolute bottom-0 right-0 h-32 w-32 bg-[#a28efc]/20 blur-[100px]" />
             <h2 className="mb-8 text-3xl font-bold md:text-5xl [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-              Ready to evolve your conversation?
+              {t.cta.title}
             </h2>
             <p className="mx-auto mb-10 max-w-xl text-lg leading-relaxed text-[#a3aac4] [font-family:_'Inter',sans-serif]">
-              Join a community of modern thinkers and creators. Step into the stream today.
+              {t.cta.desc}
             </p>
             <Link
               className="rounded-full bg-gradient-to-r from-[#a3a6ff] to-[#6063ee] px-12 py-5 text-xl font-bold text-[#0f00a4] transition-transform active:scale-95"
               to="/login"
             >
-              Enter BolChal
+              {t.cta.enter}
             </Link>
           </div>
         </section>
@@ -316,9 +314,9 @@ function LandingPage() {
           </div>
 
           <div className="flex items-center gap-8 text-[10px] uppercase font-bold tracking-[0.2em] text-[#6d758c]">
-            <Link className="hover:text-[#dee5ff] transition-colors" to="/privacy">Privacy</Link>
-            <Link className="hover:text-[#dee5ff] transition-colors" to="/terms">Terms</Link>
-            <Link className="hover:text-[#dee5ff] transition-colors" to="/support">Support</Link>
+            <Link className="hover:text-[#dee5ff] transition-colors" to="/privacy">{t.footer.privacy}</Link>
+            <Link className="hover:text-[#dee5ff] transition-colors" to="/terms">{t.footer.terms}</Link>
+            <Link className="hover:text-[#dee5ff] transition-colors" to="/support">{t.footer.support}</Link>
           </div>
 
           <div className="text-[10px] uppercase font-bold tracking-widest text-[#40485d]">
