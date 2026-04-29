@@ -13,6 +13,7 @@ function DashboardPage() {
   const [currentUser, setCurrentUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [openSettingsId, setOpenSettingsId] = useState(null)
   
   // Profile edit states
   const [isEditingProfile, setIsEditingProfile] = useState(false)
@@ -456,39 +457,66 @@ function DashboardPage() {
                               </div>
                             )}
                           </div>
-                          <div className="flex items-center gap-2">
-                            <button 
-                              onClick={() => {
-                                const newCode = window.prompt(language === 'hi' ? 'नया रूम कोड दर्ज करें:' : 'Enter new room code:', room.passkey);
-                                if (newCode && newCode !== room.passkey) {
-                                  apiService.updateRoomCode(room._id, newCode).then(() => {
-                                    setRooms(prev => prev.map(r => r._id === room._id ? { ...r, passkey: newCode } : r));
-                                    alert(language === 'hi' ? 'कोड अपडेट किया गया!' : 'Code updated!');
-                                  }).catch(err => alert(err.message));
-                                }
-                              }}
-                              className="p-2 hover:bg-white/10 rounded-lg text-[#a3aac4] hover:text-white transition-colors"
-                              title="Edit Code"
-                            >
-                              <span className="material-symbols-outlined text-sm">edit</span>
-                            </button>
-                            <button 
-                              onClick={async () => {
-                                if (window.confirm(language === 'hi' ? 'क्या आप इस रूम को हटाना चाहते हैं?' : 'Are you sure you want to delete this room?')) {
-                                  try {
-                                    await apiService.deleteRoom(room._id);
-                                    setRooms(prev => prev.filter(r => r._id !== room._id));
-                                    alert(language === 'hi' ? 'रूम सफलतापूर्वक हटा दिया गया!' : 'Room deleted successfully!');
-                                  } catch (err) {
-                                    alert(err.message);
-                                  }
-                                }
-                              }}
-                              className="p-2 hover:bg-red-500/10 rounded-lg text-[#a3aac4] hover:text-red-500 transition-colors"
-                              title="Delete Room"
-                            >
-                              <span className="material-symbols-outlined text-sm">delete</span>
-                            </button>
+                          
+                          <div className="flex items-center gap-2 relative">
+                            {room.type === 'private' && (
+                              <div className="relative">
+                                <button 
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setOpenSettingsId(openSettingsId === room._id ? null : room._id);
+                                  }}
+                                  className="p-2 hover:bg-white/10 rounded-lg text-[#a3aac4] hover:text-[#a3a6ff] transition-colors"
+                                >
+                                  <span className="material-symbols-outlined text-sm">settings</span>
+                                </button>
+                                
+                                {openSettingsId === room._id && (
+                                  <div className="absolute bottom-full right-0 mb-2 w-40 bg-[#091328] border border-[#40485d]/40 rounded-xl shadow-2xl z-50 py-1 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
+                                    <button 
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setOpenSettingsId(null);
+                                        const newCode = window.prompt(language === 'hi' ? 'नया रूम कोड दर्ज करें:' : 'Enter new room code:', room.passkey);
+                                        if (newCode && newCode !== room.passkey) {
+                                          apiService.updateRoomCode(room._id, newCode).then(() => {
+                                            setRooms(prev => prev.map(r => r._id === room._id ? { ...r, passkey: newCode } : r));
+                                            alert(language === 'hi' ? 'कोड अपडेट किया गया!' : 'Code updated!');
+                                          }).catch(err => alert(err.message));
+                                        }
+                                      }}
+                                      className="w-full flex items-center gap-2 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-[#a3aac4] hover:text-white hover:bg-[#141f38] transition-colors"
+                                    >
+                                      <span className="material-symbols-outlined text-sm">edit</span>
+                                      {language === 'hi' ? 'कोड बदलें' : 'Edit Code'}
+                                    </button>
+                                    <button 
+                                      onClick={async (e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setOpenSettingsId(null);
+                                        if (window.confirm(language === 'hi' ? 'क्या आप इस रूम को हटाना चाहते हैं?' : 'Are you sure you want to delete this room?')) {
+                                          try {
+                                            await apiService.deleteRoom(room._id);
+                                            setRooms(prev => prev.filter(r => r._id !== room._id));
+                                            alert(language === 'hi' ? 'रूम सफलतापूर्वक हटा दिया गया!' : 'Room deleted successfully!');
+                                          } catch (err) {
+                                            alert(err.message);
+                                          }
+                                        }
+                                      }}
+                                      className="w-full flex items-center gap-2 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition-colors"
+                                    >
+                                      <span className="material-symbols-outlined text-sm">delete</span>
+                                      {language === 'hi' ? 'हटाएं' : 'Delete'}
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            
                             <Link 
                               to={`/chat/${room._id}`}
                               className="bg-[#a3a6ff] text-[#0f00a4] px-4 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:scale-105 transition-transform"

@@ -11,7 +11,7 @@ const hashPassword = (password) =>
     crypto.createHash('sha256').update(password).digest('hex');
 
 /** Safe room projection — never expose passwordHash. */
-const safeRoomFields = '_id name creator type description members createdAt updatedAt';
+const safeRoomFields = '_id name creator type description members passkey createdAt updatedAt';
 
 // ─── Controllers ─────────────────────────────────────────────────────────────
 
@@ -89,8 +89,12 @@ export const listRooms = async (req, res, next) => {
             .sort({ createdAt: -1 })
             .lean();
 
-        // Ensure passkey is NEVER sent in list
-        rooms.forEach(r => delete r.passkey);
+        // Only allow creators to see their own room's passkey
+        rooms.forEach(r => {
+            if (r.creator?._id?.toString() !== req.user.id && r.creator?.toString() !== req.user.id) {
+                delete r.passkey;
+            }
+        });
 
         return res.status(200).json({ rooms });
     } catch (error) {
