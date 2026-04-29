@@ -278,10 +278,6 @@ function ChatRoomPage() {
             <span className="material-symbols-outlined">explore</span>
             <span>{t.explore.allRooms}</span>
           </button>
-          <button onClick={() => navigate('/dms')} className="w-full flex items-center gap-3 px-4 py-3 bg-[#141f38] text-white rounded-lg mx-2 font-['Plus_Jakarta_Sans'] font-medium text-sm transition-all">
-            <span className="material-symbols-outlined">chat_bubble</span>
-            <span>{t.sidebar.directMessages}</span>
-          </button>
         </nav>
       </aside>
 
@@ -293,24 +289,27 @@ function ChatRoomPage() {
         }}></div>
 
         {/* Top App Bar */}
-        <header className="sticky top-0 z-30 flex justify-between items-center w-full px-6 h-16 bg-[#091328] border-none shadow-none">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-[#141f38] overflow-hidden flex items-center justify-center">
+        <header className="sticky top-0 z-30 flex justify-between items-center w-full px-4 md:px-6 h-20 bg-[#091328]/80 backdrop-blur-xl border-b border-[#40485d]/10 shadow-none">
+          <div className="flex items-center gap-3 md:gap-4">
+            <button onClick={() => navigate('/dashboard')} className="md:hidden w-10 h-10 rounded-xl bg-[#192540] flex items-center justify-center border border-[#40485d]/20">
+               <span className="material-symbols-outlined text-[#a3a6ff]">arrow_back</span>
+            </button>
+            <div className="w-10 h-10 rounded-xl bg-[#141f38] overflow-hidden hidden sm:flex items-center justify-center">
               <span className="material-symbols-outlined text-[#a3a6ff]">
                 {roomInfo?.type === 'private' ? 'lock' : 'forum'}
               </span>
             </div>
-            <div>
-              <h1 className="text-[#6366F1] font-['Plus_Jakarta_Sans'] font-bold text-lg tracking-tight">
+            <div className="overflow-hidden">
+              <h1 className="text-[#6366F1] font-['Plus_Jakarta_Sans'] font-bold text-base md:text-lg tracking-tight truncate max-w-[150px] sm:max-w-none">
                 {roomInfo?.name || 'Loading...'}
               </h1>
               <div className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <p className="text-[#a3aac4] text-[11px] font-medium uppercase tracking-wider">{language === 'hi' ? 'लाइव कनेक्शन' : 'Live Connection'}</p>
+                <p className="text-[#a3aac4] text-[10px] font-medium uppercase tracking-wider">{language === 'hi' ? 'लाइव' : 'Live'}</p>
                 {roomInfo?.type === 'private' && roomInfo?.passkey && (
-                    <div className="ml-4 flex items-center gap-1 bg-[#141f38] px-2 py-0.5 rounded border border-[#a3a6ff]/20">
+                    <div className="hidden xs:flex items-center gap-1 bg-[#141f38] px-2 py-0.5 rounded border border-[#a3a6ff]/20">
                         <span className="material-symbols-outlined text-[10px] text-[#a3a6ff]">key</span>
-                        <span className="text-[10px] text-[#a3a6ff] font-mono tracking-tighter uppercase">{language === 'hi' ? 'कोड' : 'Code'}: {roomInfo.passkey}</span>
+                        <span className="text-[10px] text-[#a3a6ff] font-mono tracking-tighter uppercase">{roomInfo.passkey}</span>
                     </div>
                 )}
               </div>
@@ -320,24 +319,21 @@ function ChatRoomPage() {
              {roomInfo?.creator?._id === currentUserId && (
                 <button 
                   onClick={() => handleDeleteRoom(roomId, navigate)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-colors text-xs font-semibold"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-colors text-xs font-semibold"
                 >
                   <span className="material-symbols-outlined text-sm">delete</span>
-                  <span>{t.chatroom.deleteRoom}</span>
+                  <span className="hidden sm:inline">{t.chatroom.deleteRoom}</span>
                 </button>
              )}
              {roomInfo?.creator?._id !== currentUserId && roomInfo?.type === 'private' && (
                 <button 
                   onClick={handleLeaveRoom}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-500 hover:bg-orange-500/20 transition-colors text-xs font-semibold"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-500 hover:bg-orange-500/20 transition-colors text-xs font-semibold"
                 >
                   <span className="material-symbols-outlined text-sm">exit_to_app</span>
-                  <span>{t.chatroom.leaveRoom}</span>
+                  <span className="hidden sm:inline">{t.chatroom.leaveRoom}</span>
                 </button>
              )}
-             <button onClick={() => navigate('/dashboard')} className="md:hidden p-2 text-[#a3aac4]">
-                <span className="material-symbols-outlined">close</span>
-             </button>
           </div>
         </header>
 
@@ -419,12 +415,12 @@ function ChatRoomPage() {
         </div>
 
         {/* Input Area */}
-        <div className="p-6 bg-[#000000]/80 backdrop-blur-md relative z-20">
-          <div className="max-w-5xl mx-auto flex items-center gap-4">
-            <form onSubmit={handleSendMessage} className="flex-1 flex items-center gap-4">
+        <div className="p-4 md:p-6 bg-[#000000]/80 backdrop-blur-md relative z-20 border-t border-[#40485d]/10">
+          <div className="max-w-5xl mx-auto flex items-center gap-3 md:gap-4">
+            <form onSubmit={handleSendMessage} className="flex-1 flex items-center gap-3 md:gap-4">
               <div className="flex-1 relative">
                 <input
-                  className="w-full bg-[#192540] text-[#dee5ff] border-none focus:ring-1 focus:ring-[#a3a6ff]/40 rounded-full py-4 px-6 text-sm placeholder:text-[#a3aac4] transition-all outline-none"
+                  className="w-full bg-[#192540] text-[#dee5ff] border border-[#40485d]/20 focus:ring-1 focus:ring-[#a3a6ff]/40 rounded-full py-3.5 md:py-4 px-6 text-sm placeholder:text-[#a3aac4] transition-all outline-none"
                   placeholder={t.chatroom.inputPlaceholder}
                   type="text"
                   value={inputValue}

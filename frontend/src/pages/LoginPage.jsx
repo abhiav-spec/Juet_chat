@@ -73,7 +73,7 @@ function LoginPage() {
         <div className="absolute top-[60%] -right-[5%] w-[35%] h-[35%] rounded-full bg-[#49339d]/20 blur-[100px]" />
       </div>
 
-      <Link to="/" className="fixed top-8 left-8 z-[100] flex items-center gap-2 text-[#a3aac4] hover:text-[#a3a6ff] transition-all group px-4 py-2 rounded-full border border-transparent hover:border-[#a3a6ff]/20 bg-transparent hover:bg-[#141f38]/40 backdrop-blur-sm">
+      <Link to="/" className="absolute top-6 left-6 md:top-8 md:left-8 z-[100] flex items-center gap-2 text-[#a3aac4] hover:text-[#a3a6ff] transition-all group px-4 py-2 rounded-full border border-transparent hover:border-[#a3a6ff]/20 bg-[#141f38]/40 md:bg-transparent md:hover:bg-[#141f38]/40 backdrop-blur-sm">
         <span className="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
         <span className="text-xs font-bold uppercase tracking-widest px-1">{t.backHome}</span>
       </Link>

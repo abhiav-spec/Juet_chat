@@ -92,7 +92,73 @@ function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#060e20] text-[#dee5ff]">
-      {/* Sidebar */}
+      {/* Mobile Sidebar Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <aside 
+            className="h-full w-72 bg-[#091328] p-8 shadow-2xl flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-10 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img src="/logo.png" alt="BolChal Logo" className="w-10 h-10 rounded-xl" />
+                <span className="font-black italic text-[#a3a6ff] text-2xl">BolChal.</span>
+              </div>
+              <button onClick={() => setMobileMenuOpen(false)} className="text-[#a3aac4]">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            
+            <nav className="flex-1 space-y-2">
+              <button 
+                onClick={() => { setActiveView('explore'); setMobileMenuOpen(false); }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg duration-300 ${activeView === 'explore' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4]'}`}
+              >
+                <span className="material-symbols-outlined">explore</span>
+                <span>{t.sidebar.explore}</span>
+              </button>
+              <button 
+                onClick={() => { setActiveView('rooms'); setMobileMenuOpen(false); }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg duration-300 ${activeView === 'rooms' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4]'}`}
+              >
+                <span className="material-symbols-outlined">meeting_room</span>
+                <span>Rooms</span>
+              </button>
+              <button 
+                onClick={() => { setActiveView('my-rooms'); setMobileMenuOpen(false); }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg duration-300 ${activeView === 'my-rooms' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4]'}`}
+              >
+                <span className="material-symbols-outlined">person_pin</span>
+                <span>My Rooms</span>
+              </button>
+              <button onClick={() => navigate('/dms')} className="w-full flex items-center gap-3 px-4 py-3 text-[#a3aac4]">
+                <span className="material-symbols-outlined">chat_bubble</span>
+                <span>{t.sidebar.directMessages}</span>
+              </button>
+              <button 
+                onClick={() => { setActiveView('settings'); setMobileMenuOpen(false); }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg duration-300 ${activeView === 'settings' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4]'}`}
+              >
+                <span className="material-symbols-outlined">settings</span>
+                <span>Settings</span>
+              </button>
+            </nav>
+
+            <button 
+              onClick={handleLogout} 
+              className="mt-auto flex items-center gap-3 px-4 py-3 text-[#ff7b7b]"
+            >
+              <span className="material-symbols-outlined">logout</span>
+              <span>{t.sidebar.logout}</span>
+            </button>
+          </aside>
+        </div>
+      )}
+
+      {/* Desktop Sidebar */}
       <aside className="hidden md:flex fixed left-0 top-0 h-full z-40 flex-col py-8 bg-[#091328] w-72 rounded-r-none shadow-[12px_0_32px_rgba(25,37,64,0.08)]">
         <div className="px-6 mb-10 flex items-center gap-3 group cursor-pointer">
           <img src="/logo.png" alt="BolChal Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg shadow-[#a3a6ff]/20 group-hover:rotate-[360deg] group-hover:scale-110 transition-all duration-700 ease-in-out" />
@@ -160,12 +226,22 @@ function DashboardPage() {
       {/* Main Content */}
       <main className="md:ml-72 min-h-screen pb-32">
         {/* TopAppBar */}
-        <header className="sticky top-0 z-30 flex justify-between items-center w-full px-6 h-16 bg-[#091328] border-none">
-          <div className="flex items-center gap-3">
-            <button className="md:hidden w-8 h-8 rounded-lg bg-[#192540] flex items-center justify-center" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              <span className="material-symbols-outlined text-[#a3a6ff] text-sm">menu</span>
+        <header className="sticky top-0 z-30 flex justify-between items-center w-full px-6 h-20 bg-[#060e20]/80 backdrop-blur-xl border-b border-[#40485d]/10">
+          <div className="flex items-center gap-4">
+            <button className="md:hidden w-10 h-10 rounded-xl bg-[#192540] flex items-center justify-center border border-[#40485d]/20" onClick={() => setMobileMenuOpen(true)}>
+              <span className="material-symbols-outlined text-[#a3a6ff]">menu</span>
             </button>
-            <h1 className="font-['Plus_Jakarta_Sans'] font-bold text-lg tracking-tight text-[#dee5ff]">{t.sidebar.explore}</h1>
+            <div>
+              <h1 className="font-['Plus_Jakarta_Sans'] font-bold text-xl tracking-tight text-[#dee5ff]">
+                {activeView === 'explore' ? t.sidebar.explore : activeView === 'rooms' ? 'Rooms' : activeView === 'my-rooms' ? 'My Rooms' : 'Settings'}
+              </h1>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+             <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-[#141f38] rounded-full border border-[#40485d]/20">
+                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#a3aac4]">Online</span>
+             </div>
           </div>
         </header>
 
@@ -546,11 +622,31 @@ function DashboardPage() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-px left-0 w-full z-50 flex justify-around items-end px-4 pb-6 bg-[#060e20]/80 backdrop-blur-xl shadow-[0_-8px_24px_rgba(0,0,0,0.5)] rounded-t-[2.5rem]">
-        <Link className="flex flex-col items-center justify-center bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-white rounded-full p-3 mb-2 scale-110 shadow-lg shadow-indigo-500/20 active:scale-90 duration-200" to="/dashboard">
-          <span className="material-symbols-outlined">forum</span>
-        </Link>
-        <button onClick={handleLogout} className="flex flex-col items-center justify-center text-[#a3aac4] p-3 hover:text-white transition-all active:scale-90 duration-200">
+      <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] z-50 flex justify-around items-center px-4 py-4 bg-[#091328]/90 backdrop-blur-xl shadow-2xl border border-[#40485d]/20 rounded-2xl">
+        <button 
+          onClick={() => setActiveView('explore')}
+          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${activeView === 'explore' ? 'bg-[#a3a6ff] text-[#0f00a4]' : 'text-[#a3aac4]'}`}
+        >
+          <span className="material-symbols-outlined">explore</span>
+        </button>
+        <button 
+          onClick={() => setActiveView('rooms')}
+          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${activeView === 'rooms' ? 'bg-[#a3a6ff] text-[#0f00a4]' : 'text-[#a3aac4]'}`}
+        >
+          <span className="material-symbols-outlined">meeting_room</span>
+        </button>
+        <div className="relative -top-8">
+           <Link to="/create-room" className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-white flex items-center justify-center shadow-xl shadow-indigo-500/40 active:scale-90 duration-200">
+             <span className="material-symbols-outlined text-2xl">add</span>
+           </Link>
+        </div>
+        <button 
+          onClick={() => setActiveView('settings')}
+          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${activeView === 'settings' ? 'bg-[#a3a6ff] text-[#0f00a4]' : 'text-[#a3aac4]'}`}
+        >
+          <span className="material-symbols-outlined">settings</span>
+        </button>
+        <button onClick={handleLogout} className="flex flex-col items-center justify-center text-[#ff7b7b] p-2 hover:bg-red-500/10 rounded-xl transition-all">
           <span className="material-symbols-outlined">logout</span>
         </button>
       </nav>

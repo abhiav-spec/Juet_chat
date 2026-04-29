@@ -79,8 +79,8 @@ function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#060e20] text-[#dee5ff] [font-family:_'Inter',sans-serif]">
-      <Link to="/" className="fixed top-8 left-8 z-[100] flex items-center gap-2 text-[#a3aac4] hover:text-[#a3a6ff] transition-all group px-4 py-2 rounded-full border border-transparent hover:border-[#a3a6ff]/20 bg-transparent hover:bg-[#141f38]/40 backdrop-blur-sm">
+    <div className="min-h-screen overflow-x-hidden bg-[#060e20] text-[#dee5ff] [font-family:_'Inter',sans-serif] relative">
+      <Link to="/" className="absolute top-6 left-6 md:top-8 md:left-8 z-[100] flex items-center gap-2 text-[#a3aac4] hover:text-[#a3a6ff] transition-all group px-4 py-2 rounded-full border border-transparent hover:border-[#a3a6ff]/20 bg-[#141f38]/40 md:bg-transparent md:hover:bg-[#141f38]/40 backdrop-blur-sm">
         <span className="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
         <span className="text-xs font-bold uppercase tracking-widest px-1">{t.backHome}</span>
       </Link>
@@ -138,7 +138,7 @@ function SignupPage() {
               </p>
             </header>
 
-            <div className="rounded-2xl p-8 md:p-12 shadow-[0px_12px_32px_rgba(25,37,64,0.08)] bg-[rgba(31,43,73,0.6)] backdrop-blur-md border border-[#40485d]/20 h-[calc(100vh-250px)] overflow-y-auto no-scrollbar">
+            <div className="rounded-2xl p-6 md:p-12 shadow-[0px_12px_32px_rgba(25,37,64,0.08)] bg-[rgba(31,43,73,0.6)] backdrop-blur-md border border-[#40485d]/20 h-auto max-h-[70vh] md:max-h-none overflow-y-auto no-scrollbar">
               <form className="space-y-6" onSubmit={handleSignup}>
                 <div className="space-y-2">
                   <label className="ml-4 block text-sm font-semibold text-[#a3aac4]" htmlFor="username">

@@ -25,6 +25,7 @@ function LandingPage() {
   }, [])
 
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const t = translations[language] || translations['en']
 
@@ -39,8 +40,8 @@ function LandingPage() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#060e20] text-[#dee5ff] [font-family:_'Inter',sans-serif]">
       <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
-        isScrolled 
-          ? 'py-4 bg-[rgba(6,14,32,0.8)] backdrop-blur-xl border-b border-[#40485d]/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)]' 
+        isScrolled || isMenuOpen
+          ? 'py-4 bg-[rgba(6,14,32,0.95)] backdrop-blur-xl border-b border-[#40485d]/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)]' 
           : 'py-8 bg-transparent border-b border-transparent'
       }`}>
         <div className="mx-auto max-w-7xl px-6 flex items-center justify-between transition-all duration-500">
@@ -51,15 +52,16 @@ function LandingPage() {
             </span>
           </div>
 
-          <div className="hidden md:flex items-center gap-10 text-[11px] uppercase font-bold tracking-[0.2em] text-[#a3aac4]">
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-10 text-[11px] uppercase font-bold tracking-[0.2em] text-[#a3aac4]">
             <a href="#hero" className="hover:text-[#dee5ff] transition-colors">{t.nav.home}</a>
             <a href="#experience" className="hover:text-[#dee5ff] transition-colors">{t.nav.experience}</a>
             <a href="#popular-rooms" className="hover:text-[#dee5ff] transition-colors">{t.nav.communities}</a>
             <Link to="/support" className="hover:text-[#dee5ff] transition-colors">{t.nav.support}</Link>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="relative group">
+          <div className="flex items-center gap-2 md:gap-4">
+            <div className="relative group hidden sm:block">
               <button className="flex items-center gap-1 text-[11px] uppercase font-bold tracking-[0.2em] text-[#a3aac4] hover:text-[#dee5ff] transition-colors px-2 py-1 border border-transparent hover:border-[#40485d]/40 rounded-lg">
                 <span className="material-symbols-outlined text-[16px]">language</span>
                 {language === 'en' ? 'EN' : 'HI'}
@@ -84,9 +86,50 @@ function LandingPage() {
             <Link to="/login" className="hidden sm:block text-[11px] uppercase font-bold tracking-[0.2em] text-[#a3aac4] hover:text-[#dee5ff] transition-colors px-4">
               {t.nav.login}
             </Link>
-            <Link to="/signup" className="px-6 py-2.5 bg-[#a3a6ff] text-[#0f00a4] rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-[1.05] active:scale-95 transition-all shadow-lg shadow-[#a3a6ff]/10">
+            <Link to="/signup" className="px-5 py-2.5 bg-[#a3a6ff] text-[#0f00a4] rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-[1.05] active:scale-95 transition-all shadow-lg shadow-[#a3a6ff]/10">
               {t.nav.join}
             </Link>
+
+            {/* Mobile Menu Button */}
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="lg:hidden p-2 text-[#a3aac4] hover:text-white transition-colors"
+            >
+              <span className="material-symbols-outlined text-[28px]">
+                {isMenuOpen ? 'close' : 'menu'}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu Overlay */}
+        <div className={`lg:hidden fixed inset-x-0 top-[72px] bg-[#091328] border-b border-[#40485d]/20 transition-all duration-500 overflow-hidden ${isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="flex flex-col p-6 gap-6">
+            <div className="flex flex-col gap-4 text-sm font-bold uppercase tracking-[0.1em] text-[#a3aac4]">
+              <a href="#hero" onClick={() => setIsMenuOpen(false)} className="hover:text-[#a3a6ff] py-2 border-b border-[#40485d]/10 transition-colors">{t.nav.home}</a>
+              <a href="#experience" onClick={() => setIsMenuOpen(false)} className="hover:text-[#a3a6ff] py-2 border-b border-[#40485d]/10 transition-colors">{t.nav.experience}</a>
+              <a href="#popular-rooms" onClick={() => setIsMenuOpen(false)} className="hover:text-[#a3a6ff] py-2 border-b border-[#40485d]/10 transition-colors">{t.nav.communities}</a>
+              <Link to="/support" onClick={() => setIsMenuOpen(false)} className="hover:text-[#a3a6ff] py-2 border-b border-[#40485d]/10 transition-colors">{t.nav.support}</Link>
+              <Link to="/login" onClick={() => setIsMenuOpen(false)} className="sm:hidden hover:text-[#a3a6ff] py-2 border-b border-[#40485d]/10 transition-colors">{t.nav.login}</Link>
+            </div>
+            
+            <div className="flex items-center justify-between sm:hidden pt-2">
+              <span className="text-[11px] uppercase font-bold tracking-widest text-[#6d758c]">{language === 'en' ? 'Select Language' : 'भाषा चुनें'}</span>
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => { setLanguage('en'); setIsMenuOpen(false); }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold ${language === 'en' ? 'bg-[#a3a6ff] text-[#0f00a4]' : 'bg-[#141f38] text-[#a3aac4]'}`}
+                >
+                  EN
+                </button>
+                <button 
+                  onClick={() => { setLanguage('hi'); setIsMenuOpen(false); }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold ${language === 'hi' ? 'bg-[#a3a6ff] text-[#0f00a4]' : 'bg-[#141f38] text-[#a3aac4]'}`}
+                >
+                  HI
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </nav>
@@ -149,8 +192,8 @@ function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
-            <div className="group relative flex min-h-[400px] flex-col justify-between overflow-hidden rounded-2xl bg-[#091328] p-8 md:col-span-8">
-              <div className="absolute right-0 top-0 h-full w-1/2 opacity-30 transition-opacity group-hover:opacity-50">
+            <div className="group relative flex min-h-[400px] flex-col justify-between overflow-hidden rounded-2xl bg-[#091328] p-6 md:p-8 md:col-span-8">
+              <div className="absolute right-0 top-0 h-full w-full md:w-1/2 opacity-10 md:opacity-30 transition-opacity group-hover:opacity-50">
                 <img
                   className="h-full w-full object-cover"
                   alt="minimalist dark abstract 3D shapes with soft blue glow and architectural shadows"
@@ -158,12 +201,12 @@ function LandingPage() {
                 />
               </div>
               <div className="relative z-10">
-                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(31,43,73,0.6)] backdrop-blur-md">
-                  <span className="material-symbols-outlined text-[#a3a6ff]">
+                <div className="mb-6 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-2xl bg-[rgba(31,43,73,0.6)] backdrop-blur-md">
+                  <span className="material-symbols-outlined text-[#a3a6ff] text-xl md:text-2xl">
                     auto_awesome
                   </span>
                 </div>
-                <h3 className="mb-4 text-3xl font-bold [font-family:_'Plus_Jakarta_Sans',sans-serif]">
+                <h3 className="mb-4 text-2xl md:text-3xl font-bold [font-family:_'Plus_Jakarta_Sans',sans-serif]">
                   {t.experience.feat1Title}
                 </h3>
                 <p className="max-w-md leading-relaxed text-[#a3aac4] [font-family:_'Inter',sans-serif]">
@@ -180,17 +223,17 @@ function LandingPage() {
               </div>
             </div>
 
-            <div className="flex min-h-[400px] flex-col justify-between rounded-2xl bg-[#141f38] p-8 md:col-span-4">
+            <div className="flex min-h-[400px] flex-col justify-between rounded-2xl bg-[#141f38] p-6 md:p-8 md:col-span-4">
               <div>
-                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(31,43,73,0.6)] backdrop-blur-md">
-                  <span className="material-symbols-outlined text-[#a3a6ff]">
+                <div className="mb-6 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-2xl bg-[rgba(31,43,73,0.6)] backdrop-blur-md">
+                  <span className="material-symbols-outlined text-[#a3a6ff] text-xl md:text-2xl">
                     verified_user
                   </span>
                 </div>
-                <h3 className="mb-4 text-2xl font-bold [font-family:_'Plus_Jakarta_Sans',sans-serif]">
+                <h3 className="mb-4 text-xl md:text-2xl font-bold [font-family:_'Plus_Jakarta_Sans',sans-serif]">
                   {t.experience.feat2Title}
                 </h3>
-                <p className="leading-relaxed text-[#a3aac4] [font-family:_'Inter',sans-serif]">
+                <p className="text-sm md:text-base leading-relaxed text-[#a3aac4] [font-family:_'Inter',sans-serif]">
                   {t.experience.feat2Desc}
                 </p>
               </div>
@@ -204,7 +247,7 @@ function LandingPage() {
               </div>
             </div>
 
-            <div className="relative flex min-h-[350px] flex-col justify-center overflow-hidden rounded-2xl bg-[#0f1930] p-8 text-center md:col-span-5">
+            <div className="relative flex min-h-[350px] flex-col justify-center overflow-hidden rounded-2xl bg-[#0f1930] p-6 md:p-8 text-center md:col-span-5">
               <div className="absolute inset-0 opacity-10">
                 <img
                   className="h-full w-full object-cover"
@@ -213,18 +256,18 @@ function LandingPage() {
                 />
               </div>
               <div className="relative z-10 flex flex-col items-center">
-                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-[#a3a6ff] to-[#6063ee] shadow-lg shadow-[#a3a6ff]/20">
+                <div className="mb-6 flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-full bg-gradient-to-r from-[#a3a6ff] to-[#6063ee] shadow-lg shadow-[#a3a6ff]/20">
                   <span
-                    className="material-symbols-outlined text-3xl text-[#0f00a4]"
+                    className="material-symbols-outlined text-2xl md:text-3xl text-[#0f00a4]"
                     style={{ fontVariationSettings: "'FILL' 1" }}
                   >
                     bolt
                   </span>
                 </div>
-                <h3 className="mb-4 text-2xl font-bold [font-family:_'Plus_Jakarta_Sans',sans-serif]">
+                <h3 className="mb-4 text-xl md:text-2xl font-bold [font-family:_'Plus_Jakarta_Sans',sans-serif]">
                   {t.experience.feat3Title}
                 </h3>
-                <p className="mx-auto max-w-xs text-[#a3aac4] [font-family:_'Inter',sans-serif]">
+                <p className="mx-auto max-w-xs text-sm md:text-base text-[#a3aac4] [font-family:_'Inter',sans-serif]">
                   {t.experience.feat3Desc}
                 </p>
               </div>
@@ -255,10 +298,10 @@ function LandingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {featuredRooms.map((room) => (
-                <div key={room._id} className="relative group overflow-hidden bg-gradient-to-b from-[#091328] to-[#060e20] p-8 rounded-2xl border border-[#40485d]/10 hover:border-[#a3a6ff]/30 transition-all duration-300">
+                <div key={room._id} className="relative group overflow-hidden bg-gradient-to-b from-[#091328] to-[#060e20] p-6 md:p-8 rounded-2xl border border-[#40485d]/10 hover:border-[#a3a6ff]/30 transition-all duration-300">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-[#141f38] flex items-center justify-center text-[#a3a6ff]">
-                      <span className="material-symbols-outlined text-2xl">rocket_launch</span>
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#141f38] flex items-center justify-center text-[#a3a6ff]">
+                      <span className="material-symbols-outlined text-xl md:text-2xl">rocket_launch</span>
                     </div>
                     <div>
                       <h4 className="font-bold text-[#dee5ff] group-hover:text-[#a3a6ff] transition-colors">{room.name}</h4>
@@ -278,17 +321,17 @@ function LandingPage() {
         )}
 
         <section className="px-6 py-24">
-          <div className="relative mx-auto max-w-4xl overflow-hidden rounded-2xl border border-[#40485d]/10 bg-[rgba(31,43,73,0.6)] p-12 text-center backdrop-blur-md">
+          <div className="relative mx-auto max-w-4xl overflow-hidden rounded-2xl border border-[#40485d]/10 bg-[rgba(31,43,73,0.6)] p-8 md:p-12 text-center backdrop-blur-md">
             <div className="absolute left-0 top-0 h-32 w-32 bg-[#a3a6ff]/20 blur-[100px]" />
             <div className="absolute bottom-0 right-0 h-32 w-32 bg-[#a28efc]/20 blur-[100px]" />
-            <h2 className="mb-8 text-3xl font-bold md:text-5xl [font-family:_'Plus_Jakarta_Sans',sans-serif]">
+            <h2 className="mb-6 md:mb-8 text-2xl md:text-5xl font-bold [font-family:_'Plus_Jakarta_Sans',sans-serif]">
               {t.cta.title}
             </h2>
-            <p className="mx-auto mb-10 max-w-xl text-lg leading-relaxed text-[#a3aac4] [font-family:_'Inter',sans-serif]">
+            <p className="mx-auto mb-10 max-w-xl text-base md:text-lg leading-relaxed text-[#a3aac4] [font-family:_'Inter',sans-serif]">
               {t.cta.desc}
             </p>
             <Link
-              className="rounded-full bg-gradient-to-r from-[#a3a6ff] to-[#6063ee] px-12 py-5 text-xl font-bold text-[#0f00a4] transition-transform active:scale-95"
+              className="inline-block rounded-full bg-gradient-to-r from-[#a3a6ff] to-[#6063ee] px-8 md:px-12 py-4 md:py-5 text-lg md:text-xl font-bold text-[#0f00a4] transition-transform active:scale-95"
               to="/login"
             >
               {t.cta.enter}
