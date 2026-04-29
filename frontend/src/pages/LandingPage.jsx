@@ -50,7 +50,7 @@ function LandingPage() {
       if (index >= fullText.length) {
         clearInterval(interval)
       }
-    }, 40)
+    }, 80)
     
     return () => clearInterval(interval)
   }, [language, t.hero.subtitle])
