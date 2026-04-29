@@ -89,7 +89,13 @@ function DashboardPage() {
     <div className="min-h-screen bg-[#060e20] text-[#dee5ff]">
       {/* Sidebar */}
       <aside className="hidden md:flex fixed left-0 top-0 h-full z-40 flex-col py-8 bg-[#091328] w-72 rounded-r-none shadow-[12px_0_32px_rgba(25,37,64,0.08)]">
-        <div className="px-6 mb-8 flex items-center gap-3">
+        <div className="px-6 mb-10 flex items-center gap-3 group cursor-pointer">
+          <img src="/logo.png" alt="BolChal Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg shadow-[#a3a6ff]/20 group-hover:rotate-[360deg] group-hover:scale-110 transition-all duration-700 ease-in-out" />
+          <span className="font-black italic text-[#a3a6ff] tracking-tighter text-2xl [font-family:_'Plus_Jakarta_Sans',sans-serif] group-hover:text-white transition-colors duration-300">
+            BolChal.
+          </span>
+        </div>
+        <div className="px-6 mb-8 flex items-center gap-3 border-t border-[#40485d]/20 pt-6">
           <div className="w-10 h-10 rounded-full bg-[#192540] flex items-center justify-center border border-[#40485d]/20 text-[#a3a6ff] font-bold">
             {currentUser?.username?.substring(0, 2).toUpperCase() || '??'}
           </div>
