@@ -90,7 +90,7 @@ function SignupPage() {
             <img
               alt="Cinematic Background"
               className="w-full h-full object-cover opacity-30 mix-blend-luminosity"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHmD8zQ0ZkX35g8T0hR-tQh4J7eE9-i1Q9u_KkSvw0vBvPz5ZlQ33fR54uI7p20PzV9zF5cWv3rDqPjO9v_e0M7Z8_vR5xY6gK9K3H7HjO0l8zF6B9zN6Z0yT4xVzF8wQ7vD6sB6yT4h_M7v_P6Z_9Z6Z_0vPzBw6hP_rQzX7_T9P0yI5P2tMvB0H_G7uR0qU9s"
+              src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=2070"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-[#000000] via-[#060e20]/80 to-[#060e20]" />
           </div>
@@ -127,6 +127,7 @@ function SignupPage() {
         <section className="col-span-1 flex items-center justify-center bg-[#060e20] p-6 lg:col-span-5 lg:p-12">
           <div className="w-full max-w-md">
             <header className="mb-10 text-center lg:text-left">
+              <img src="/logo.png" alt="BolChal Logo" className="w-16 h-16 rounded-2xl object-cover shadow-xl shadow-[#a3a6ff]/20 mb-8 mx-auto lg:ml-0" />
               <h1 className="font-extrabold text-4xl tracking-tight italic text-[#a3a6ff] mb-2 [font-family:_'Plus_Jakarta_Sans',sans-serif]">
                 {t.bolChal}
               </h1>

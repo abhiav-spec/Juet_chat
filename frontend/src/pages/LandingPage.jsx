@@ -196,8 +196,8 @@ function LandingPage() {
               <div className="absolute right-0 top-0 h-full w-full md:w-1/2 opacity-10 md:opacity-30 transition-opacity group-hover:opacity-50">
                 <img
                   className="h-full w-full object-cover"
-                  alt="minimalist dark abstract 3D shapes with soft blue glow and architectural shadows"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1AM22-1mnqatumYnbjcoZuSi-JGYFrzxuUcYbQVyVGVk1DfeaJTMUcVlQ8So5RAVLW6V_YzpMq5z_q86G08tW-djpfMOYGUbyQYfqLZFHDthK6rOdhv8DRT500Dw-n852nWguhzzxjF5Xv7kJHCqhU3ydOzjG9YI4ztz5ulGsxPI8tG3eaW5-gzfKKJOFoEmychOa5MGFkXHEWWaAk9nmwm728K6cmXyNvf2qJNIsbJfrttQDFUl0eUxOr7KZtcmLX0vOw4dl-vI"
+                  alt="minimalist dark abstract 3D shapes with soft blue glow"
+                  src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=2064"
                 />
               </div>
               <div className="relative z-10">
