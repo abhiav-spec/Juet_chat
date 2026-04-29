@@ -2,6 +2,16 @@ import Conversation from '../../models/Conversation.js';
 import DirectMessage from '../../models/DirectMessage.js';
 import { getUserContext, getUserSockets } from '../state/users.js';
 import { WS_SERVER_EVENTS } from '../../utils/constants.js';
+import { consumeRateLimit } from '../../utils/rateLimiter.js';
+
+const DIRECT_MESSAGE_RATE_LIMIT = {
+    windowMs: 60 * 1000,
+    max: 30,
+};
+
+const sendError = (ws, message, extra = {}) => {
+    ws.send(JSON.stringify({ type: WS_SERVER_EVENTS.ERROR, message, ...extra }));
+};
 
 /**
  * Handle incoming direct messages.
@@ -18,7 +28,15 @@ const handleDirectMessage = async (ws, payload) => {
     const { conversationId, message } = payload;
 
     if (!conversationId || !message || typeof message !== 'string') {
-        ws.send(JSON.stringify({ type: WS_SERVER_EVENTS.ERROR, message: 'Invalid payload' }));
+        sendError(ws, 'Invalid payload');
+        return;
+    }
+
+    const rateLimit = consumeRateLimit(`ws:direct-message:${userId}`, DIRECT_MESSAGE_RATE_LIMIT);
+    if (!rateLimit.allowed) {
+        sendError(ws, 'You are sending direct messages too quickly. Please slow down.', {
+            retryAfter: rateLimit.retryAfter,
+        });
         return;
     }
 
@@ -26,12 +44,12 @@ const handleDirectMessage = async (ws, payload) => {
         // Verify conversation exists and user is a participant
         const conversation = await Conversation.findById(conversationId);
         if (!conversation) {
-            ws.send(JSON.stringify({ type: WS_SERVER_EVENTS.ERROR, message: 'Conversation not found' }));
+            sendError(ws, 'Conversation not found');
             return;
         }
 
         if (!conversation.participants.includes(userId)) {
-            ws.send(JSON.stringify({ type: WS_SERVER_EVENTS.ERROR, message: 'Not a participant in this conversation' }));
+            sendError(ws, 'Not a participant in this conversation');
             return;
         }
 
@@ -80,7 +98,7 @@ const handleDirectMessage = async (ws, payload) => {
 
     } catch (error) {
         console.error(`[WS] Error sending direct message from user ${userId}:`, error.message);
-        ws.send(JSON.stringify({ type: WS_SERVER_EVENTS.ERROR, message: 'Failed to send direct message' }));
+        sendError(ws, 'Failed to send direct message');
     }
 };
 

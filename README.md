@@ -71,6 +71,7 @@ For interview revision, explain the project in one line like this:
 - Session records store hashed refresh tokens for logout and logout-all flows.
 - Protected backend routes validate JWT through auth middleware.
 - Protected frontend routes redirect unauthenticated users to login.
+- Login and OTP routes use in-memory rate limiting to reduce brute-force and spam attempts.
 
 ### Chat Rooms
 
@@ -92,6 +93,7 @@ For interview revision, explain the project in one line like this:
 - Messages are stored in MongoDB for persistence.
 - Message deletion is broadcast in real time.
 - Online/offline presence is tracked.
+- Room message sending is rate-limited per user to reduce spam.
 
 ### Direct Messages
 
@@ -100,6 +102,7 @@ For interview revision, explain the project in one line like this:
 - Conversation history is loaded from the REST API.
 - New direct messages are sent over WebSocket.
 - Conversations and direct messages are stored in MongoDB.
+- Direct message sending is rate-limited per user.
 
 ## Architecture
 
@@ -738,6 +741,10 @@ The frontend opens a WebSocket connection with the access token. The backend aut
 
 The frontend checks for `accessToken` in localStorage. If missing, protected pages redirect to `/login`. The backend separately verifies tokens for protected API routes, so security does not depend only on frontend checks.
 
+### How Rate Limiting Works
+
+The backend uses a lightweight in-memory fixed-window rate limiter. Login attempts are limited per IP and per IP plus email, OTP send requests are limited per IP and per IP plus email, OTP verification attempts are limited per IP plus email, and WebSocket room/direct messages are limited per authenticated user. When an HTTP limit is exceeded, the API returns `429` with `Retry-After`; when a WebSocket message limit is exceeded, the server sends an `error` event with `retryAfter`.
+
 ### Important Files To Remember
 
 | File | Why it matters |
@@ -780,12 +787,12 @@ The backend validates the room and passkey if needed, adds the user to room stat
 The room creator is admin. Admin can delete the room, update details, change private room code, remove members, and block members.
 
 **Q: What would you improve next?**  
-Use bcrypt instead of SHA-256 for password hashing, add rate limiting, improve token refresh on the frontend, add tests, add pagination, and deploy with production-safe environment settings.
+Use bcrypt instead of SHA-256 for password hashing, improve token refresh on the frontend, add tests, add pagination, move rate limiting to Redis for multi-server deployments, and deploy with production-safe environment settings.
 
 ## Possible Improvements
 
 - Use `bcrypt` or `argon2` for stronger password hashing.
-- Add rate limiting for login, OTP, and message sending.
+- Move rate limiting to Redis for multi-server deployments.
 - Add automated tests for auth, rooms, and WebSocket events.
 - Add pagination for rooms, users, and messages.
 - Add typing indicators and read receipts.

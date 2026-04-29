@@ -2,10 +2,16 @@ import Message from '../../models/message.js';
 import { getRoomClients } from '../state/rooms.js';
 import { getUserContext } from '../state/users.js';
 import { WS_SERVER_EVENTS } from '../../utils/constants.js';
+import { consumeRateLimit } from '../../utils/rateLimiter.js';
+
+const MESSAGE_RATE_LIMIT = {
+    windowMs: 60 * 1000,
+    max: 30,
+};
 
 /** Send a structured error event to a single client. */
-const sendError = (ws, message) => {
-    ws.send(JSON.stringify({ type: WS_SERVER_EVENTS.ERROR, message }));
+const sendError = (ws, message, extra = {}) => {
+    ws.send(JSON.stringify({ type: WS_SERVER_EVENTS.ERROR, message, ...extra }));
 };
 
 /**
@@ -36,6 +42,13 @@ const handleSendMessage = async (ws, payload) => {
         // ─── SENDER IDENTITY ALWAYS COMES FROM SERVER (never trust client) ─────
         const senderId = ws.user.id;
         const roomId = ctx.currentRoomId;
+
+        const rateLimit = consumeRateLimit(`ws:room-message:${senderId}`, MESSAGE_RATE_LIMIT);
+        if (!rateLimit.allowed) {
+            return sendError(ws, 'You are sending messages too quickly. Please slow down.', {
+                retryAfter: rateLimit.retryAfter,
+            });
+        }
 
         // ─── 1. PERSIST TO DATABASE (Wait for confirmation) ─────────────────
         const message = await Message.create({
