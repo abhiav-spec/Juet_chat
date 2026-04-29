@@ -444,16 +444,58 @@ function DashboardPage() {
                           {room.description || "You haven't set a description for this room yet."}
                         </p>
                         <div className="flex items-center justify-between pt-4 border-t border-[#40485d]/10">
-                          <span className="text-[10px] text-[#a3aac4] flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[14px]">public</span>
-                            {room.type.toUpperCase()}
-                          </span>
-                          <Link 
-                            to={`/chat/${room._id}`}
-                            className="bg-[#a3a6ff] text-[#0f00a4] px-4 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:scale-105 transition-transform"
-                          >
-                            Manage
-                          </Link>
+                          <div className="flex items-center gap-3">
+                            <span className="text-[10px] text-[#a3aac4] flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[14px]">public</span>
+                              {room.type.toUpperCase()}
+                            </span>
+                            {room.type === 'private' && room.passkey && (
+                              <div className="flex items-center gap-1 bg-[#141f38] px-2 py-0.5 rounded border border-[#a3a6ff]/20">
+                                <span className="material-symbols-outlined text-[10px] text-[#a3a6ff]">key</span>
+                                <span className="text-[10px] text-[#a3a6ff] font-mono">{room.passkey}</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button 
+                              onClick={() => {
+                                const newCode = window.prompt(language === 'hi' ? 'नया रूम कोड दर्ज करें:' : 'Enter new room code:', room.passkey);
+                                if (newCode && newCode !== room.passkey) {
+                                  apiService.updateRoomCode(room._id, newCode).then(() => {
+                                    setRooms(prev => prev.map(r => r._id === room._id ? { ...r, passkey: newCode } : r));
+                                    alert(language === 'hi' ? 'कोड अपडेट किया गया!' : 'Code updated!');
+                                  }).catch(err => alert(err.message));
+                                }
+                              }}
+                              className="p-2 hover:bg-white/10 rounded-lg text-[#a3aac4] hover:text-white transition-colors"
+                              title="Edit Code"
+                            >
+                              <span className="material-symbols-outlined text-sm">edit</span>
+                            </button>
+                            <button 
+                              onClick={async () => {
+                                if (window.confirm(language === 'hi' ? 'क्या आप इस रूम को हटाना चाहते हैं?' : 'Are you sure you want to delete this room?')) {
+                                  try {
+                                    await apiService.deleteRoom(room._id);
+                                    setRooms(prev => prev.filter(r => r._id !== room._id));
+                                    alert(language === 'hi' ? 'रूम सफलतापूर्वक हटा दिया गया!' : 'Room deleted successfully!');
+                                  } catch (err) {
+                                    alert(err.message);
+                                  }
+                                }
+                              }}
+                              className="p-2 hover:bg-red-500/10 rounded-lg text-[#a3aac4] hover:text-red-500 transition-colors"
+                              title="Delete Room"
+                            >
+                              <span className="material-symbols-outlined text-sm">delete</span>
+                            </button>
+                            <Link 
+                              to={`/chat/${room._id}`}
+                              className="bg-[#a3a6ff] text-[#0f00a4] px-4 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:scale-105 transition-transform"
+                            >
+                              {language === 'hi' ? 'प्रबंधित करें' : 'Manage'}
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     ))}
