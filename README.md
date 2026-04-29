@@ -517,28 +517,89 @@ JUET_chat/
 
 ### Backend Folder Explanation
 
-- `server.js`: Application entry point. Connects database, creates HTTP server, attaches WebSocket server, and starts listening.
-- `app.js`: Express app setup. Adds CORS, JSON parsing, cookies, logging, routes, and error handler.
-- `config/`: Environment and MongoDB configuration.
-- `controllers/`: Request handlers that contain API business logic.
-- `middleware/`: Shared Express middleware for authentication and errors.
-- `models/`: Mongoose schemas.
-- `routes/`: Express route declarations.
-- `services/`: Reusable service-level logic such as email and message operations.
-- `utils/`: Constants, JWT helpers, and OTP helpers.
-- `websocket/`: WebSocket authentication, event handlers, in-memory room/user state, and broadcast helpers.
+The backend follows a layered Express structure. In an interview, explain it like this: routes define the API URLs, middleware protects or prepares requests, controllers handle business logic, models talk to MongoDB, services hold reusable logic, and the WebSocket folder handles real-time communication.
+
+| Path | Purpose | Interview explanation |
+| --- | --- | --- |
+| `backend/package.json` | Backend dependencies and scripts | Defines commands like `npm start` and `npm run dev`, plus packages such as Express, Mongoose, JWT, Nodemailer, and `ws`. |
+| `backend/src/server.js` | Server entry point | First connects to MongoDB, then creates the HTTP server, attaches WebSocket support, and starts the app on `PORT`. |
+| `backend/src/app.js` | Express app configuration | Adds CORS, JSON parsing, cookie parsing, logging, API routes, health routes, and the centralized error handler. |
+| `backend/src/config/configure.js` | Environment configuration | Loads environment variables and exposes app-level config such as the server port. |
+| `backend/src/config/db.js` | Database connection | Connects the backend to MongoDB using Mongoose. |
+| `backend/src/routes/` | API route layer | Keeps URL definitions separate from business logic. Example: `/api/auth/login` is declared in route files and handled by controllers. |
+| `backend/src/controllers/` | Request handling layer | Contains the main API logic for auth, rooms, users, and direct messages. Controllers read request data, call models/services, and send responses. |
+| `backend/src/middleware/` | Shared request middleware | `auth.middleware.js` verifies JWT tokens for protected APIs, and `error.middleware.js` centralizes error responses. |
+| `backend/src/models/` | MongoDB schema layer | Defines Mongoose schemas for users, rooms, messages, sessions, OTPs, conversations, and direct messages. |
+| `backend/src/services/` | Reusable backend logic | Holds logic that can be reused by controllers or WebSocket handlers, such as email sending, message operations, room operations, and auth helpers. |
+| `backend/src/utils/` | Helper constants and utilities | Contains shared constants, JWT helpers, and OTP generation/email-template utilities. |
+| `backend/src/websocket/` | Real-time communication layer | Authenticates socket connections, handles join/message/delete/direct-message events, tracks online users, tracks room connections, and broadcasts events. |
+
+Important backend files:
+
+| File | What it does |
+| --- | --- |
+| `auth.controller.js` | Handles register, login, OTP verification, profile update, refresh token, logout, logout-all, and account delete. |
+| `room.controller.js` | Handles room creation, room listing, room details, member management, blocking, passkey update, room update, and room delete. |
+| `dm.controller.js` | Handles creating/reusing direct-message conversations and loading DM history. |
+| `user.controller.js` | Handles user listing and filters used by direct messages. |
+| `auth.middleware.js` | Protects API routes by validating the JWT access token and attaching user data to the request. |
+| `socket.server.js` | Creates the WebSocket server and routes incoming socket events to handlers. |
+| `wsAuth.js` | Verifies the JWT token before allowing a WebSocket connection. |
+| `websocket/state/users.js` | Tracks online users and lets the backend notify a specific connected user. |
+| `websocket/state/rooms.js` | Tracks room membership and active WebSocket connections. |
+| `websocket/utils/broadcast.js` | Sends real-time events to the correct room or user group. |
 
 ### Frontend Folder Explanation
 
-- `main.jsx`: React entry point.
-- `App.jsx`: Main router and protected route logic.
-- `pages/`: Full page components for auth, dashboard, rooms, DMs, and legal/support pages.
-- `services/api.service.js`: Central REST API wrapper that attaches JWT automatically.
-- `services/socket.service.js`: WebSocket manager class used by chat pages.
-- `hooks/useLanguage.js`: Language selection helper.
-- `locales/`: Text content for multilingual UI sections.
-- `assets/`: Images and branding assets.
-- `App.css` and `index.css`: Main styling files.
+The frontend is organized around pages and services. In an interview, explain it like this: pages render the UI, services communicate with the backend, routing decides which page is visible, and protected routes prevent unauthenticated users from opening private screens.
+
+| Path | Purpose | Interview explanation |
+| --- | --- | --- |
+| `frontend/package.json` | Frontend dependencies and scripts | Defines commands like `npm run dev`, `npm run build`, and packages such as React, Vite, and React Router. |
+| `frontend/vite.config.js` | Vite configuration | Configures the React/Vite development and build setup. |
+| `frontend/index.html` | HTML root | Contains the root element where React mounts the application. |
+| `frontend/src/main.jsx` | React entry point | Mounts the React app into the DOM. |
+| `frontend/src/App.jsx` | Routing and protected routes | Defines public and protected routes. It checks localStorage for `accessToken` before allowing dashboard, chat, room creation, and DM pages. |
+| `frontend/src/pages/` | Page components | Contains full screens such as landing, signup, login, dashboard, chat room, create room, direct messages, privacy, terms, and support. |
+| `frontend/src/services/api.service.js` | REST API service | Centralizes `fetch` calls, attaches `Authorization: Bearer <token>`, parses JSON, and exposes functions like `getRooms`, `login`, `getProfile`, and `getDirectMessages`. |
+| `frontend/src/services/socket.service.js` | WebSocket client service | Opens the socket connection with the JWT token, registers event handlers, sends room messages, deletes messages, joins rooms, and sends direct messages. |
+| `frontend/src/hooks/useLanguage.js` | Custom language hook | Helps the UI read and switch localized text. |
+| `frontend/src/locales/` | Localization text | Stores page text for auth, dashboard, landing, and legal sections. |
+| `frontend/src/assets/` | Static assets | Stores images and branding assets used by the UI. |
+| `frontend/src/App.css` | Main app styling | Contains most application-level layout and component styles. |
+| `frontend/src/index.css` | Global styling | Contains global CSS reset/base styles. |
+
+Important frontend pages:
+
+| File | What it does |
+| --- | --- |
+| `LandingPage.jsx` | Public first page that introduces the app and can show featured rooms. |
+| `SignupPage.jsx` | Registration UI for creating a new user. |
+| `VerifyEmailPage.jsx` | OTP verification UI after signup. |
+| `LoginPage.jsx` | Login UI that stores the access token after successful login. |
+| `DashboardPage.jsx` | Protected room dashboard where users can view rooms and navigate into chats. |
+| `CreateChatroomPage.jsx` | Protected page for creating public or private rooms. |
+| `ChatRoomPage.jsx` | Main room chat page that loads room data, connects WebSocket, joins a room, displays history, and sends messages. |
+| `DirectMessagePage.jsx` | Protected page for user discovery, conversations, and private messages. |
+| `TermsPage.jsx`, `PrivacyPage.jsx`, `SupportPage.jsx` | Public informational pages. |
+
+### How To Remember The Structure
+
+Use this mental model:
+
+```text
+backend/src/routes      -> What URL was called?
+backend/src/middleware  -> Is the request allowed?
+backend/src/controllers -> What should happen?
+backend/src/models      -> What data is stored or fetched?
+backend/src/websocket   -> What must happen instantly in real time?
+
+frontend/src/pages      -> What screen is shown?
+frontend/src/services   -> How does the UI talk to the backend?
+frontend/src/App.jsx    -> Which route opens which page?
+frontend/src/assets     -> What images are used?
+frontend/src/locales    -> What text appears in the UI?
+```
 
 ## Environment Variables
 
