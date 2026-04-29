@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { apiService } from '../services/api.service'
 import { socketService } from '../services/socket.service'
+import { useLanguage } from '../hooks/useLanguage'
+import { dashboardTranslations } from '../locales/dashboard'
 
 function ChatRoomPage() {
   const navigate = useNavigate()
@@ -15,8 +17,10 @@ function ChatRoomPage() {
   const [error, setError] = useState(null)
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
   const [passwordInput, setPasswordInput] = useState('')
-  const [isDeleting, setIsDeleting] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
+  
+  const { language } = useLanguage()
+  const t = dashboardTranslations[language] || dashboardTranslations['en']
   
   const currentUserId = apiService.getCurrentUserId()
   const messagesEndRef = useRef(null)
@@ -30,7 +34,7 @@ function ChatRoomPage() {
   }, [messages])
 
   const handleDeleteRoom = async (roomId, navigate) => {
-    if (!window.confirm('Are you sure you want to delete this room? This action cannot be undone.')) return;
+    if (!window.confirm(language === 'hi' ? 'क्या आप वाकई इस रूम को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।' : 'Are you sure you want to delete this room? This action cannot be undone.')) return;
 
     try {
         setIsDeleting(true)
@@ -38,7 +42,7 @@ function ChatRoomPage() {
         if (response.error) {
             alert(response.error);
         } else {
-            alert('Room deleted successfully.');
+            alert(t.profile.deleteSuccess);
             navigate('/dashboard');
         }
     } catch (err) {
@@ -50,7 +54,7 @@ function ChatRoomPage() {
   }
 
   const handleLeaveRoom = async () => {
-    if (!window.confirm('Are you sure you want to leave this chat room? You will need to enter the passkey again to re-join.')) return;
+    if (!window.confirm(language === 'hi' ? 'क्या आप वाकई इस चैट रूम को छोड़ना चाहते हैं? दोबारा शामिल होने के लिए आपको फिर से पासकी दर्ज करनी होगी।' : 'Are you sure you want to leave this chat room? You will need to enter the passkey again to re-join.')) return;
 
     try {
         setIsDeleting(true)
@@ -70,7 +74,7 @@ function ChatRoomPage() {
   }
 
   const handleDeleteMessage = (messageId) => {
-    if (window.confirm('Delete this message?')) {
+    if (window.confirm(language === 'hi' ? 'इस संदेश को हटाएं?' : 'Delete this message?')) {
         socketService.deleteMessage(messageId);
     }
   }
@@ -148,7 +152,7 @@ function ChatRoomPage() {
           setMessages((prev) => 
             prev.map((msg) => 
               msg.id === payload.messageId 
-                ? { ...msg, text: 'This message was deleted', isDeleted: true } 
+                ? { ...msg, text: language === 'hi' ? 'यह संदेश हटा दिया गया था' : 'This message was deleted', isDeleted: true } 
                 : msg
             )
           );
@@ -209,7 +213,7 @@ function ChatRoomPage() {
       <div className="min-h-screen bg-[#060e20] flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-[#a3a6ff] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-[#a3aac4] text-sm font-medium uppercase tracking-widest">Connecting to BolChal...</p>
+          <p className="text-[#a3aac4] text-sm font-medium uppercase tracking-widest">{language === 'hi' ? 'बोलचाल से जुड़ रहे हैं...' : 'Connecting to BolChal...'}</p>
         </div>
       </div>
     )
@@ -224,14 +228,14 @@ function ChatRoomPage() {
             <div className="w-16 h-16 bg-[#192540] rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <span className="material-symbols-outlined text-[#a3a6ff] text-3xl">lock</span>
             </div>
-            <h3 className="text-xl font-bold text-center mb-2">Private Room</h3>
-            <p className="text-[#a3aac4] text-sm text-center mb-8">This space requires an access code to enter.</p>
+            <h3 className="text-xl font-bold text-center mb-2">{language === 'hi' ? 'निजी रूम' : 'Private Room'}</h3>
+            <p className="text-[#a3aac4] text-sm text-center mb-8">{language === 'hi' ? 'इस स्थान में प्रवेश करने के लिए एक्सेस कोड की आवश्यकता है।' : 'This space requires an access code to enter.'}</p>
             
             <form onSubmit={handleJoinWithPassword} className="space-y-4">
               <input 
                 type="password"
                 className="w-full bg-[#060e20] border border-[#40485d]/20 rounded-xl py-4 px-6 text-center text-[#dee5ff] focus:ring-2 focus:ring-[#a3a6ff]/40 outline-none transition-all font-mono tracking-widest"
-                placeholder="ENTER CODE"
+                placeholder={language === 'hi' ? 'कोड दर्ज करें' : 'ENTER CODE'}
                 value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
                 autoFocus
@@ -241,14 +245,14 @@ function ChatRoomPage() {
                 type="submit"
                 className="w-full bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] font-bold py-4 rounded-xl active:scale-95 transition-transform"
               >
-                ACCESS ROOM
+                {language === 'hi' ? 'प्रवेश करें' : 'ACCESS ROOM'}
               </button>
               <button 
                 type="button"
                 onClick={() => navigate('/dashboard')}
                 className="w-full text-[#a3aac4] text-xs font-bold uppercase tracking-widest pt-2"
               >
-                Back to Dashboard
+                {t.backHome || (language === 'hi' ? 'डैशबोर्ड पर वापस जाएं' : 'Back to Dashboard')}
               </button>
             </form>
           </div>
@@ -265,18 +269,18 @@ function ChatRoomPage() {
             <p className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm">{currentUser?.username || 'Loading...'}</p>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <p className="text-[#a3aac4] text-xs">Online</p>
+              <p className="text-[#a3aac4] text-xs">{t.chatroom.online}</p>
             </div>
           </div>
         </div>
         <nav className="flex-1 space-y-2 px-4">
           <button onClick={() => navigate('/dashboard')} className="w-full flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white transition-all hover:bg-[#141f38] font-['Plus_Jakarta_Sans'] font-medium text-sm">
             <span className="material-symbols-outlined">explore</span>
-            <span>Explore Rooms</span>
+            <span>{t.explore.allRooms}</span>
           </button>
           <button onClick={() => navigate('/dms')} className="w-full flex items-center gap-3 px-4 py-3 bg-[#141f38] text-white rounded-lg mx-2 font-['Plus_Jakarta_Sans'] font-medium text-sm transition-all">
             <span className="material-symbols-outlined">chat_bubble</span>
-            <span>Direct Messages</span>
+            <span>{t.sidebar.directMessages}</span>
           </button>
         </nav>
       </aside>
@@ -302,11 +306,11 @@ function ChatRoomPage() {
               </h1>
               <div className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <p className="text-[#a3aac4] text-[11px] font-medium uppercase tracking-wider">Live Connection</p>
+                <p className="text-[#a3aac4] text-[11px] font-medium uppercase tracking-wider">{language === 'hi' ? 'लाइव कनेक्शन' : 'Live Connection'}</p>
                 {roomInfo?.type === 'private' && roomInfo?.passkey && (
                     <div className="ml-4 flex items-center gap-1 bg-[#141f38] px-2 py-0.5 rounded border border-[#a3a6ff]/20">
                         <span className="material-symbols-outlined text-[10px] text-[#a3a6ff]">key</span>
-                        <span className="text-[10px] text-[#a3a6ff] font-mono tracking-tighter uppercase">Code: {roomInfo.passkey}</span>
+                        <span className="text-[10px] text-[#a3a6ff] font-mono tracking-tighter uppercase">{language === 'hi' ? 'कोड' : 'Code'}: {roomInfo.passkey}</span>
                     </div>
                 )}
               </div>
@@ -319,7 +323,7 @@ function ChatRoomPage() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-colors text-xs font-semibold"
                 >
                   <span className="material-symbols-outlined text-sm">delete</span>
-                  <span>Delete Room</span>
+                  <span>{t.chatroom.deleteRoom}</span>
                 </button>
              )}
              {roomInfo?.creator?._id !== currentUserId && roomInfo?.type === 'private' && (
@@ -328,7 +332,7 @@ function ChatRoomPage() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-500 hover:bg-orange-500/20 transition-colors text-xs font-semibold"
                 >
                   <span className="material-symbols-outlined text-sm">exit_to_app</span>
-                  <span>Leave Room</span>
+                  <span>{t.chatroom.leaveRoom}</span>
                 </button>
              )}
              <button onClick={() => navigate('/dashboard')} className="md:hidden p-2 text-[#a3aac4]">
@@ -355,7 +359,7 @@ function ChatRoomPage() {
                 </div>
               ))}
               <div className="text-center py-4 text-[#a3aac4] text-[10px] uppercase tracking-widest animate-pulse">
-                Fetching Previous Transmissions...
+                {t.chatroom.fetchingHistory}
               </div>
             </div>
           )}
@@ -364,7 +368,7 @@ function ChatRoomPage() {
           {messages.length === 0 && !isLoading && !isHistoryLoading && (
             <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
                 <span className="material-symbols-outlined text-6xl mb-4">chat_bubble_outline</span>
-                <p className="text-sm">Safe and encrypted conversation started.</p>
+                <p className="text-sm">{t.chatroom.noMessages}</p>
             </div>
           )}
 
@@ -400,7 +404,7 @@ function ChatRoomPage() {
                         <button 
                             onClick={() => handleDeleteMessage(message.id)}
                             className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-black/10 rounded transition-all"
-                            title="Delete message"
+                            title={t.chatroom.deleteMessage}
                         >
                             <span className="material-symbols-outlined text-[16px] leading-none">delete</span>
                         </button>
@@ -421,7 +425,7 @@ function ChatRoomPage() {
               <div className="flex-1 relative">
                 <input
                   className="w-full bg-[#192540] text-[#dee5ff] border-none focus:ring-1 focus:ring-[#a3a6ff]/40 rounded-full py-4 px-6 text-sm placeholder:text-[#a3aac4] transition-all outline-none"
-                  placeholder="Type a message..."
+                  placeholder={t.chatroom.inputPlaceholder}
                   type="text"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}

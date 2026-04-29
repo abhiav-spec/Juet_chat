@@ -2,20 +2,13 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { apiService } from '../services/api.service'
 import { translations } from '../locales/landing'
+import { useLanguage } from '../hooks/useLanguage'
 
 function LandingPage() {
   const [featuredRooms, setFeaturedRooms] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
-  const validLanguages = ['en', 'hi']
-  const [language, setLanguage] = useState(() => {
-    const saved = localStorage.getItem('language')
-    return validLanguages.includes(saved) ? saved : 'en'
-  })
-
-  useEffect(() => {
-    localStorage.setItem('language', language)
-  }, [language])
+  const { language, setLanguage } = useLanguage()
 
   useEffect(() => {
     async function loadFeatured() {

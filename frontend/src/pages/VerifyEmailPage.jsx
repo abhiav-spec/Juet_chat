@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../hooks/useLanguage'
+import { authTranslations } from '../locales/auth'
 
 function VerifyEmailPage() {
   const navigate = useNavigate()
@@ -13,6 +15,9 @@ function VerifyEmailPage() {
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const inputRefs = useRef([])
+
+  const { language } = useLanguage()
+  const t = authTranslations[language] || authTranslations['en']
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
@@ -160,9 +165,9 @@ function VerifyEmailPage() {
           <Link className="rounded-full p-2 transition-all hover:bg-slate-800/50 active:opacity-80" to="/signup">
             <span className="material-symbols-outlined text-indigo-500">arrow_back</span>
           </Link>
-          <h1 className="font-['Plus_Jakarta_Sans'] font-bold tracking-tight text-[#dee5ff]">Verification</h1>
+          <h1 className="font-['Plus_Jakarta_Sans'] font-bold tracking-tight text-[#dee5ff]">{t.verify.title}</h1>
         </div>
-        <div className="text-xl font-black tracking-tighter text-indigo-500">THE STREAM</div>
+        <div className="text-xl font-black tracking-tighter text-indigo-500 uppercase italic">BolChal</div>
       </header>
 
       <main className="cinematic-bg flex min-h-screen items-center justify-center px-6 pb-12 pt-20">
@@ -175,12 +180,12 @@ function VerifyEmailPage() {
               </span>
             </div>
             <h2 className="mb-4 text-4xl font-extrabold tracking-tight text-[#dee5ff] [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-              Verify Your Email
+              {t.verify.title}
             </h2>
             <p className="mx-auto max-w-xs leading-relaxed text-[#a3aac4]">
-              We&apos;ve sent a 6-digit code to your email address. Please enter it below to continue.
+              {t.verify.subtitle}
             </p>
-            <p className="mt-3 text-sm text-[#a3a6ff]">{email || 'No email selected yet'}</p>
+            <p className="mt-3 text-sm text-[#a3a6ff]">{email || '...'}</p>
           </div>
 
           <div className="glass-card relative overflow-hidden rounded-2xl border border-[#40485d]/10 p-8 shadow-2xl md:p-12">
@@ -191,7 +196,7 @@ function VerifyEmailPage() {
             <form className="relative z-10 space-y-10" onSubmit={submitVerification}>
               <div className="space-y-2">
                 <label className="ml-2 block text-xs uppercase tracking-[0.2em] text-[#a3aac4]" htmlFor="verify-email">
-                  Email
+                  {t.signup.emailLabel}
                 </label>
                 <input
                   id="verify-email"
@@ -227,7 +232,7 @@ function VerifyEmailPage() {
                 disabled={!isComplete || isSubmitting}
                 type="submit"
               >
-                {isSubmitting ? 'Verifying...' : 'Verify'}
+                {isSubmitting ? t.verify.loading : t.verify.button}
               </button>
 
               {errorMessage && (
@@ -252,7 +257,7 @@ function VerifyEmailPage() {
                   type="button"
                   disabled={resendCountdown > 0 || isResending}
                 >
-                  {isResending ? 'Resending...' : resendCountdown > 0 ? `Resend in ${resendCountdown}s` : 'Resend Code'}
+                  {isResending ? t.verify.loading : resendCountdown > 0 ? `${t.verify.resend} in ${resendCountdown}s` : t.verify.resend}
                 </button>
               </div>
 

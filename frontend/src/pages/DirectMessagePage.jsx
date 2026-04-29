@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/api.service';
 import { socketService } from '../services/socket.service';
+import { useLanguage } from '../hooks/useLanguage'
+import { dashboardTranslations } from '../locales/dashboard'
 
 function DirectMessagePage() {
   const navigate = useNavigate();
@@ -14,6 +16,9 @@ function DirectMessagePage() {
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const { language } = useLanguage()
+  const t = dashboardTranslations[language] || dashboardTranslations['en']
   
   // Filter states
   const [genderFilter, setGenderFilter] = useState('all');
@@ -173,7 +178,7 @@ function DirectMessagePage() {
       <aside className="w-80 border-r border-[#40485d]/20 bg-[#091328] flex flex-col shadow-2xl relative z-20">
         <div className="p-6 border-b border-[#40485d]/20">
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold font-['Plus_Jakarta_Sans'] text-white">Messages</h2>
+                <h2 className="text-xl font-bold font-['Plus_Jakarta_Sans'] text-white">{t.sidebar.directMessages}</h2>
                 <button 
                     onClick={() => setShowFilters(!showFilters)}
                     className={`p-2 rounded-lg transition-colors ${showFilters ? 'bg-[#a3a6ff]/20 text-[#a3a6ff]' : 'bg-[#141f38] text-[#a3aac4] hover:text-white'}`}
@@ -185,7 +190,7 @@ function DirectMessagePage() {
             <div className="relative mb-3">
                 <input 
                     type="text" 
-                    placeholder="Search users..." 
+                    placeholder={language === 'hi' ? 'उपयोगकर्ता खोजें...' : 'Search users...'} 
                     className="w-full bg-[#141f38] text-sm text-[#dee5ff] border border-transparent focus:border-[#a3a6ff]/40 focus:ring-1 focus:ring-[#a3a6ff]/40 rounded-xl py-3 px-4 pl-10 outline-none transition-all"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -197,24 +202,24 @@ function DirectMessagePage() {
             {showFilters && (
                 <div className="bg-[#141f38] rounded-xl p-3 space-y-3 border border-[#40485d]/30 mb-2 animate-in slide-in-from-top-2 duration-200">
                     <div>
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-[#a3aac4] mb-1 block pl-1">Gender</label>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-[#a3aac4] mb-1 block pl-1">{t.profile.gender}</label>
                         <select 
                             value={genderFilter}
                             onChange={(e) => setGenderFilter(e.target.value)}
                             className="w-full bg-[#091328] text-xs text-[#dee5ff] border border-[#40485d]/30 rounded-lg py-2 px-3 outline-none focus:border-[#a3a6ff]/50"
                         >
-                            <option value="all">All Genders</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
+                            <option value="all">{language === 'hi' ? 'सभी लिंग' : 'All Genders'}</option>
+                            <option value="male">{language === 'hi' ? 'पुरुष' : 'Male'}</option>
+                            <option value="female">{language === 'hi' ? 'महिला' : 'Female'}</option>
+                            <option value="other">{language === 'hi' ? 'अन्य' : 'Other'}</option>
                         </select>
                     </div>
                     <div>
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-[#a3aac4] mb-1 block pl-1">Location</label>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-[#a3aac4] mb-1 block pl-1">{t.profile.location}</label>
                         <div className="relative">
                             <input 
                                 type="text" 
-                                placeholder="City or country..."
+                                placeholder={language === 'hi' ? 'शहर या देश...' : 'City or country...'}
                                 value={locationFilter}
                                 onChange={(e) => setLocationFilter(e.target.value)}
                                 className="w-full bg-[#091328] text-xs text-[#dee5ff] border border-[#40485d]/30 rounded-lg py-2 px-3 pl-8 outline-none focus:border-[#a3a6ff]/50"
@@ -227,7 +232,7 @@ function DirectMessagePage() {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-1" style={{ scrollbarWidth: 'none' }}>
-            {isLoadingUsers && <div className="text-center text-[#a3aac4] text-sm p-4">Loading users...</div>}
+            {isLoadingUsers && <div className="text-center text-[#a3aac4] text-sm p-4">{language === 'hi' ? 'उपयोगकर्ता लोड हो रहे हैं...' : 'Loading users...'}</div>}
             
             {!isLoadingUsers && filteredUsers.map(user => {
                 const isActive = activeConversation && getOtherParticipant(activeConversation)?._id === user._id;
@@ -263,7 +268,7 @@ function DirectMessagePage() {
         <div className="p-4 border-t border-[#40485d]/20">
             <button onClick={() => navigate('/dashboard')} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#141f38] text-[#a3aac4] hover:text-white transition-all text-sm font-medium">
                 <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-                Back to Dashboard
+                {t.backHome || (language === 'hi' ? 'डैशबोर्ड पर वापस जाएं' : 'Back to Dashboard')}
             </button>
         </div>
       </aside>
@@ -286,7 +291,7 @@ function DirectMessagePage() {
                             <h1 className="text-white font-['Plus_Jakarta_Sans'] font-bold text-lg tracking-tight">
                                 {getOtherParticipant(activeConversation)?.username}
                             </h1>
-                            <p className="text-[#a3aac4] text-[11px] font-medium uppercase tracking-wider">Direct Message</p>
+                            <p className="text-[#a3aac4] text-[11px] font-medium uppercase tracking-wider">{t.sidebar.directMessages}</p>
                         </div>
                     </div>
                 </header>
@@ -301,7 +306,7 @@ function DirectMessagePage() {
                     {!isHistoryLoading && activeMessages.length === 0 && (
                         <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
                             <span className="material-symbols-outlined text-5xl mb-4">waving_hand</span>
-                            <p className="text-sm">Say hello to {getOtherParticipant(activeConversation)?.username}!</p>
+                            <p className="text-sm">{language === 'hi' ? `${getOtherParticipant(activeConversation)?.username} को नमस्ते कहें!` : `Say hello to ${getOtherParticipant(activeConversation)?.username}!`}</p>
                         </div>
                     )}
 
@@ -341,7 +346,7 @@ function DirectMessagePage() {
                         <div className="flex-1 relative">
                             <input
                                 className="w-full bg-[#141f38] text-[#dee5ff] border border-[#40485d]/30 focus:border-[#a3a6ff]/50 focus:ring-1 focus:ring-[#a3a6ff]/30 rounded-2xl py-4 px-6 text-sm placeholder:text-[#a3aac4] transition-all outline-none"
-                                placeholder="Type a message..."
+                                placeholder={t.chatroom.inputPlaceholder}
                                 type="text"
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
@@ -364,8 +369,8 @@ function DirectMessagePage() {
                 <div className="w-24 h-24 rounded-3xl bg-[#141f38] flex items-center justify-center mb-6 shadow-2xl border border-[#40485d]/20 rotate-12">
                     <span className="material-symbols-outlined text-[#a3a6ff] text-5xl -rotate-12">forum</span>
                 </div>
-                <h2 className="text-2xl font-bold text-white font-['Plus_Jakarta_Sans'] mb-2">Direct Messages</h2>
-                <p className="text-[#a3aac4] text-sm text-center max-w-sm">Select a user from the sidebar to start a private, end-to-end encrypted conversation.</p>
+                <h2 className="text-2xl font-bold text-white font-['Plus_Jakarta_Sans'] mb-2">{t.sidebar.directMessages}</h2>
+                <p className="text-[#a3aac4] text-sm text-center max-w-sm">{language === 'hi' ? 'निजी, एंड-टू-एंड एन्क्रिप्टेड बातचीत शुरू करने के लिए साइडबार से एक उपयोगकर्ता चुनें।' : 'Select a user from the sidebar to start a private, end-to-end encrypted conversation.'}</p>
             </div>
         )}
       </main>

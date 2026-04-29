@@ -1,6 +1,11 @@
 import { Link } from 'react-router-dom'
+import { useLanguage } from '../hooks/useLanguage'
+import { legalTranslations } from '../locales/legal'
 
 function SupportPage() {
+  const { language } = useLanguage()
+  const t = legalTranslations[language] || legalTranslations['en']
+
   return (
     <div className="min-h-screen bg-[#060e20] text-[#dee5ff] [font-family:_'Inter',sans-serif]">
       {/* Background Effects */}
@@ -11,49 +16,49 @@ function SupportPage() {
 
       <Link to="/signup" className="fixed top-8 left-8 z-[100] flex items-center gap-2 text-[#a3aac4] hover:text-[#a3a6ff] transition-all group px-4 py-2 rounded-full border border-transparent hover:border-[#a3a6ff]/20 bg-transparent hover:bg-[#141f38]/40 backdrop-blur-sm">
         <span className="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
-        <span className="text-xs font-bold uppercase tracking-widest px-1">Back</span>
+        <span className="text-xs font-bold uppercase tracking-widest px-1">{t.back}</span>
       </Link>
 
       <main className="relative max-w-4xl mx-auto px-6 py-24 lg:py-32">
         <header className="mb-16">
           <h1 className="text-4xl lg:text-6xl font-black italic tracking-tighter text-[#a3a6ff] hover:scale-[1.01] transition-transform duration-500 [font-family:_'Plus_Jakarta_Sans',sans-serif] mb-6">
-            BolChal <span className="text-[#dee5ff]">Support.</span>
+            {t.support.title.split(' ')[0]} <span className="text-[#dee5ff]">{t.support.title.split(' ')[1]}</span>
           </h1>
           <p className="text-[#a3aac4] text-lg max-w-2xl leading-relaxed">
-            Encountered a glitch in the stream? Our dedicated support unit is here to help you navigate back to perfect clarity.
+            {t.support.subtitle}
           </p>
         </header>
 
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
           {/* FAQ 1 */}
           <div className="p-8 rounded-2xl bg-[#091328]/40 border border-[#40485d]/10 backdrop-blur-md hover:bg-[#141f38]/40 transition-all duration-300">
-            <h3 className="text-lg font-bold text-[#dee5ff] mb-3 [font-family:_'Plus_Jakarta_Sans',sans-serif]">Account Recovery</h3>
+            <h3 className="text-lg font-bold text-[#dee5ff] mb-3 [font-family:_'Plus_Jakarta_Sans',sans-serif]">{t.support.faq1Title}</h3>
             <p className="text-sm text-[#a3aac4] leading-relaxed">
-              If you lost access to your account, please use the password reset link on the login page or contact us with your registered email.
+              {t.support.faq1Text}
             </p>
           </div>
 
           {/* FAQ 2 */}
           <div className="p-8 rounded-2xl bg-[#091328]/40 border border-[#40485d]/10 backdrop-blur-md hover:bg-[#141f38]/40 transition-all duration-300">
-            <h3 className="text-lg font-bold text-[#dee5ff] mb-3 [font-family:_'Plus_Jakarta_Sans',sans-serif]">Room Creation Errors</h3>
+            <h3 className="text-lg font-bold text-[#dee5ff] mb-3 [font-family:_'Plus_Jakarta_Sans',sans-serif]">{t.support.faq2Title}</h3>
             <p className="text-sm text-[#a3aac4] leading-relaxed">
-              Ensure your room name is unique and doesn't contain restricted characters. If issues persist, try refreshing your session.
+              {t.support.faq2Text}
             </p>
           </div>
 
           {/* FAQ 3 */}
           <div className="p-8 rounded-2xl bg-[#091328]/40 border border-[#40485d]/10 backdrop-blur-md hover:bg-[#141f38]/40 transition-all duration-300">
-            <h3 className="text-lg font-bold text-[#dee5ff] mb-3 [font-family:_'Plus_Jakarta_Sans',sans-serif]">Real-time Connectivity</h3>
+            <h3 className="text-lg font-bold text-[#dee5ff] mb-3 [font-family:_'Plus_Jakarta_Sans',sans-serif]">{t.support.faq3Title}</h3>
             <p className="text-sm text-[#a3aac4] leading-relaxed">
-              Messages not sending? Check your internet connection. Our WebSocket stream requires a stable connection for real-time delivery.
+              {t.support.faq3Text}
             </p>
           </div>
 
           {/* FAQ 4 */}
           <div className="p-8 rounded-2xl bg-[#091328]/40 border border-[#40485d]/10 backdrop-blur-md hover:bg-[#141f38]/40 transition-all duration-300">
-            <h3 className="text-lg font-bold text-[#dee5ff] mb-3 [font-family:_'Plus_Jakarta_Sans',sans-serif]">Identity Verification</h3>
+            <h3 className="text-lg font-bold text-[#dee5ff] mb-3 [font-family:_'Plus_Jakarta_Sans',sans-serif]">{t.support.faq4Title}</h3>
             <p className="text-sm text-[#a3aac4] leading-relaxed">
-              Did not receive your OTP? Check your spam folder or wait 5 minutes before requesting a resend from the verification page.
+              {t.support.faq4Text}
             </p>
           </div>
         </section>
@@ -63,15 +68,15 @@ function SupportPage() {
             <span className="material-symbols-outlined text-[80px]">contact_support</span>
           </div>
           <div className="relative z-10">
-            <h2 className="text-3xl font-black italic text-[#dee5ff] mb-4 [font-family:_'Plus_Jakarta_Sans',sans-serif]">Still need assistance?</h2>
+            <h2 className="text-3xl font-black italic text-[#dee5ff] mb-4 [font-family:_'Plus_Jakarta_Sans',sans-serif]">{t.support.stillNeedHelp}</h2>
             <p className="text-[#a3aac4] mb-8 max-w-xl">
-              Our direct support team is active 24/7. Drop us a digital message and we'll get back to you within 4 cinematic hours.
+              {t.support.stillNeedHelpText}
             </p>
             <a 
               href="mailto:kumarabhinav6649@gmail.com?subject=Support%20Request%20-%20BolChal"
               className="inline-flex items-center gap-3 px-8 py-4 bg-[#a3a6ff] text-[#0f00a4] rounded-full font-black uppercase tracking-widest text-xs hover:scale-[1.05] active:scale-95 transition-all shadow-lg shadow-[#a3a6ff]/20"
             >
-              Contact Support
+              {t.support.contactButton}
               <span className="material-symbols-outlined">send</span>
             </a>
           </div>

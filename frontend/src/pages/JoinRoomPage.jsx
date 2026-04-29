@@ -1,10 +1,17 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { useLanguage } from '../hooks/useLanguage'
+import { dashboardTranslations } from '../locales/dashboard'
+import { authTranslations } from '../locales/auth'
 
 function JoinRoomPage() {
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [roomCode, setRoomCode] = useState('')
+
+  const { language } = useLanguage()
+  const tDash = dashboardTranslations[language] || dashboardTranslations['en']
+  const tAuth = authTranslations[language] || authTranslations['en']
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -35,7 +42,7 @@ function JoinRoomPage() {
           >
             <span className="material-symbols-outlined">arrow_back</span>
           </button>
-          <h1 className="font-['Plus_Jakarta_Sans'] font-bold text-lg tracking-tight text-[#dee5ff]">General Chat</h1>
+          <h1 className="font-['Plus_Jakarta_Sans'] font-bold text-lg tracking-tight text-[#dee5ff]">{language === 'hi' ? 'रूम में शामिल हों' : 'Join Room'}</h1>
         </div>
         <div className="flex items-center gap-2">
           <button className="text-[#a3aac4] hover:bg-[#1f2b49]/50 transition-colors p-2 rounded-full scale-95 active:scale-90 transition-transform">
@@ -54,15 +61,15 @@ function JoinRoomPage() {
         <div className="w-full max-w-md z-10">
           <div className="bg-[rgba(31,43,73,0.6)] backdrop-blur-[12px] rounded-lg p-8 md:p-10 shadow-[0_12px_32px_rgba(25,37,64,0.08)] border border-[rgba(64,72,93,0.2)]">
             <div className="mb-10 text-center">
-              <h2 className="font-['Plus_Jakarta_Sans'] text-3xl font-extrabold tracking-tight mb-3 text-[#dee5ff]">Join a Room</h2>
-              <p className="text-[#a3aac4] text-sm font-medium">Enter your details to join the conversation.</p>
+              <h2 className="font-['Plus_Jakarta_Sans'] text-3xl font-extrabold tracking-tight mb-3 text-[#dee5ff]">{language === 'hi' ? 'रूम में शामिल हों' : 'Join a Room'}</h2>
+              <p className="text-[#a3aac4] text-sm font-medium">{language === 'hi' ? 'बातचीत में शामिल होने के लिए अपना विवरण दर्ज करें।' : 'Enter your details to join the conversation.'}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Username Input */}
               <div className="space-y-2">
                 <label className="block text-[10px] font-semibold text-[#a3aac4] px-4 tracking-wider uppercase" htmlFor="username">
-                  Username
+                  {tAuth.signup.username}
                 </label>
                 <div className="relative group">
                   <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-[#a3aac4] group-focus-within:text-[#a3a6ff] transition-colors">
@@ -71,7 +78,7 @@ function JoinRoomPage() {
                   <input
                     className="w-full bg-[#192540] border-none rounded-full py-4 pl-14 pr-6 text-[#dee5ff] placeholder-[#a3aac4]/50 focus:ring-2 focus:ring-[#a3a6ff]/40 transition-all duration-300 font-medium"
                     id="username"
-                    placeholder="e.g. CinematicExplorer"
+                    placeholder={language === 'hi' ? 'जैसे: राहुल' : 'e.g. CinematicExplorer'}
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -82,7 +89,7 @@ function JoinRoomPage() {
               {/* Room ID Input */}
               <div className="space-y-2">
                 <label className="block text-[10px] font-semibold text-[#a3aac4] px-4 tracking-wider uppercase" htmlFor="room-id">
-                  Room Code
+                  {language === 'hi' ? 'रूम कोड' : 'Room Code'}
                 </label>
                 <div className="relative group">
                   <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-[#a3aac4] group-focus-within:text-[#a3a6ff] transition-colors">
@@ -91,7 +98,7 @@ function JoinRoomPage() {
                   <input
                     className="w-full bg-[#192540] border-none rounded-full py-4 pl-14 pr-6 text-[#dee5ff] placeholder-[#a3aac4]/50 focus:ring-2 focus:ring-[#a3a6ff]/40 transition-all duration-300 font-medium"
                     id="room-id"
-                    placeholder="Enter 6-digit code"
+                    placeholder={language === 'hi' ? '6-अंकों का कोड दर्ज करें' : 'Enter 6-digit code'}
                     type="text"
                     value={roomCode}
                     onChange={(e) => setRoomCode(e.target.value)}
@@ -101,22 +108,22 @@ function JoinRoomPage() {
 
               {/* Submit Button */}
               <div className="pt-4">
-                <button
-                  className="w-full bg-gradient-to-r from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] font-['Plus_Jakarta_Sans'] font-extrabold text-sm uppercase tracking-widest py-4 rounded-full shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 active:scale-[0.98] transition-all duration-300"
-                  type="submit"
-                >
-                  Join Room
-                </button>
+                  <button
+                    className="w-full bg-gradient-to-r from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] font-['Plus_Jakarta_Sans'] font-extrabold text-sm uppercase tracking-widest py-4 rounded-full shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 active:scale-[0.98] transition-all duration-300"
+                    type="submit"
+                  >
+                    {tAuth.joinRoom}
+                  </button>
               </div>
             </form>
 
             <div className="mt-8 pt-8 border-t border-[#40485d]/20 flex flex-col items-center gap-4">
-              <p className="text-[#a3aac4] text-xs">Don't have a code?</p>
+              <p className="text-[#a3aac4] text-xs">{tAuth.noCode}</p>
               <button 
                 onClick={() => navigate('/dashboard')}
                 className="text-[#a3a6ff] font-bold text-sm hover:text-[#9396ff] transition-colors"
               >
-                Explore Public Rooms
+                {tDash.explore.allRooms}
               </button>
             </div>
           </div>
@@ -136,7 +143,7 @@ function JoinRoomPage() {
                 +12
               </div>
             </div>
-            <span className="text-[#a3aac4] text-[11px] font-medium italic">12 friends are active right now</span>
+            <span className="text-[#a3aac4] text-[11px] font-medium italic">{language === 'hi' ? '12 मित्र अभी सक्रिय हैं' : '12 friends are active right now'}</span>
           </div>
         </div>
       </main>

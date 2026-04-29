@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { apiService } from '../services/api.service'
+import { useLanguage } from '../hooks/useLanguage'
+import { dashboardTranslations } from '../locales/dashboard'
 
 function randomCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -20,6 +22,9 @@ function CreateChatroomPage() {
   const [copied, setCopied] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState(null)
+
+  const { language } = useLanguage()
+  const t = dashboardTranslations[language] || dashboardTranslations['en']
 
   const canCreate = useMemo(() => 
     roomName.trim().length > 0 && 
@@ -91,8 +96,8 @@ function CreateChatroomPage() {
 
       <main className="max-w-3xl mx-auto px-6 pt-12">
         <div className="mb-12">
-          <h2 className="[font-family:_'Plus_Jakarta_Sans',sans-serif] font-bold text-4xl tracking-tight mb-2">Create Your Space</h2>
-          <p className="text-[#a3aac4]">Craft a sanctuary for your community to stream, chat, and connect.</p>
+          <h2 className="[font-family:_'Plus_Jakarta_Sans',sans-serif] font-bold text-4xl tracking-tight mb-2">{t.createRoom.title}</h2>
+          <p className="text-[#a3aac4]">{t.createRoom.subtitle}</p>
         </div>
 
         {error && (
@@ -105,12 +110,12 @@ function CreateChatroomPage() {
           <div className="md:col-span-8 space-y-8">
             <div className="space-y-3">
               <label className="[font-family:_'Plus_Jakarta_Sans',sans-serif] font-semibold text-sm uppercase tracking-wider text-[#a3a6ff] ml-1">
-                Room Name
+                {t.createRoom.roomName}
               </label>
               <div className="border border-[rgba(64,72,93,0.2)] bg-[#192540] rounded-full px-6 py-4 transition-all focus-within:ring-2 focus-within:ring-[#a3a6ff]/20 focus-within:border-[rgba(163,166,255,0.4)]">
                 <input
                   className="bg-transparent border-none focus:ring-0 w-full text-[#dee5ff] placeholder:text-[#a3aac4]/50 text-lg"
-                  placeholder="The Midnight Lounge"
+                  placeholder={t.createRoom.roomNamePlaceholder}
                   type="text"
                   value={roomName}
                   onChange={(e) => setRoomName(e.target.value)}
@@ -121,12 +126,12 @@ function CreateChatroomPage() {
 
             <div className="space-y-3">
               <label className="[font-family:_'Plus_Jakarta_Sans',sans-serif] font-semibold text-sm uppercase tracking-wider text-[#a3a6ff] ml-1">
-                Description
+                {t.createRoom.description}
               </label>
               <div className="border border-[rgba(64,72,93,0.2)] bg-[#192540] rounded-xl px-6 py-4 transition-all focus-within:ring-2 focus-within:ring-[#a3a6ff]/20 focus-within:border-[rgba(163,166,255,0.4)]">
                 <textarea
                   className="bg-transparent border-none focus:ring-0 w-full text-[#dee5ff] placeholder:text-[#a3aac4]/50 resize-none"
-                  placeholder="Describe the vibe of your room..."
+                  placeholder={t.createRoom.descriptionPlaceholder}
                   rows="4"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -211,7 +216,7 @@ function CreateChatroomPage() {
               type="submit"
               disabled={!canCreate}
             >
-              {isSubmitting ? 'CREATING...' : 'CREATE ROOM'}
+              {isSubmitting ? (language === 'hi' ? 'बना रहे हैं...' : 'CREATING...') : t.createRoom.button.toUpperCase()}
               <span className="material-symbols-outlined">rocket_launch</span>
             </button>
             <button
@@ -220,7 +225,7 @@ function CreateChatroomPage() {
               onClick={handleDiscard}
               disabled={isSubmitting}
             >
-              Discard Draft
+              {language === 'hi' ? 'ड्राफ्ट छोड़ें' : 'Discard Draft'}
             </button>
           </div>
         </form>

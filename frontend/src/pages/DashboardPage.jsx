@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { apiService } from '../services/api.service'
+import { useLanguage } from '../hooks/useLanguage'
+import { dashboardTranslations } from '../locales/dashboard'
 
 function DashboardPage() {
   const navigate = useNavigate()
@@ -16,6 +18,9 @@ function DashboardPage() {
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [editForm, setEditForm] = useState({ username: '', gender: '', location: '', about: '' })
   const [isSavingProfile, setIsSavingProfile] = useState(false)
+
+  const { language } = useLanguage()
+  const t = dashboardTranslations[language] || dashboardTranslations['en']
 
   useEffect(() => {
     async function loadData() {
@@ -47,17 +52,17 @@ function DashboardPage() {
   }
 
   const handleDeleteAccount = async () => {
-    const isConfirmed = window.confirm("CAUTION: Are you sure you want to delete your account? This action is permanent and cannot be undone. You must delete all rooms you created first.")
+    const isConfirmed = window.confirm(t.profile.deleteConfirm)
     
     if (!isConfirmed) return
 
     try {
       await apiService.deleteAccount()
-      alert("Your account has been deleted successfully.")
+      alert(t.profile.deleteSuccess)
       localStorage.removeItem('accessToken')
       navigate('/')
     } catch (err) {
-      alert(err.message || "Failed to delete account. Ensure all your created rooms are deleted.")
+      alert(err.message || t.profile.deleteError)
     }
   }
 
@@ -77,9 +82,9 @@ function DashboardPage() {
         const updatedProfile = await apiService.updateProfile(editForm)
         setCurrentUser(updatedProfile.user)
         setIsEditingProfile(false)
-        alert('Profile updated successfully!')
+        alert(t.profile.updateSuccess)
     } catch (err) {
-        alert(err.message || 'Failed to update profile')
+        alert(err.message || t.profile.updateError)
     } finally {
         setIsSavingProfile(false)
     }
@@ -113,7 +118,7 @@ function DashboardPage() {
             className={`w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm ${activeView === 'explore' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4] hover:text-white hover:bg-[#141f38]'}`}
           >
             <span className="material-symbols-outlined">explore</span>
-            <span>Dashboard</span>
+            <span>{t.sidebar.explore}</span>
           </button>
           <button 
             onClick={() => setActiveView('rooms')}
@@ -131,7 +136,7 @@ function DashboardPage() {
           </button>
           <button onClick={() => navigate('/dms')} className="w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm text-[#a3aac4] hover:text-white hover:bg-[#141f38]">
             <span className="material-symbols-outlined">chat_bubble</span>
-            <span>Direct Messages</span>
+            <span>{t.sidebar.directMessages}</span>
           </button>
           <button 
             onClick={() => setActiveView('settings')}
@@ -147,7 +152,7 @@ function DashboardPage() {
             className="w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 text-[#ff7b7b] hover:bg-red-500/10 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm group"
           >
             <span className="material-symbols-outlined text-[#ff7b7b] group-hover:rotate-180 transition-transform duration-500">logout</span>
-            <span>Sign Out</span>
+            <span>{t.sidebar.logout}</span>
           </button>
         </div>
       </aside>
@@ -160,7 +165,7 @@ function DashboardPage() {
             <button className="md:hidden w-8 h-8 rounded-lg bg-[#192540] flex items-center justify-center" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               <span className="material-symbols-outlined text-[#a3a6ff] text-sm">menu</span>
             </button>
-            <h1 className="font-['Plus_Jakarta_Sans'] font-bold text-lg tracking-tight text-[#dee5ff]">Dashboard</h1>
+            <h1 className="font-['Plus_Jakarta_Sans'] font-bold text-lg tracking-tight text-[#dee5ff]">{t.sidebar.explore}</h1>
           </div>
         </header>
 
@@ -179,23 +184,25 @@ function DashboardPage() {
                 <div className="lg:col-span-2 relative overflow-hidden rounded-lg bg-gradient-to-br from-[#49339d] to-[#0f1930] h-64 flex flex-col justify-end p-8">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-[#a3a6ff]/20 blur-[100px] -mr-32 -mt-32"></div>
                   <div className="relative z-10">
-                    <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#a3a6ff] mb-2 block">Welcome Back</span>
+                    <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#a3a6ff] mb-2 block">{t.explore.welcomeBack || 'Welcome Back'}</span>
                     <h2 className="text-4xl font-['Plus_Jakarta_Sans'] font-extrabold text-white mb-4 leading-tight">
-                      Hey {currentUser?.username || 'there'}, <br />
-                      Ready to chat?
+                      {language === 'hi' ? `नमस्ते ${currentUser?.username || 'दोस्त'},` : `Hey ${currentUser?.username || 'there'},`} <br />
+                      {language === 'hi' ? 'बातचीत के लिए तैयार हैं?' : 'Ready to chat?'}
                     </h2>
                     <div className="flex items-center gap-4">
                       <button onClick={() => setActiveView('rooms')} className="bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] px-6 py-2.5 rounded-full font-['Inter'] font-bold text-sm uppercase tracking-wider shadow-lg shadow-[#a3a6ff]/20 active:scale-95 transition-transform">
-                        Explore Rooms
+                        {t.explore.joinRoom}
                       </button>
                     </div>
                   </div>
                 </div>
                 <div className="bg-[#0f1930] rounded-lg p-8 flex flex-col justify-center border border-[#40485d]/5">
-                  <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-xl text-[#dee5ff] mb-2">Live Status</h3>
-                  <p className="text-[#a3aac4] text-sm mb-6 leading-relaxed">There are currently {rooms.length} active rooms available to join right now.</p>
+                  <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-xl text-[#dee5ff] mb-2">{t.chatroom.online}</h3>
+                  <p className="text-[#a3aac4] text-sm mb-6 leading-relaxed">
+                    {language === 'hi' ? `अभी शामिल होने के लिए ${rooms.length} सक्रिय रूम उपलब्ध हैं।` : `There are currently ${rooms.length} active rooms available to join right now.`}
+                  </p>
                   <button onClick={() => setActiveView('rooms')} className="w-full flex items-center justify-center gap-2 bg-[#1f2b49] text-[#dee5ff] px-6 py-4 rounded-xl font-['Inter'] font-bold text-xs uppercase tracking-widest border border-[#40485d]/20 hover:bg-[#192540] transition-colors group">
-                    View All Rooms
+                    {t.explore.allRooms}
                   </button>
                 </div>
               </section>
@@ -203,7 +210,7 @@ function DashboardPage() {
               {/* Featured Highlight Section */}
               <section className="mb-12">
                 <div className="flex items-center justify-between mb-8">
-                  <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-[#dee5ff]">Popular Rooms</h3>
+                  <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-[#dee5ff]">{t.explore.trending}</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {featuredRooms.map((room) => (
@@ -221,7 +228,7 @@ function DashboardPage() {
                         {room.description || `Welcome to ${room.name}! A great place to connect and share moments.`}
                       </p>
                       <Link to={`/chat/${room._id}`} className="w-full flex items-center justify-center py-3 bg-[#192540] hover:bg-[#a3a6ff] hover:text-[#0a0081] text-[#dee5ff] rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
-                        Step Inside
+                        {t.explore.joinRoom}
                       </Link>
                     </div>
                   ))}
@@ -239,12 +246,12 @@ function DashboardPage() {
               <section className="mb-12">
                 <div className="bg-[#0f1930] rounded-lg p-8 flex flex-col md:flex-row items-center justify-between border border-[#40485d]/5 gap-6">
                   <div>
-                    <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-xl text-[#dee5ff] mb-2">Create your space</h3>
-                    <p className="text-[#a3aac4] text-sm leading-relaxed">Design a custom room for your community with unique roles and permissions.</p>
+                    <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-xl text-[#dee5ff] mb-2">{t.createRoom.title}</h3>
+                    <p className="text-[#a3aac4] text-sm leading-relaxed">{t.createRoom.subtitle}</p>
                   </div>
                   <Link to="/create-room" className="whitespace-nowrap flex items-center justify-center gap-2 bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] px-8 py-4 rounded-xl font-['Inter'] font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all group">
                     <span className="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform">add</span>
-                    Create New Room
+                    {t.createRoom.button}
                   </Link>
                 </div>
               </section>
@@ -300,10 +307,10 @@ function DashboardPage() {
                 <div className="flex items-center justify-between mb-8">
                   <div>
                     <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-[#dee5ff]">My Rooms</h3>
-                    <p className="text-[#a3aac4] text-sm">Rooms created and managed by you</p>
+                    <p className="text-[#a3aac4] text-sm">{language === 'hi' ? 'आपके द्वारा बनाए गए और प्रबंधित रूम्स' : 'Rooms created and managed by you'}</p>
                   </div>
                   <Link to="/create-room" className="bg-[#1f2b49] text-[#a3a6ff] px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest border border-[#40485d]/20 hover:bg-[#192540] transition-colors">
-                    New Room
+                    {t.sidebar.createRoom}
                   </Link>
                 </div>
                 
@@ -360,8 +367,8 @@ function DashboardPage() {
               {/* Profile Settings View */}
               <section className="max-w-4xl mx-auto">
                 <div className="mb-10">
-                  <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-3xl text-[#dee5ff] mb-2">Profile Settings</h3>
-                  <p className="text-[#a3aac4]">Manage your digital identity in the BolChal platform.</p>
+                  <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-3xl text-[#dee5ff] mb-2">{t.sidebar.myProfile}</h3>
+                  <p className="text-[#a3aac4]">{language === 'hi' ? 'बोलचाल प्लेटफॉर्म में अपनी डिजिटल पहचान प्रबंधित करें।' : 'Manage your digital identity in the BolChal platform.'}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -390,15 +397,15 @@ function DashboardPage() {
                           </h5>
                           {!isEditingProfile ? (
                               <button onClick={startEditingProfile} className="text-xs font-bold uppercase tracking-widest bg-[#141f38] text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#192540] py-2 px-4 rounded-lg transition-colors border border-[#40485d]/20">
-                                Edit Profile
+                                {t.profile.editProfile}
                               </button>
                           ) : (
                               <div className="flex gap-2">
                                   <button onClick={() => setIsEditingProfile(false)} className="text-[10px] font-bold uppercase tracking-widest bg-[#141f38] text-[#a3aac4] hover:text-white py-2 px-3 rounded-lg transition-colors" disabled={isSavingProfile}>
-                                    Cancel
+                                    {t.profile.cancel}
                                   </button>
                                   <button onClick={handleSaveProfile} className="text-[10px] font-bold uppercase tracking-widest bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] hover:opacity-90 py-2 px-4 rounded-lg transition-all" disabled={isSavingProfile}>
-                                    {isSavingProfile ? 'Saving...' : 'Save'}
+                                    {isSavingProfile ? (language === 'hi' ? 'सहेज रहे हैं...' : 'Saving...') : t.profile.saveChanges.split(' ')[0]}
                                   </button>
                               </div>
                           )}
@@ -406,7 +413,7 @@ function DashboardPage() {
                       
                       <div className="space-y-6">
                         <div className="space-y-2">
-                          <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Username</label>
+                          <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">{t.profile.username}</label>
                           {isEditingProfile ? (
                               <input 
                                   className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/30 text-[#dee5ff] font-medium outline-none focus:border-[#a3a6ff]/50" 
@@ -421,7 +428,7 @@ function DashboardPage() {
                         </div>
 
                         <div className="space-y-2 relative">
-                          <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Email Address</label>
+                          <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">{t.profile.email}</label>
                           <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium opacity-70 cursor-not-allowed">
                             {currentUser?.email}
                           </div>
@@ -446,7 +453,7 @@ function DashboardPage() {
 
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Gender</label>
+                            <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">{t.profile.gender}</label>
                             {isEditingProfile ? (
                                 <select 
                                     className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/30 text-[#dee5ff] font-medium capitalize outline-none focus:border-[#a3a6ff]/50 appearance-none"
@@ -464,7 +471,7 @@ function DashboardPage() {
                             )}
                           </div>
                           <div className="space-y-2">
-                            <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Location</label>
+                            <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">{t.profile.location}</label>
                             {isEditingProfile ? (
                                 <input 
                                   className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/30 text-[#dee5ff] font-medium outline-none focus:border-[#a3a6ff]/50" 
@@ -481,7 +488,7 @@ function DashboardPage() {
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">About Me</label>
+                          <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">{t.profile.bio}</label>
                           {isEditingProfile ? (
                               <textarea 
                                   className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/30 text-[#dee5ff] font-medium min-h-[80px] outline-none focus:border-[#a3a6ff]/50 resize-y" 
@@ -512,14 +519,14 @@ function DashboardPage() {
                       </div>
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
-                          <p className="text-[#dee5ff] font-bold text-sm mb-1">Delete Account</p>
-                          <p className="text-[#a3aac4] text-xs">Permanently remove your account and data. This action is irreversible.</p>
+                          <p className="text-[#dee5ff] font-bold text-sm mb-1">{t.profile.deleteAccount}</p>
+                          <p className="text-[#a3aac4] text-xs">{language === 'hi' ? 'अपना खाता और डेटा स्थायी रूप से हटाएं। यह क्रिया अपरिवर्तनीय है।' : 'Permanently remove your account and data. This action is irreversible.'}</p>
                         </div>
                         <button 
                           onClick={handleDeleteAccount}
                           className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-red-500/20 whitespace-nowrap"
                         >
-                          Delete Account
+                          {t.profile.deleteAccount}
                         </button>
                       </div>
                     </div>
