@@ -146,7 +146,7 @@ function SignupPage() {
             <div className="absolute inset-0 bg-gradient-to-tr from-[#060e20] via-transparent to-transparent" />
           </div>
 
-          <div className="relative z-10">
+          <div className="relative z-10 pt-20">
             <h1 className="mb-4 text-4xl font-black italic tracking-tighter text-[#a3a6ff] [font-family:_'Plus_Jakarta_Sans',sans-serif]">
               {t.bolChal}
             </h1>
