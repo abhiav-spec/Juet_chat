@@ -85,3 +85,34 @@ export const unregisterUser = (ws) => {
 export const getOnlineUserIds = () => {
     return Array.from(userSockets.keys());
 };
+
+/**
+ * Send a targeted event to all sockets belonging to a specific user.
+ * @param {string} userId 
+ * @param {string} event 
+ * @param {object} payload 
+ */
+export const notifyUser = (userId, event, payload = {}) => {
+    const sockets = userSockets.get(userId);
+    if (sockets) {
+        const data = JSON.stringify({ type: event, ...payload });
+        sockets.forEach(ws => {
+            if (ws.readyState === 1) {
+                ws.send(data);
+            }
+        });
+    }
+};
+
+/**
+ * Force disconnect all sockets for a user.
+ * @param {string} userId 
+ */
+export const disconnectUser = (userId) => {
+    const sockets = userSockets.get(userId);
+    if (sockets) {
+        sockets.forEach(ws => {
+            ws.close();
+        });
+    }
+};

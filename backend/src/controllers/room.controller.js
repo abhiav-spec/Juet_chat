@@ -1,7 +1,8 @@
 import crypto from 'crypto';
 import Room from '../models/Room.js';
 import Message from '../models/message.js';
-import { ROOM_TYPES } from '../utils/constants.js';
+import { ROOM_TYPES, WS_SERVER_EVENTS } from '../utils/constants.js';
+import { notifyUser } from '../websocket/state/users.js';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -217,6 +218,90 @@ export const getRoomMembers = async (req, res, next) => {
         }));
 
         return res.status(200).json(members);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * POST /api/rooms/:id/remove
+ * Kick a user from the room (Admin only).
+ */
+export const removeMember = async (req, res, next) => {
+    try {
+        const { userId } = req.body;
+        const room = await Room.findById(req.params.id);
+
+        if (!room) return res.status(404).json({ error: 'Room not found.' });
+        if (room.creator.toString() !== req.user.id) return res.status(403).json({ error: 'Only admin can remove members.' });
+        if (userId === req.user.id) return res.status(400).json({ error: 'You cannot remove yourself.' });
+
+        room.members = room.members.filter(m => m.user.toString() !== userId);
+        await room.save();
+
+        // Notify user via WebSocket
+        notifyUser(userId, WS_SERVER_EVENTS.KICKED, { roomId: room._id, roomName: room.name });
+
+        return res.status(200).json({ message: 'User removed successfully.' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * POST /api/rooms/:id/block
+ * Block a user from the room (Admin only).
+ */
+export const blockMember = async (req, res, next) => {
+    try {
+        const { userId } = req.body;
+        const room = await Room.findById(req.params.id);
+
+        if (!room) return res.status(404).json({ error: 'Room not found.' });
+        if (room.creator.toString() !== req.user.id) return res.status(403).json({ error: 'Only admin can block members.' });
+        if (userId === req.user.id) return res.status(400).json({ error: 'You cannot block yourself.' });
+
+        // Remove from members
+        room.members = room.members.filter(m => m.user.toString() !== userId);
+        
+        // Add to blockedUsers if not already there
+        if (!room.blockedUsers.includes(userId)) {
+            room.blockedUsers.push(userId);
+        }
+        
+        await room.save();
+
+        // Notify user via WebSocket
+        notifyUser(userId, WS_SERVER_EVENTS.BLOCKED, { roomId: room._id, roomName: room.name });
+
+        return res.status(200).json({ message: 'User blocked successfully.' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * PATCH /api/rooms/:id/code
+ * Update room code/passkey (Admin only).
+ */
+export const updateRoomCode = async (req, res, next) => {
+    try {
+        const { roomCode } = req.body;
+        const room = await Room.findById(req.params.id);
+
+        if (!room) return res.status(404).json({ error: 'Room not found.' });
+        if (room.creator.toString() !== req.user.id) return res.status(403).json({ error: 'Only admin can update the code.' });
+
+        if (!roomCode || roomCode.length < 4) {
+            return res.status(400).json({ error: 'Room code must be at least 4 characters.' });
+        }
+
+        room.passkey = roomCode;
+        room.passwordHash = hashPassword(roomCode);
+
+        await room.save();
+
+        return res.status(200).json({ message: 'Room code updated successfully.', roomCode });
     } catch (error) {
         next(error);
     }

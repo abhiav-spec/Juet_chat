@@ -186,6 +186,18 @@ function ChatRoomPage() {
           setOnlineUsers(new Set(payload.users));
         });
 
+        socketService.on('kicked', (payload) => {
+          if (!mounted) return;
+          alert(language === 'hi' ? `आपको ${payload.roomName} से निकाल दिया गया है।` : `You have been kicked from ${payload.roomName}.`);
+          navigate('/dashboard');
+        });
+
+        socketService.on('blocked', (payload) => {
+          if (!mounted) return;
+          alert(language === 'hi' ? `आपको ${payload.roomName} से ब्लॉक कर दिया गया है।` : `You have been blocked from ${payload.roomName}.`);
+          navigate('/dashboard');
+        });
+
         socketService.on('error', (payload) => {
           if (!mounted) return;
           if (payload.status === 401 || (payload.message && payload.message.toLowerCase().includes('password'))) {
@@ -228,6 +240,43 @@ function ChatRoomPage() {
 
     socketService.sendMessage(inputValue)
     setInputValue('')
+  }
+
+  const handleKickUser = async (userId) => {
+    if (!window.confirm(language === 'hi' ? 'इस उपयोगकर्ता को निकालें?' : 'Kick this user?')) return;
+    try {
+      await apiService.removeMember(roomId, userId);
+      setRoomMembers(prev => prev.filter(m => m.userId !== userId));
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  const handleBlockUser = async (userId) => {
+    if (!window.confirm(language === 'hi' ? 'इस उपयोगकर्ता को ब्लॉक करें?' : 'Block this user?')) return;
+    try {
+      await apiService.blockMember(roomId, userId);
+      setRoomMembers(prev => prev.filter(m => m.userId !== userId));
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  const handleUpdateCode = async () => {
+    const newCode = window.prompt(language === 'hi' ? 'नया रूम कोड दर्ज करें:' : 'Enter new room code:', roomInfo?.passkey);
+    if (!newCode || newCode === roomInfo?.passkey) return;
+    try {
+      await apiService.updateRoomCode(roomId, newCode);
+      setRoomInfo(prev => ({ ...prev, passkey: newCode }));
+      alert(language === 'hi' ? 'कोड सफलतापूर्वक अपडेट किया गया!' : 'Code updated successfully!');
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    alert(language === 'hi' ? 'कॉपी किया गया!' : 'Copied to clipboard!');
   }
 
   const handleJoinWithPassword = (e) => {
@@ -349,6 +398,24 @@ function ChatRoomPage() {
                           <p className="text-[9px] font-black uppercase tracking-widest text-[#a3a6ff]/60">Admin</p>
                         )}
                       </div>
+                      {roomInfo?.creator?._id === currentUserId && member.userId !== currentUserId && (
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleKickUser(member.userId); }}
+                            className="p-1.5 hover:bg-white/10 rounded-lg text-[#a3aac4] hover:text-orange-400 transition-colors"
+                            title="Kick"
+                          >
+                            <span className="material-symbols-outlined text-sm">logout</span>
+                          </button>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleBlockUser(member.userId); }}
+                            className="p-1.5 hover:bg-white/10 rounded-lg text-[#a3aac4] hover:text-red-400 transition-colors"
+                            title="Block"
+                          >
+                            <span className="material-symbols-outlined text-sm">block</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -384,9 +451,23 @@ function ChatRoomPage() {
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <p className="text-[#a3aac4] text-[10px] font-medium uppercase tracking-wider">{language === 'hi' ? 'लाइव' : 'Live'}</p>
                 {roomInfo?.type === 'private' && roomInfo?.passkey && (
-                    <div className="hidden xs:flex items-center gap-1 bg-[#141f38] px-2 py-0.5 rounded border border-[#a3a6ff]/20">
-                        <span className="material-symbols-outlined text-[10px] text-[#a3a6ff]">key</span>
-                        <span className="text-[10px] text-[#a3a6ff] font-mono tracking-tighter uppercase">{roomInfo.passkey}</span>
+                    <div className="hidden xs:flex items-center gap-2 bg-[#141f38] px-3 py-1 rounded-xl border border-[#a3a6ff]/20">
+                        <span className="material-symbols-outlined text-[14px] text-[#a3a6ff]">key</span>
+                        <span className="text-xs text-[#a3a6ff] font-mono tracking-wider uppercase">{roomInfo.passkey}</span>
+                        <button 
+                          onClick={() => copyToClipboard(roomInfo.passkey)}
+                          className="hover:text-white transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-[14px]">content_copy</span>
+                        </button>
+                        {roomInfo?.creator?._id === currentUserId && (
+                          <button 
+                            onClick={handleUpdateCode}
+                            className="hover:text-white transition-colors border-l border-[#a3a6ff]/20 pl-2 ml-1"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">edit</span>
+                          </button>
+                        )}
                     </div>
                 )}
               </div>

@@ -15,6 +15,8 @@ export const WS_SERVER_EVENTS = {
     ERROR: 'error',
     PRESENCE: 'presence',
     ONLINE_USERS: 'online_users',
+    KICKED: 'kicked',
+    BLOCKED: 'blocked',
 };
 
 // Room types

@@ -58,6 +58,18 @@ export const apiService = {
     leaveRoom: (roomId) => fetchWithAuth(`/api/rooms/${roomId}/leave`, {
         method: 'POST',
     }),
+    removeMember: (roomId, userId) => fetchWithAuth(`/api/rooms/${roomId}/remove`, {
+        method: 'POST',
+        body: JSON.stringify({ userId }),
+    }),
+    blockMember: (roomId, userId) => fetchWithAuth(`/api/rooms/${roomId}/block`, {
+        method: 'POST',
+        body: JSON.stringify({ userId }),
+    }),
+    updateRoomCode: (roomId, roomCode) => fetchWithAuth(`/api/rooms/${roomId}/code`, {
+        method: 'PATCH',
+        body: JSON.stringify({ roomCode }),
+    }),
 
     // User Utils
     getProfile: () => fetchWithAuth('/api/auth/profile'),

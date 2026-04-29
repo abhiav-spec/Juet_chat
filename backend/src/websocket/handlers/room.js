@@ -29,10 +29,16 @@ const handleJoinRoom = async (ws, payload) => {
             return sendError(ws, 'roomId is required.');
         }
 
-        // Fetch room — include passwordHash only if needed for comparison
-        const room = await Room.findById(roomId).select('+passwordHash');
+        // Fetch room — include passwordHash and blockedUsers
+        const room = await Room.findById(roomId).select('+passwordHash +blockedUsers');
         if (!room) {
             return sendError(ws, 'Room not found.');
+        }
+
+        // Check if user is blocked
+        const userIdStr = ws.user.id.toString();
+        if (room.blockedUsers && room.blockedUsers.some(id => id.toString() === userIdStr)) {
+            return sendError(ws, 'You are blocked from this room.');
         }
 
         // ─── Access Control ───────────────────────────────────────────────────

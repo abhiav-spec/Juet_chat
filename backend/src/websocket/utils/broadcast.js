@@ -27,3 +27,15 @@ export const broadcastPresence = (wss, userId, status) => {
         status
     });
 };
+
+/**
+ * Send a targeted event to all sockets belonging to a specific user.
+ * @param {string} userId 
+ * @param {string} event 
+ * @param {object} payload 
+ */
+export const notifyUser = (userId, event, payload = {}) => {
+    // Note: We'll import this dynamically or handle it carefully to avoid circular deps
+    // Actually, it's better to pass the sockets or a getter.
+    // For now, let's assume we can get it.
+};
