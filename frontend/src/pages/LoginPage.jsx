@@ -69,11 +69,7 @@ function LoginPage() {
 
       <main className="relative w-full max-w-[480px]">
         <header className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#141f38] mb-6 shadow-xl shadow-[#000000]">
-            <span className="material-symbols-outlined text-[#a3a6ff] text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-              forum
-            </span>
-          </div>
+          <img src="/logo.png" alt="BolChal Logo" className="mx-auto w-16 h-16 rounded-2xl object-cover shadow-xl shadow-[#a3a6ff]/20 mb-8" />
           <h1 className="font-extrabold text-4xl tracking-tight italic text-[#a3a6ff] mb-2 [font-family:_'Plus_Jakarta_Sans',sans-serif]">
             BolChal
           </h1>

@@ -82,6 +82,7 @@ function CreateChatroomPage() {
           >
             <span className="material-symbols-outlined">menu</span>
           </button>
+          <img src="/logo.png" alt="BolChal Logo" className="w-8 h-8 rounded-lg object-cover" />
           <h1 className="text-[#a3a6ff] [font-family:_'Plus_Jakarta_Sans',sans-serif] font-extrabold tracking-tighter text-lg">
             BolChal
           </h1>

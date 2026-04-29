@@ -91,7 +91,8 @@ function SignupPage() {
           </div>
 
           <div className="relative z-10">
-            <h1 className="mb-4 text-4xl font-black italic tracking-tighter text-[#a3a6ff] [font-family:_'Plus_Jakarta_Sans',sans-serif]">
+            <h1 className="mb-4 text-4xl font-black italic tracking-tighter text-[#a3a6ff] [font-family:_'Plus_Jakarta_Sans',sans-serif] flex items-center gap-3">
+              <img src="/logo.png" alt="BolChal Logo" className="w-12 h-12 rounded-xl object-cover" />
               BolChal
             </h1>
             <p className="max-w-xl text-6xl font-bold leading-[1.1] tracking-tighter text-[#dee5ff] [font-family:_'Plus_Jakarta_Sans',sans-serif]">
@@ -123,9 +124,7 @@ function SignupPage() {
           <div className="w-full max-w-md">
             <div className="mb-10 flex flex-col items-center text-center lg:items-start lg:text-left">
               <div className="mb-6 lg:hidden">
-                <span className="text-2xl font-black italic text-[#a3a6ff] [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-                  CS
-                </span>
+                <img src="/logo.png" alt="BolChal Logo" className="w-10 h-10 rounded-lg object-cover" />
               </div>
               <h2 className="mb-2 text-3xl font-extrabold tracking-tight text-[#dee5ff] [font-family:_'Plus_Jakarta_Sans',sans-serif]">
                 Create Account

@@ -39,11 +39,9 @@ function LandingPage() {
       }`}>
         <div className="mx-auto max-w-7xl px-6 flex items-center justify-between transition-all duration-500">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#a3a6ff] to-[#6063ee] flex items-center justify-center text-[#0f00a4] shadow-lg shadow-[#a3a6ff]/20">
-              <span className="material-symbols-outlined text-xl font-bold">forum</span>
-            </div>
+            <img src="/logo.png" alt="BolChal Logo" className="w-9 h-9 rounded-xl object-cover shadow-lg shadow-[#a3a6ff]/20" />
             <span className="font-black italic text-[#a3a6ff] tracking-tighter text-xl [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-              STREAM.
+              BolChal.
             </span>
           </div>
 
@@ -279,11 +277,9 @@ function LandingPage() {
       <footer className="mx-auto max-w-7xl px-6 py-12 border-t border-[#40485d]/10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#141f38] flex items-center justify-center text-[#a3a6ff] border border-[#a3a6ff]/20">
-              <span className="material-symbols-outlined text-lg">forum</span>
-            </div>
+            <img src="/logo.png" alt="BolChal Logo" className="w-8 h-8 rounded-lg object-cover border border-[#a3a6ff]/20" />
             <span className="font-black italic text-[#a3a6ff] tracking-tighter [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-              THE CINEMATIC STREAM
+              BolChal
             </span>
           </div>
 
