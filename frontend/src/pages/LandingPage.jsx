@@ -37,6 +37,24 @@ function LandingPage() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const [heroDisplayText, setHeroDisplayText] = useState('')
+  
+  useEffect(() => {
+    let index = 0
+    const fullText = t.hero.subtitle
+    setHeroDisplayText('')
+    
+    const interval = setInterval(() => {
+      setHeroDisplayText(fullText.substring(0, index + 1))
+      index++
+      if (index >= fullText.length) {
+        clearInterval(interval)
+      }
+    }, 40)
+    
+    return () => clearInterval(interval)
+  }, [language, t.hero.subtitle])
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#060e20] text-[#dee5ff] [font-family:_'Inter',sans-serif]">
       <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
@@ -153,8 +171,9 @@ function LandingPage() {
             <h1 className="mb-6 text-5xl font-extrabold leading-tight tracking-tighter text-[#dee5ff] drop-shadow-[0_0_20px_rgba(163,166,255,0.3)] md:text-8xl [font-family:_'Plus_Jakarta_Sans',sans-serif]">
               {t.hero.title}
             </h1>
-            <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-[#a3aac4] md:text-2xl [font-family:_'Inter',sans-serif]">
-              {t.hero.subtitle}
+            <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-[#a3aac4] md:text-2xl [font-family:_'Inter',sans-serif] min-h-[80px]">
+              {heroDisplayText}
+              <span className="inline-block w-1 h-6 ml-1 bg-[#a3a6ff] animate-blink align-middle"></span>
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
