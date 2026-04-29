@@ -18,6 +18,10 @@ function ChatRoomPage() {
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
   const [passwordInput, setPasswordInput] = useState('')
   const [currentUser, setCurrentUser] = useState(null)
+  const [roomMembers, setRoomMembers] = useState([])
+  const [onlineUsers, setOnlineUsers] = useState(new Set())
+  const [isMembersOpen, setIsMembersOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   
   const { language } = useLanguage()
   const t = dashboardTranslations[language] || dashboardTranslations['en']
@@ -85,9 +89,14 @@ function ChatRoomPage() {
 
     async function init() {
       try {
+        // 1. Fetch Room Info
         const data = await apiService.getRoom(roomId)
         if (!mounted) return
         setRoomInfo(data.room)
+
+        // 2. Fetch Room Members
+        const membersData = await apiService.getRoomMembers(roomId)
+        if (mounted) setRoomMembers(membersData)
 
         const token = apiService.getToken()
         if (!token) {
@@ -156,6 +165,24 @@ function ChatRoomPage() {
                 : msg
             )
           );
+        });
+
+        socketService.on('presence', (payload) => {
+          if (!mounted) return;
+          setOnlineUsers(prev => {
+            const next = new Set(prev);
+            if (payload.status === 'online') {
+              next.add(payload.userId);
+            } else {
+              next.delete(payload.userId);
+            }
+            return next;
+          });
+        });
+
+        socketService.on('online_users', (payload) => {
+          if (!mounted) return;
+          setOnlineUsers(new Set(payload.users));
         });
 
         socketService.on('error', (payload) => {
@@ -316,6 +343,14 @@ function ChatRoomPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+             <button 
+               onClick={() => setIsMembersOpen(!isMembersOpen)}
+               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all text-xs font-semibold ${isMembersOpen ? 'bg-[#a3a6ff] text-[#0f00a4]' : 'bg-[#141f38] text-[#a3aac4] hover:text-white'}`}
+             >
+               <span className="material-symbols-outlined text-sm">groups</span>
+               <span>{roomMembers.length}</span>
+             </button>
+
              {roomInfo?.creator?._id === currentUserId && (
                 <button 
                   onClick={() => handleDeleteRoom(roomId, navigate)}
@@ -440,6 +475,41 @@ function ChatRoomPage() {
           </div>
         </div>
       </main>
+
+      {/* Right Sidebar: Member List */}
+      <aside className={`${isMembersOpen ? 'flex' : 'hidden'} lg:flex fixed lg:relative right-0 top-0 h-full z-40 flex-col py-8 bg-[#091328] w-72 border-l border-[#40485d]/10 shadow-[-12px_0_32px_rgba(0,0,0,0.2)]`}>
+        <div className="px-6 mb-6 flex items-center justify-between">
+          <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-[#dee5ff] text-sm tracking-tight uppercase">{language === 'hi' ? 'सदस्य' : 'Members'} — {roomMembers.length}</h3>
+          <button onClick={() => setIsMembersOpen(false)} className="lg:hidden text-[#a3aac4] hover:text-white">
+            <span className="material-symbols-outlined text-xl">close</span>
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-4 space-y-1">
+          {roomMembers.map(member => (
+            <div 
+              key={member.userId}
+              className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#141f38] transition-colors group cursor-default"
+            >
+              <div className="relative">
+                <div className="w-9 h-9 rounded-full bg-[#192540] border border-[#40485d]/20 flex items-center justify-center text-[10px] font-bold text-[#a3a6ff]">
+                  {member.username.substring(0, 2).toUpperCase()}
+                </div>
+                {onlineUsers.has(member.userId) && (
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#091328] rounded-full animate-pulse"></span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className={`text-sm font-medium truncate ${onlineUsers.has(member.userId) ? 'text-[#dee5ff]' : 'text-[#a3aac4]'}`}>
+                  {member.username}
+                </p>
+                {member.isAdmin && (
+                  <p className="text-[9px] font-black uppercase tracking-widest text-[#a3a6ff]/60">Admin</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </aside>
     </div>
   )
 }

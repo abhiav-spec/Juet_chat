@@ -77,3 +77,11 @@ export const unregisterUser = (ws) => {
     }
     userContextMap.delete(ws);
 };
+
+/**
+ * Get all user IDs currently online (at least one active socket).
+ * @returns {string[]}
+ */
+export const getOnlineUserIds = () => {
+    return Array.from(userSockets.keys());
+};

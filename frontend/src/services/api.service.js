@@ -45,6 +45,7 @@ export const apiService = {
     getRooms: () => fetchWithAuth('/api/rooms'),
     getFeaturedRooms: () => fetchWithAuth('/api/rooms/featured'),
     getRoom: (id) => fetchWithAuth(`/api/rooms/${id}`),
+    getRoomMembers: (id) => fetchWithAuth(`/api/rooms/${id}/members`),
     createRoom: (roomData) => fetchWithAuth('/api/rooms', {
         method: 'POST',
         body: JSON.stringify(roomData),

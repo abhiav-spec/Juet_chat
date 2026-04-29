@@ -13,6 +13,8 @@ export const WS_SERVER_EVENTS = {
     MESSAGE_DELETED: 'message_deleted',
     DIRECT_MESSAGE: 'direct_message',
     ERROR: 'error',
+    PRESENCE: 'presence',
+    ONLINE_USERS: 'online_users',
 };
 
 // Room types

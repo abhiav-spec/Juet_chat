@@ -23,7 +23,7 @@ const createWebSocketServer = (httpServer, app) => {
         // ─── 1. Authenticate ──────────────────────────────────────────────────
         wsAuth(ws, req, () => {
             // ─── 2. Register user context ─────────────────────────────────────
-            handleConnection(ws);
+            handleConnection(ws, wss);
 
             // ─── 3. Route incoming messages ───────────────────────────────────
             ws.on('message', (rawData) => {
@@ -56,12 +56,12 @@ const createWebSocketServer = (httpServer, app) => {
             });
 
             // ─── 4. Handle disconnect ─────────────────────────────────────────
-            ws.on('close', () => handleDisconnect(ws));
+            ws.on('close', () => handleDisconnect(ws, wss));
 
             // ─── 5. Handle connection-level errors ────────────────────────────
             ws.on('error', (err) => {
                 console.error(`[WS] Socket error for user ${ws.user?.id}:`, err.message);
-                handleDisconnect(ws);
+                handleDisconnect(ws, wss);
             });
         });
     });

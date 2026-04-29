@@ -190,3 +190,34 @@ export const leaveRoom = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * GET /api/rooms/:id/members
+ * Retrieve a list of all members in a room.
+ *
+ * @param {import('express').Request} req - The Express request object.
+ * @param {import('express').Response} res - The Express response object.
+ * @param {import('express').NextFunction} next - The next middleware function.
+ */
+export const getRoomMembers = async (req, res, next) => {
+    try {
+        const room = await Room.findById(req.params.id)
+            .populate('members.user', 'username email gender location about')
+            .lean();
+
+        if (!room) {
+            return res.status(404).json({ error: 'Room not found.' });
+        }
+
+        const members = room.members.map(m => ({
+            userId: m.user._id,
+            username: m.user.username,
+            isAdmin: m.isAdmin,
+            joinedAt: m.joinedAt
+        }));
+
+        return res.status(200).json(members);
+    } catch (error) {
+        next(error);
+    }
+};
