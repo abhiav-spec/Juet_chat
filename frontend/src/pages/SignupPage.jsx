@@ -84,6 +84,30 @@ function SignupPage() {
         <span className="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
         <span className="text-xs font-bold uppercase tracking-widest px-1">{t.backHome}</span>
       </Link>
+
+      <div className="absolute top-6 right-6 md:top-8 md:right-8 z-[100]">
+        <div className="relative group">
+          <button className="flex items-center gap-1 text-[11px] uppercase font-bold tracking-[0.2em] text-[#a3aac4] hover:text-[#dee5ff] transition-colors px-3 py-2 border border-[#40485d]/20 hover:border-[#a3a6ff]/20 rounded-full bg-[#141f38]/40 backdrop-blur-sm">
+            <span className="material-symbols-outlined text-[16px]">language</span>
+            {language === 'en' ? 'EN' : 'HI'}
+            <span className="material-symbols-outlined text-[14px]">arrow_drop_down</span>
+          </button>
+          <div className="absolute top-full right-0 mt-2 w-32 bg-[#091328] border border-[#40485d]/40 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden z-50">
+            <button 
+              className={`w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#141f38] transition-colors ${language === 'en' ? 'text-[#a3a6ff] bg-[#141f38]/50' : 'text-[#a3aac4]'}`}
+              onClick={() => setLanguage('en')}
+            >
+              English
+            </button>
+            <button 
+              className={`w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#141f38] transition-colors ${language === 'hi' ? 'text-[#a3a6ff] bg-[#141f38]/50' : 'text-[#a3aac4]'}`}
+              onClick={() => setLanguage('hi')}
+            >
+              हिंदी
+            </button>
+          </div>
+        </div>
+      </div>
       <main className="grid min-h-screen grid-cols-1 lg:grid-cols-12">
         <section className="relative hidden overflow-hidden p-16 lg:col-span-7 lg:flex lg:flex-col lg:justify-between">
           <div className="absolute inset-0 z-0">
