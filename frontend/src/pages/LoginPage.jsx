@@ -6,7 +6,7 @@ import { useLanguage } from '../hooks/useLanguage'
 
 function LoginPage() {
   const navigate = useNavigate()
-  const { language } = useLanguage()
+  const { language, setLanguage } = useLanguage()
   const t = authTranslations[language] || authTranslations['en']
   const [showPassword, setShowPassword] = useState(false)
   const [identifier, setIdentifier] = useState('')

@@ -19,7 +19,7 @@ function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  const { language } = useLanguage()
+  const { language, setLanguage } = useLanguage()
   const t = authTranslations[language] || authTranslations['en']
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
@@ -205,68 +205,68 @@ function SignupPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="ml-4 block text-sm font-semibold text-[#a3aac4]" htmlFor="gender">
-                      Gender
-                    </label>
-                    <div className="relative">
-                      <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-xl text-[#a3aac4]">
-                        wc
-                      </span>
-                      <select
-                        className="w-full appearance-none rounded-full border border-[#40485d]/20 bg-[#192540] py-4 pl-14 pr-10 text-[#dee5ff] outline-none transition-all focus:ring-2 focus:ring-[#a3a6ff]/40"
-                        id="gender"
-                        name="gender"
-                        onChange={handleChange}
-                        value={formData.gender}
-                      >
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                      </select>
-                      <span className="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-[#a3aac4] pointer-events-none">
-                        expand_more
-                      </span>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="ml-4 block text-sm font-semibold text-[#a3aac4]" htmlFor="gender">
+                        {t.signup.genderLabel}
+                      </label>
+                      <div className="relative">
+                        <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-xl text-[#a3aac4]">
+                          wc
+                        </span>
+                        <select
+                          className="w-full appearance-none rounded-full border border-[#40485d]/20 bg-[#192540] py-4 pl-14 pr-10 text-[#dee5ff] outline-none transition-all focus:ring-2 focus:ring-[#a3a6ff]/40"
+                          id="gender"
+                          name="gender"
+                          onChange={handleChange}
+                          value={formData.gender}
+                        >
+                          <option value="male">{t.signup.genderMale}</option>
+                          <option value="female">{t.signup.genderFemale}</option>
+                          <option value="other">{t.signup.genderOther}</option>
+                        </select>
+                        <span className="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-[#a3aac4] pointer-events-none">
+                          expand_more
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="ml-4 block text-sm font-semibold text-[#a3aac4]" htmlFor="location">
+                        {t.signup.locationLabel}
+                      </label>
+                      <div className="relative">
+                        <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-xl text-[#a3aac4]">
+                          location_on
+                        </span>
+                        <input
+                          className="w-full rounded-full border border-[#40485d]/20 bg-[#192540] py-4 pl-14 pr-6 text-[#dee5ff] outline-none transition-all placeholder:text-[#6d758c] focus:ring-2 focus:ring-[#a3a6ff]/40"
+                          id="location"
+                          name="location"
+                          onChange={handleChange}
+                          placeholder={t.signup.locationPlaceholder}
+                          type="text"
+                          value={formData.location}
+                        />
+                      </div>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="ml-4 block text-sm font-semibold text-[#a3aac4]" htmlFor="location">
-                      Location
+                    <label className="ml-4 block text-sm font-semibold text-[#a3aac4]" htmlFor="about">
+                      {t.signup.aboutLabel}
                     </label>
                     <div className="relative">
-                      <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-xl text-[#a3aac4]">
-                        location_on
-                      </span>
-                      <input
-                        className="w-full rounded-full border border-[#40485d]/20 bg-[#192540] py-4 pl-14 pr-6 text-[#dee5ff] outline-none transition-all placeholder:text-[#6d758c] focus:ring-2 focus:ring-[#a3a6ff]/40"
-                        id="location"
-                        name="location"
+                      <textarea
+                        className="w-full rounded-2xl border border-[#40485d]/20 bg-[#192540] py-4 px-6 text-[#dee5ff] outline-none transition-all placeholder:text-[#6d758c] focus:ring-2 focus:ring-[#a3a6ff]/40 min-h-[100px] resize-none"
+                        id="about"
+                        name="about"
                         onChange={handleChange}
-                        placeholder="City, Country"
-                        type="text"
-                        value={formData.location}
+                        placeholder={t.signup.aboutPlaceholder}
+                        value={formData.about}
                       />
                     </div>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="ml-4 block text-sm font-semibold text-[#a3aac4]" htmlFor="about">
-                    About Me
-                  </label>
-                  <div className="relative">
-                    <textarea
-                      className="w-full rounded-2xl border border-[#40485d]/20 bg-[#192540] py-4 px-6 text-[#dee5ff] outline-none transition-all placeholder:text-[#6d758c] focus:ring-2 focus:ring-[#a3a6ff]/40 min-h-[100px] resize-none"
-                      id="about"
-                      name="about"
-                      onChange={handleChange}
-                      placeholder="Tell us a bit about yourself..."
-                      value={formData.about}
-                    />
-                  </div>
-                </div>
 
                 <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
