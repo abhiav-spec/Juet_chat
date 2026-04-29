@@ -60,6 +60,10 @@ export const apiService = {
 
     // User Utils
     getProfile: () => fetchWithAuth('/api/auth/profile'),
+    updateProfile: (data) => fetchWithAuth('/api/auth/profile', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+    }),
     deleteAccount: () => fetchWithAuth('/api/auth/profile', {
         method: 'DELETE',
     }),

@@ -118,6 +118,48 @@ const getUserProfile = async (req, res) => {
     }
 }
 
+const updateProfile = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { username, gender, location, about } = req.body;
+        
+        // We explicitly do NOT destructure or use 'email' from req.body
+        const updateData = {};
+        
+        if (username) {
+            // Check if username is already taken by another user
+            const existingUser = await User.findOne({ username, _id: { $ne: userId } });
+            if (existingUser) {
+                return res.status(400).json({ error: 'Username is already taken' });
+            }
+            updateData.username = username;
+        }
+        
+        if (gender !== undefined) updateData.gender = gender;
+        if (location !== undefined) updateData.location = location;
+        if (about !== undefined) updateData.about = about;
+        
+        const updatedUser = await User.findByIdAndUpdate(
+            userId, 
+            updateData, 
+            { new: true, runValidators: true }
+        ).select('-password -__v');
+        
+        if (!updatedUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        
+        return res.status(200).json({ 
+            message: 'Profile updated successfully',
+            user: updatedUser 
+        });
+        
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 const refreshToken = async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
@@ -361,4 +403,4 @@ export const deleteAccount = async (req, res) => {
     }
 };
 
-export { registerUser, getUserProfile, refreshToken, logout, logoutAll, login, verifyEmail, resendOtp };
+export { registerUser, getUserProfile, updateProfile, refreshToken, logout, logoutAll, login, verifyEmail, resendOtp };

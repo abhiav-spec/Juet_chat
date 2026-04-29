@@ -11,6 +11,11 @@ function DashboardPage() {
   const [currentUser, setCurrentUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  
+  // Profile edit states
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
+  const [editForm, setEditForm] = useState({ username: '', gender: '', location: '', about: '' })
+  const [isSavingProfile, setIsSavingProfile] = useState(false)
 
   useEffect(() => {
     async function loadData() {
@@ -53,6 +58,30 @@ function DashboardPage() {
       navigate('/')
     } catch (err) {
       alert(err.message || "Failed to delete account. Ensure all your created rooms are deleted.")
+    }
+  }
+
+  const startEditingProfile = () => {
+    setEditForm({
+        username: currentUser?.username || '',
+        gender: currentUser?.gender || 'other',
+        location: currentUser?.location || '',
+        about: currentUser?.about || ''
+    })
+    setIsEditingProfile(true)
+  }
+
+  const handleSaveProfile = async () => {
+    try {
+        setIsSavingProfile(true)
+        const updatedProfile = await apiService.updateProfile(editForm)
+        setCurrentUser(updatedProfile.user)
+        setIsEditingProfile(false)
+        alert('Profile updated successfully!')
+    } catch (err) {
+        alert(err.message || 'Failed to update profile')
+    } finally {
+        setIsSavingProfile(false)
     }
   }
 
@@ -347,25 +376,50 @@ function DashboardPage() {
 
                   {/* Details Form Area */}
                   <div className="md:col-span-2 space-y-6">
-                    <div className="bg-[#091328] rounded-2xl p-8 border border-[#40485d]/10">
-                      <h5 className="text-sm font-bold uppercase tracking-widest text-[#a3a6ff] mb-6 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-[20px]">badge</span>
-                        Account Details
-                      </h5>
+                    <div className="bg-[#091328] rounded-2xl p-8 border border-[#40485d]/10 relative">
+                      <div className="flex items-center justify-between mb-6">
+                          <h5 className="text-sm font-bold uppercase tracking-widest text-[#a3a6ff] flex items-center gap-2">
+                            <span className="material-symbols-outlined text-[20px]">badge</span>
+                            Account Details
+                          </h5>
+                          {!isEditingProfile ? (
+                              <button onClick={startEditingProfile} className="text-xs font-bold uppercase tracking-widest bg-[#141f38] text-[#a3aac4] hover:text-[#dee5ff] hover:bg-[#192540] py-2 px-4 rounded-lg transition-colors border border-[#40485d]/20">
+                                Edit Profile
+                              </button>
+                          ) : (
+                              <div className="flex gap-2">
+                                  <button onClick={() => setIsEditingProfile(false)} className="text-[10px] font-bold uppercase tracking-widest bg-[#141f38] text-[#a3aac4] hover:text-white py-2 px-3 rounded-lg transition-colors" disabled={isSavingProfile}>
+                                    Cancel
+                                  </button>
+                                  <button onClick={handleSaveProfile} className="text-[10px] font-bold uppercase tracking-widest bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] hover:opacity-90 py-2 px-4 rounded-lg transition-all" disabled={isSavingProfile}>
+                                    {isSavingProfile ? 'Saving...' : 'Save'}
+                                  </button>
+                              </div>
+                          )}
+                      </div>
                       
                       <div className="space-y-6">
                         <div className="space-y-2">
                           <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Username</label>
-                          <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium">
-                            {currentUser?.username}
-                          </div>
+                          {isEditingProfile ? (
+                              <input 
+                                  className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/30 text-[#dee5ff] font-medium outline-none focus:border-[#a3a6ff]/50" 
+                                  value={editForm.username}
+                                  onChange={(e) => setEditForm({...editForm, username: e.target.value})}
+                              />
+                          ) : (
+                              <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium">
+                                {currentUser?.username}
+                              </div>
+                          )}
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-2 relative">
                           <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Email Address</label>
-                          <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium">
+                          <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium opacity-70 cursor-not-allowed">
                             {currentUser?.email}
                           </div>
+                          {isEditingProfile && <span className="absolute right-4 top-10 text-[10px] text-[#ff7b7b] bg-[#ff7b7b]/10 px-2 py-1 rounded font-bold uppercase">Locked</span>}
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
@@ -387,23 +441,53 @@ function DashboardPage() {
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Gender</label>
-                            <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium capitalize">
-                              {currentUser?.gender || 'Not specified'}
-                            </div>
+                            {isEditingProfile ? (
+                                <select 
+                                    className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/30 text-[#dee5ff] font-medium capitalize outline-none focus:border-[#a3a6ff]/50 appearance-none"
+                                    value={editForm.gender}
+                                    onChange={(e) => setEditForm({...editForm, gender: e.target.value})}
+                                >
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            ) : (
+                                <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium capitalize">
+                                  {currentUser?.gender || 'Not specified'}
+                                </div>
+                            )}
                           </div>
                           <div className="space-y-2">
                             <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">Location</label>
-                            <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium">
-                              {currentUser?.location || 'Undisclosed'}
-                            </div>
+                            {isEditingProfile ? (
+                                <input 
+                                  className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/30 text-[#dee5ff] font-medium outline-none focus:border-[#a3a6ff]/50" 
+                                  value={editForm.location}
+                                  placeholder="e.g. New York, USA"
+                                  onChange={(e) => setEditForm({...editForm, location: e.target.value})}
+                                />
+                            ) : (
+                                <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium">
+                                  {currentUser?.location || 'Undisclosed'}
+                                </div>
+                            )}
                           </div>
                         </div>
 
                         <div className="space-y-2">
                           <label className="text-[10px] uppercase font-bold text-[#6d758c] ml-1">About Me</label>
-                          <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium min-h-[80px]">
-                            {currentUser?.about || 'No bio provided.'}
-                          </div>
+                          {isEditingProfile ? (
+                              <textarea 
+                                  className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/30 text-[#dee5ff] font-medium min-h-[80px] outline-none focus:border-[#a3a6ff]/50 resize-y" 
+                                  value={editForm.about}
+                                  placeholder="Tell everyone a bit about yourself..."
+                                  onChange={(e) => setEditForm({...editForm, about: e.target.value})}
+                              />
+                          ) : (
+                              <div className="w-full bg-[#141f38] px-5 py-4 rounded-xl border border-[#40485d]/20 text-[#dee5ff] font-medium min-h-[80px]">
+                                {currentUser?.about || 'No bio provided.'}
+                              </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -411,7 +495,7 @@ function DashboardPage() {
                     <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-6 flex gap-4">
                       <span className="material-symbols-outlined text-amber-500">info</span>
                       <p className="text-xs text-[#a3aac4] leading-relaxed">
-                        To change your username or email address, please contact support. For security reasons, identity updates require manual verification.
+                        To change your email address, please contact support. For security reasons, identity updates require manual verification.
                       </p>
                     </div>
 
