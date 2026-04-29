@@ -2,6 +2,9 @@ export const dashboardTranslations = {
   en: {
     sidebar: {
       explore: "Explore",
+      rooms: "Rooms",
+      myRooms: "My Rooms",
+      settings: "Settings",
       search: "Search",
       createRoom: "Create Room",
       myProfile: "My Profile",
@@ -58,6 +61,9 @@ export const dashboardTranslations = {
   hi: {
     sidebar: {
       explore: "एक्सप्लोर करें",
+      rooms: "रूम्स",
+      myRooms: "मेरे रूम्स",
+      settings: "सेटिंग्स",
       search: "खोजें",
       createRoom: "रूम बनाएं",
       myProfile: "मेरी प्रोफ़ाइल",

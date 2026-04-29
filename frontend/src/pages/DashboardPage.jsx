@@ -19,7 +19,7 @@ function DashboardPage() {
   const [editForm, setEditForm] = useState({ username: '', gender: '', location: '', about: '' })
   const [isSavingProfile, setIsSavingProfile] = useState(false)
 
-  const { language } = useLanguage()
+  const { language, setLanguage } = useLanguage()
   const t = dashboardTranslations[language] || dashboardTranslations['en']
 
   useEffect(() => {
@@ -191,14 +191,14 @@ function DashboardPage() {
             className={`w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm ${activeView === 'rooms' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4] hover:text-white hover:bg-[#141f38]'}`}
           >
             <span className="material-symbols-outlined">meeting_room</span>
-            <span>Rooms</span>
+            <span>{t.sidebar.rooms}</span>
           </button>
           <button 
             onClick={() => setActiveView('my-rooms')}
             className={`w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm ${activeView === 'my-rooms' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4] hover:text-white hover:bg-[#141f38]'}`}
           >
             <span className="material-symbols-outlined">person_pin</span>
-            <span>My Rooms</span>
+            <span>{t.sidebar.myRooms}</span>
           </button>
           <button onClick={() => navigate('/dms')} className="w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm text-[#a3aac4] hover:text-white hover:bg-[#141f38]">
             <span className="material-symbols-outlined">chat_bubble</span>
@@ -209,7 +209,7 @@ function DashboardPage() {
             className={`w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm ${activeView === 'settings' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4] hover:text-white hover:bg-[#141f38]'}`}
           >
             <span className="material-symbols-outlined">settings</span>
-            <span>Settings</span>
+            <span>{t.sidebar.settings}</span>
           </button>
         </nav>
         <div className="mt-auto px-4 pb-4">
@@ -233,11 +233,34 @@ function DashboardPage() {
             </button>
             <div>
               <h1 className="font-['Plus_Jakarta_Sans'] font-bold text-xl tracking-tight text-[#dee5ff]">
-                {activeView === 'explore' ? t.sidebar.explore : activeView === 'rooms' ? 'Rooms' : activeView === 'my-rooms' ? 'My Rooms' : 'Settings'}
+                {activeView === 'explore' ? t.sidebar.explore : activeView === 'rooms' ? t.sidebar.rooms : activeView === 'my-rooms' ? t.sidebar.myRooms : t.sidebar.settings}
               </h1>
             </div>
           </div>
           <div className="flex items-center gap-4">
+             {/* Language Selector */}
+             <div className="relative group">
+               <button className="flex items-center gap-1 text-[11px] uppercase font-bold tracking-[0.2em] text-[#a3aac4] hover:text-[#dee5ff] transition-colors px-3 py-2 border border-[#40485d]/20 hover:border-[#a3a6ff]/20 rounded-full bg-[#141f38]/40 backdrop-blur-sm">
+                 <span className="material-symbols-outlined text-[16px]">language</span>
+                 {language === 'en' ? 'EN' : 'HI'}
+                 <span className="material-symbols-outlined text-[14px]">arrow_drop_down</span>
+               </button>
+               <div className="absolute top-full right-0 mt-2 w-32 bg-[#091328] border border-[#40485d]/40 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden z-50">
+                 <button 
+                   className={`w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#141f38] transition-colors ${language === 'en' ? 'text-[#a3a6ff] bg-[#141f38]/50' : 'text-[#a3aac4]'}`}
+                   onClick={() => setLanguage('en')}
+                 >
+                   English
+                 </button>
+                 <button 
+                   className={`w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#141f38] transition-colors ${language === 'hi' ? 'text-[#a3a6ff] bg-[#141f38]/50' : 'text-[#a3aac4]'}`}
+                   onClick={() => setLanguage('hi')}
+                 >
+                   हिंदी
+                 </button>
+               </div>
+             </div>
+
              <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-[#141f38] rounded-full border border-[#40485d]/20">
                 <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-[#a3aac4]">Online</span>
