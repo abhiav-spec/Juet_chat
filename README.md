@@ -743,7 +743,42 @@ The frontend checks for `accessToken` in localStorage. If missing, protected pag
 
 ### How Rate Limiting Works
 
-The backend uses a lightweight in-memory fixed-window rate limiter. Login attempts are limited per IP and per IP plus email, OTP send requests are limited per IP and per IP plus email, OTP verification attempts are limited per IP plus email, and WebSocket room/direct messages are limited per authenticated user. When an HTTP limit is exceeded, the API returns `429` with `Retry-After`; when a WebSocket message limit is exceeded, the server sends an `error` event with `retryAfter`.
+Rate limiting means controlling how many times a user or IP address can perform an action in a fixed time window. It protects sensitive and high-frequency actions from abuse.
+
+Example: if login is limited to 5 attempts per 15 minutes, then after 5 repeated attempts the backend temporarily blocks more login attempts and returns a response like this:
+
+```json
+{
+  "error": "Too many login attempts. Please try again later.",
+  "retryAfter": 120
+}
+```
+
+`retryAfter` tells the client how many seconds to wait before trying again.
+
+This project uses a lightweight in-memory fixed-window rate limiter in `backend/src/utils/rateLimiter.js`. It stores request counters in a JavaScript `Map`. This works well for a single backend server. In production with multiple backend instances, the counters should usually be moved to Redis so every server shares the same limits.
+
+Rate limits added in this project:
+
+| Area | File | Limit |
+| --- | --- | --- |
+| Login | `backend/src/routes/auth.routes.js` | Max 5 attempts per same IP + email in 15 minutes |
+| Login | `backend/src/routes/auth.routes.js` | Max 20 attempts per same IP in 15 minutes |
+| OTP register/resend | `backend/src/routes/auth.routes.js` | Max 3 OTP requests per same IP + email in 10 minutes |
+| OTP register/resend | `backend/src/routes/auth.routes.js` | Max 10 OTP requests per same IP in 10 minutes |
+| OTP verify | `backend/src/routes/auth.routes.js` | Max 10 verification attempts per same IP + email in 10 minutes |
+| Room messages | `backend/src/websocket/handlers/message.js` | Max 30 messages per authenticated user per minute |
+| Direct messages | `backend/src/websocket/handlers/directMessage.js` | Max 30 direct messages per authenticated user per minute |
+
+Problems solved by rate limiting:
+
+- **Login protection**: Prevents brute-force password guessing, slows attackers trying many passwords for one email, and limits attackers trying many emails from one IP.
+- **OTP protection**: Prevents OTP spam, protects the email service from abuse, reduces cost/risk if email sending is limited or paid, and prevents someone from repeatedly sending OTPs to another user's email.
+- **Chat protection**: Prevents message spam in rooms, prevents direct message flooding, reduces unnecessary database writes, and keeps WebSocket traffic controlled.
+
+Interview line:
+
+> I added fixed-window rate limiting to protect sensitive and high-frequency actions. Login and OTP routes are limited by IP and email to reduce brute-force and spam attacks, while WebSocket messages are limited per authenticated user to prevent chat flooding and unnecessary database load.
 
 ### Important Files To Remember
 
