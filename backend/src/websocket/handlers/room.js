@@ -39,18 +39,15 @@ const handleJoinRoom = async (ws, payload) => {
         const isCreator = ws.user.id.toString() === room.creator.toString();
         const isMember = room.members.some(m => m.user.toString() === ws.user.id);
 
-        if (!isCreator && !isMember) {
-            // If private, check password first
-            if (room.type === ROOM_TYPES.PRIVATE) {
-                if (!password || typeof password !== 'string') {
-                    return sendError(ws, 'A password is required to join this private room.');
-                }
-                if (hashPassword(password) !== room.passwordHash) {
-                    return sendError(ws, 'Incorrect room password.');
-                }
+        if (room.type === ROOM_TYPES.PRIVATE && !isCreator && !isMember) {
+            if (!password || typeof password !== 'string') {
+                return sendError(ws, 'A password is required to join this private room.');
+            }
+            if (hashPassword(password) !== room.passwordHash) {
+                return sendError(ws, 'Incorrect room password.');
             }
 
-            // Successfully entered -> Add to persistent members (for both public & private)
+            // Successfully entered -> Add to persistent members
             room.members.push({ user: ws.user.id, isAdmin: false });
             await room.save();
         }
