@@ -3,6 +3,7 @@ export const WS_EVENTS = {
     JOIN: 'join',
     MESSAGE: 'message',
     DELETE_MESSAGE: 'delete_message',
+    DIRECT_MESSAGE: 'direct_message',
 };
 
 // WebSocket event names — server sends these
@@ -10,6 +11,7 @@ export const WS_SERVER_EVENTS = {
     HISTORY: 'history',
     MESSAGE: 'message',
     MESSAGE_DELETED: 'message_deleted',
+    DIRECT_MESSAGE: 'direct_message',
     ERROR: 'error',
 };
 

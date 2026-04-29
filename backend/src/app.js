@@ -6,6 +6,8 @@ import cors from 'cors';
 import authRoutes from './routes/auth.routes.js';
 import roomRoutes from './routes/room.routes.js';
 import healthRouter from './routes/health.routes.js';
+import userRoutes from './routes/user.routes.js';
+import dmRoutes from './routes/dm.routes.js';
 import errorHandler from './middleware/error.middleware.js';
 
 const app = express();
@@ -35,6 +37,8 @@ app.use(morgan('dev'));
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/dms', dmRoutes);
 
 // Health routes (must be mounted before error handler, no auth required)
 app.use('/', healthRouter);

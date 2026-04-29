@@ -274,10 +274,10 @@ function ChatRoomPage() {
             <span className="material-symbols-outlined">explore</span>
             <span>Explore Rooms</span>
           </button>
-          <a className="flex items-center gap-3 px-4 py-3 bg-[#49339d] text-white rounded-lg mx-2 font-['Plus_Jakarta_Sans'] font-medium text-sm" href="#">
+          <button onClick={() => navigate('/dms')} className="w-full flex items-center gap-3 px-4 py-3 bg-[#141f38] text-white rounded-lg mx-2 font-['Plus_Jakarta_Sans'] font-medium text-sm transition-all">
             <span className="material-symbols-outlined">chat_bubble</span>
             <span>Direct Messages</span>
-          </a>
+          </button>
         </nav>
       </aside>
 

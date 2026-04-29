@@ -72,5 +72,23 @@ export const apiService = {
         } catch (e) {
             return null;
         }
-    }
+    },
+
+    // Users
+    getUsers: (filters = {}) => {
+        const params = new URLSearchParams();
+        if (filters.gender) params.append('gender', filters.gender);
+        if (filters.location) params.append('location', filters.location);
+        
+        const queryString = params.toString() ? `?${params.toString()}` : '';
+        return fetchWithAuth(`/api/users${queryString}`);
+    },
+
+    // Direct Messages
+    startConversation: (targetUserId) => fetchWithAuth('/api/dms/conversation', {
+        method: 'POST',
+        body: JSON.stringify({ targetUserId }),
+    }),
+    getConversations: () => fetchWithAuth('/api/dms/conversations'),
+    getDirectMessages: (conversationId, limit = 50) => fetchWithAuth(`/api/dms/messages/${conversationId}?limit=${limit}`),
 };

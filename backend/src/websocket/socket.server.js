@@ -4,6 +4,7 @@ import handleConnection from './handlers/connection.js';
 import handleJoinRoom from './handlers/room.js';
 import handleSendMessage from './handlers/message.js';
 import handleDeleteMessage from './handlers/delete.js';
+import handleDirectMessage from './handlers/directMessage.js';
 import handleDisconnect from './handlers/disconnect.js';
 import { WS_EVENTS } from '../utils/constants.js';
 import { getTotalConnections } from './state/rooms.js';
@@ -44,6 +45,9 @@ const createWebSocketServer = (httpServer, app) => {
                         break;
                     case WS_EVENTS.DELETE_MESSAGE:
                         handleDeleteMessage(ws, payload);
+                        break;
+                    case WS_EVENTS.DIRECT_MESSAGE:
+                        handleDirectMessage(ws, payload);
                         break;
                     default:
                         // Ignore unknown events

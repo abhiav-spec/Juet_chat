@@ -117,6 +117,16 @@ export class ChatSocket {
             this.ws.close();
         }
     }
+
+    /**
+     * Send a direct message to a user in a specific conversation.
+     * 
+     * @param {string} conversationId - The unique ID of the conversation.
+     * @param {string} message - The content of the direct message.
+     */
+    sendDirectMessage(conversationId, message) {
+        this.send('direct_message', { conversationId, message });
+    }
 }
 
 export const socketService = new ChatSocket();

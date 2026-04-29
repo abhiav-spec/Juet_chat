@@ -94,10 +94,10 @@ function DashboardPage() {
             <span className="material-symbols-outlined">person_pin</span>
             <span>My Rooms</span>
           </button>
-          <a className="flex items-center gap-3 px-4 py-3 text-[#a3aac4] hover:text-white mx-2 duration-300 ease-in-out hover:bg-[#141f38] transition-all font-['Plus_Jakarta_Sans'] font-medium text-sm" href="#">
+          <button onClick={() => navigate('/dms')} className="w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm text-[#a3aac4] hover:text-white hover:bg-[#141f38]">
             <span className="material-symbols-outlined">chat_bubble</span>
             <span>Direct Messages</span>
-          </a>
+          </button>
           <button 
             onClick={() => setActiveView('settings')}
             className={`w-[calc(100%-1rem)] flex items-center gap-3 px-4 py-3 rounded-lg mx-2 duration-300 ease-in-out font-['Plus_Jakarta_Sans'] font-medium text-sm ${activeView === 'settings' ? 'bg-[#49339d] text-white' : 'text-[#a3aac4] hover:text-white hover:bg-[#141f38]'}`}

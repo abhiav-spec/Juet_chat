@@ -10,12 +10,25 @@
 const userContextMap = new WeakMap();
 
 /**
+ * Reverse mapping to find all active sockets for a given user.
+ * Structure: Map<string, Set<WebSocket>>
+ */
+/** @type {Map<string, Set<import('ws').WebSocket>>} */
+const userSockets = new Map();
+
+/**
  * Register a user context when they connect.
  * @param {import('ws').WebSocket} ws
  * @param {string} userId
  */
 export const registerUser = (ws, userId) => {
     userContextMap.set(ws, { userId, currentRoomId: null });
+    
+    // Add to reverse map
+    if (!userSockets.has(userId)) {
+        userSockets.set(userId, new Set());
+    }
+    userSockets.get(userId).add(ws);
 };
 
 /**
@@ -38,9 +51,29 @@ export const setUserRoom = (ws, roomId) => {
 };
 
 /**
+ * Get all active sockets for a given user.
+ * @param {string} userId
+ * @returns {Set<import('ws').WebSocket> | undefined}
+ */
+export const getUserSockets = (userId) => {
+    return userSockets.get(userId);
+};
+
+/**
  * Remove user context on disconnect.
  * @param {import('ws').WebSocket} ws
  */
 export const unregisterUser = (ws) => {
+    const ctx = userContextMap.get(ws);
+    if (ctx) {
+        const { userId } = ctx;
+        const sockets = userSockets.get(userId);
+        if (sockets) {
+            sockets.delete(ws);
+            if (sockets.size === 0) {
+                userSockets.delete(userId);
+            }
+        }
+    }
     userContextMap.delete(ws);
 };

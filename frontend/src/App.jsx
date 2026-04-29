@@ -6,6 +6,7 @@ import VerifyEmailPage from './pages/VerifyEmailPage'
 import DashboardPage from './pages/DashboardPage'
 import ChatRoomPage from './pages/ChatRoomPage'
 import CreateChatroomPage from './pages/CreateChatroomPage'
+import DirectMessagePage from './pages/DirectMessagePage'
 import TermsPage from './pages/TermsPage'
 import PrivacyPage from './pages/PrivacyPage'
 import SupportPage from './pages/SupportPage'
@@ -48,6 +49,11 @@ function App() {
         <Route path="/create-room" element={
           <ProtectedRoute>
             <CreateChatroomPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/dms" element={
+          <ProtectedRoute>
+            <DirectMessagePage />
           </ProtectedRoute>
         } />
         
