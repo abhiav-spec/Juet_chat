@@ -14,6 +14,8 @@ function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [openSettingsId, setOpenSettingsId] = useState(null)
+  const [managementModalRoom, setManagementModalRoom] = useState(null)
+  const [isUpdatingRoom, setIsUpdatingRoom] = useState(false)
   
   // Profile edit states
   const [isEditingProfile, setIsEditingProfile] = useState(false)
@@ -88,6 +90,25 @@ function DashboardPage() {
         alert(err.message || t.profile.updateError)
     } finally {
         setIsSavingProfile(false)
+    }
+  }
+
+  const handleUpdateRoom = async (roomId, data) => {
+    try {
+        setIsUpdatingRoom(true)
+        if (data.passkey) {
+            await apiService.updateRoomCode(roomId, data.passkey)
+        }
+        await apiService.updateRoom(roomId, { name: data.name, description: data.description })
+        
+        // Update local state
+        setRooms(prev => prev.map(r => r._id === roomId ? { ...r, ...data } : r))
+        setManagementModalRoom(null)
+        alert(language === 'hi' ? 'रूम सफलतापूर्वक अपडेट किया गया!' : 'Room updated successfully!')
+    } catch (err) {
+        alert(err.message)
+    } finally {
+        setIsUpdatingRoom(false)
     }
   }
 
@@ -465,55 +486,12 @@ function DashboardPage() {
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    setOpenSettingsId(openSettingsId === room._id ? null : room._id);
+                                    setManagementModalRoom(room);
                                   }}
                                   className="p-2 hover:bg-white/10 rounded-lg text-[#a3aac4] hover:text-[#a3a6ff] transition-colors"
                                 >
                                   <span className="material-symbols-outlined text-sm">settings</span>
                                 </button>
-                                
-                                {openSettingsId === room._id && (
-                                  <div className="absolute bottom-full right-0 mb-2 w-40 bg-[#091328] border border-[#40485d]/40 rounded-xl shadow-2xl z-50 py-1 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
-                                    <button 
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setOpenSettingsId(null);
-                                        const newCode = window.prompt(language === 'hi' ? 'नया रूम कोड दर्ज करें:' : 'Enter new room code:', room.passkey);
-                                        if (newCode && newCode !== room.passkey) {
-                                          apiService.updateRoomCode(room._id, newCode).then(() => {
-                                            setRooms(prev => prev.map(r => r._id === room._id ? { ...r, passkey: newCode } : r));
-                                            alert(language === 'hi' ? 'कोड अपडेट किया गया!' : 'Code updated!');
-                                          }).catch(err => alert(err.message));
-                                        }
-                                      }}
-                                      className="w-full flex items-center gap-2 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-[#a3aac4] hover:text-white hover:bg-[#141f38] transition-colors"
-                                    >
-                                      <span className="material-symbols-outlined text-sm">edit</span>
-                                      {language === 'hi' ? 'कोड बदलें' : 'Edit Code'}
-                                    </button>
-                                    <button 
-                                      onClick={async (e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setOpenSettingsId(null);
-                                        if (window.confirm(language === 'hi' ? 'क्या आप इस रूम को हटाना चाहते हैं?' : 'Are you sure you want to delete this room?')) {
-                                          try {
-                                            await apiService.deleteRoom(room._id);
-                                            setRooms(prev => prev.filter(r => r._id !== room._id));
-                                            alert(language === 'hi' ? 'रूम सफलतापूर्वक हटा दिया गया!' : 'Room deleted successfully!');
-                                          } catch (err) {
-                                            alert(err.message);
-                                          }
-                                        }
-                                      }}
-                                      className="w-full flex items-center gap-2 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition-colors"
-                                    >
-                                      <span className="material-symbols-outlined text-sm">delete</span>
-                                      {language === 'hi' ? 'हटाएं' : 'Delete'}
-                                    </button>
-                                  </div>
-                                )}
                               </div>
                             )}
                             
@@ -713,6 +691,134 @@ function DashboardPage() {
           </Link>
         </div>
       </main>
+
+      {/* Room Management Modal */}
+      {managementModalRoom && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#060e20]/90 backdrop-blur-xl animate-in fade-in duration-300">
+          <div 
+            className="w-full max-w-lg bg-[#091328] border border-[#40485d]/40 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="px-8 py-6 bg-gradient-to-r from-[#49339d]/20 to-transparent border-b border-[#40485d]/20 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-black text-white flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#a3a6ff]">settings</span>
+                  {language === 'hi' ? 'रूम सेटिंग्स' : 'Room Settings'}
+                </h3>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-[#a3aac4] font-bold mt-1">
+                  ID: {managementModalRoom._id}
+                </p>
+              </div>
+              <button 
+                onClick={() => setManagementModalRoom(null)}
+                className="w-10 h-10 rounded-xl bg-[#141f38] flex items-center justify-center text-[#a3aac4] hover:text-white transition-colors"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-8 space-y-6">
+              {/* Quick Stats */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-[#141f38]/40 p-4 rounded-2xl border border-[#40485d]/10">
+                  <span className="text-[10px] font-bold text-[#a3aac4] uppercase tracking-widest block mb-1">Members</span>
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-emerald-400 text-lg">group</span>
+                    <span className="text-xl font-black text-white">{managementModalRoom.members?.length || 1}</span>
+                  </div>
+                </div>
+                <div className="bg-[#141f38]/40 p-4 rounded-2xl border border-[#40485d]/10">
+                  <span className="text-[10px] font-bold text-[#a3aac4] uppercase tracking-widest block mb-1">Type</span>
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[#a3a6ff] text-lg">lock</span>
+                    <span className="text-xl font-black text-white uppercase">{managementModalRoom.type}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Editable Fields */}
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-[#a3a6ff] uppercase tracking-widest ml-1">Room Name</label>
+                  <input 
+                    type="text"
+                    defaultValue={managementModalRoom.name}
+                    id="edit-room-name"
+                    className="w-full bg-[#141f38] border border-[#40485d]/40 rounded-xl px-4 py-3 text-sm text-white focus:border-[#a3a6ff] outline-none transition-colors"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-[#a3a6ff] uppercase tracking-widest ml-1">Passkey (Code)</label>
+                  <div className="relative">
+                    <input 
+                      type="text"
+                      defaultValue={managementModalRoom.passkey}
+                      id="edit-room-passkey"
+                      className="w-full bg-[#141f38] border border-[#40485d]/40 rounded-xl px-4 py-3 text-sm text-white font-mono focus:border-[#a3a6ff] outline-none transition-colors"
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#a3aac4] text-sm">key</span>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-[#a3a6ff] uppercase tracking-widest ml-1">Description</label>
+                  <textarea 
+                    defaultValue={managementModalRoom.description}
+                    id="edit-room-description"
+                    rows="3"
+                    className="w-full bg-[#141f38] border border-[#40485d]/40 rounded-xl px-4 py-3 text-sm text-white focus:border-[#a3a6ff] outline-none transition-colors resize-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-8 py-6 bg-[#060e20]/50 border-t border-[#40485d]/20 flex items-center justify-between gap-4">
+              <button 
+                onClick={async () => {
+                  if (window.confirm(language === 'hi' ? 'क्या आप इस रूम को हटाना चाहते हैं?' : 'Are you sure you want to delete this room?')) {
+                    try {
+                      await apiService.deleteRoom(managementModalRoom._id);
+                      setRooms(prev => prev.filter(r => r._id !== managementModalRoom._id));
+                      setManagementModalRoom(null);
+                      alert(language === 'hi' ? 'रूम सफलतापूर्वक हटा दिया गया!' : 'Room deleted successfully!');
+                    } catch (err) {
+                      alert(err.message);
+                    }
+                  }
+                }}
+                className="px-6 py-3 text-red-500 font-bold text-xs uppercase tracking-widest hover:bg-red-500/10 rounded-xl transition-colors"
+              >
+                {language === 'hi' ? 'हटाएं' : 'Delete Room'}
+              </button>
+              
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setManagementModalRoom(null)}
+                  className="px-6 py-3 text-[#a3aac4] font-bold text-xs uppercase tracking-widest hover:text-white transition-colors"
+                >
+                  {language === 'hi' ? 'रद्द करें' : 'Cancel'}
+                </button>
+                <button 
+                  onClick={() => {
+                    const name = document.getElementById('edit-room-name').value;
+                    const passkey = document.getElementById('edit-room-passkey').value;
+                    const description = document.getElementById('edit-room-description').value;
+                    handleUpdateRoom(managementModalRoom._id, { name, passkey, description });
+                  }}
+                  disabled={isUpdatingRoom}
+                  className="px-8 py-3 bg-gradient-to-tr from-[#a3a6ff] to-[#6063ee] text-[#0f00a4] font-black text-xs uppercase tracking-widest rounded-xl hover:opacity-90 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  {isUpdatingRoom ? (language === 'hi' ? 'सहेज रहे हैं...' : 'Saving...') : (language === 'hi' ? 'सहेजें' : 'Save Changes')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Navigation */}
       <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] z-50 flex justify-around items-center px-4 py-4 bg-[#091328]/90 backdrop-blur-xl shadow-2xl border border-[#40485d]/20 rounded-2xl">

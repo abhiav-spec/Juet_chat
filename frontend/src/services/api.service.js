@@ -70,6 +70,10 @@ export const apiService = {
         method: 'PATCH',
         body: JSON.stringify({ roomCode }),
     }),
+    updateRoom: (roomId, data) => fetchWithAuth(`/api/rooms/${roomId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+    }),
 
     // User Utils
     getProfile: () => fetchWithAuth('/api/auth/profile'),

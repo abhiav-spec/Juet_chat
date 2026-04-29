@@ -310,3 +310,33 @@ export const updateRoomCode = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * PATCH /api/rooms/:id
+ * Update room details like name and description (Admin only).
+ */
+export const updateRoom = async (req, res, next) => {
+    try {
+        const { name, description } = req.body;
+        const room = await Room.findById(req.params.id);
+
+        if (!room) return res.status(404).json({ error: 'Room not found.' });
+        if (room.creator.toString() !== req.user.id) return res.status(403).json({ error: 'Only admin can update the room.' });
+
+        if (name) room.name = name.trim();
+        if (description !== undefined) room.description = description.trim();
+
+        await room.save();
+
+        return res.status(200).json({ 
+            message: 'Room updated successfully.',
+            room: {
+                id: room._id,
+                name: room.name,
+                description: room.description
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
