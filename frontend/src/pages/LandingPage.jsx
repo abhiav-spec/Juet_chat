@@ -6,6 +6,16 @@ function LandingPage() {
   const [featuredRooms, setFeaturedRooms] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
+  const validLanguages = ['en', 'hi']
+  const [language, setLanguage] = useState(() => {
+    const saved = localStorage.getItem('language')
+    return validLanguages.includes(saved) ? saved : 'en'
+  })
+
+  useEffect(() => {
+    localStorage.setItem('language', language)
+  }, [language])
+
   useEffect(() => {
     async function loadFeatured() {
       try {
@@ -53,6 +63,28 @@ function LandingPage() {
           </div>
 
           <div className="flex items-center gap-4">
+            <div className="relative group">
+              <button className="flex items-center gap-1 text-[11px] uppercase font-bold tracking-[0.2em] text-[#a3aac4] hover:text-[#dee5ff] transition-colors px-2 py-1 border border-transparent hover:border-[#40485d]/40 rounded-lg">
+                <span className="material-symbols-outlined text-[16px]">language</span>
+                {language === 'en' ? 'EN' : 'HI'}
+                <span className="material-symbols-outlined text-[14px]">arrow_drop_down</span>
+              </button>
+              <div className="absolute top-full right-0 mt-2 w-32 bg-[#091328] border border-[#40485d]/40 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden z-50">
+                <button 
+                  className={`w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#141f38] transition-colors ${language === 'en' ? 'text-[#a3a6ff] bg-[#141f38]/50' : 'text-[#a3aac4]'}`}
+                  onClick={() => setLanguage('en')}
+                >
+                  English
+                </button>
+                <button 
+                  className={`w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#141f38] transition-colors ${language === 'hi' ? 'text-[#a3a6ff] bg-[#141f38]/50' : 'text-[#a3aac4]'}`}
+                  onClick={() => setLanguage('hi')}
+                >
+                  हिंदी
+                </button>
+              </div>
+            </div>
+
             <Link to="/login" className="hidden sm:block text-[11px] uppercase font-bold tracking-[0.2em] text-[#a3aac4] hover:text-[#dee5ff] transition-colors px-4">
               Login
             </Link>
