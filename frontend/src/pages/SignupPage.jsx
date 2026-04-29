@@ -140,10 +140,10 @@ function SignupPage() {
           <div className="absolute inset-0 z-0">
             <img
               alt="Cinematic Background"
-              className="w-full h-full object-cover opacity-30 mix-blend-luminosity"
-              src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=2070"
+              className="w-full h-full object-cover opacity-50"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXN8scYnwVV-yMtuPhx9RZmCL8-Y8fyUdwPRs5jZuT85jrxIiGw5WuID0grPyNmdQRZ8afNms2bV7_80w2uTQp_n8zG_P0SZjQJ7qnn05LpzhF3GJvFk8DDn9Bfzceg5TBPsrvHiNnfm5UlXhg-Go-72342VKkQCrBm55jVtpLFc-TU3-eind3hYo6KAZ6ENi_1-mx3pprUl-zTgY8EVqnoNbOdV1nQ90Ntgirw1CbgcvPFagAhoUWP9n9W3AeaXFKtRhONEIGg2c"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#000000] via-[#060e20]/80 to-[#060e20]" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#060e20] via-transparent to-transparent" />
           </div>
 
           <div className="relative z-10">

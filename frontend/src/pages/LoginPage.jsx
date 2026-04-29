@@ -67,7 +67,7 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#000000] text-[#dee5ff] [font-family:_'Inter',sans-serif] relative selection:bg-[#a3a6ff] selection:text-[#0a0081]">
+    <div className="min-h-screen flex items-center justify-center bg-[#000000] p-6 overflow-hidden selection:bg-[#a3a6ff] selection:text-[#0a0081]">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-[#a3a6ff]/10 blur-[120px]" />
         <div className="absolute top-[60%] -right-[5%] w-[35%] h-[35%] rounded-full bg-[#49339d]/20 blur-[100px]" />
@@ -102,150 +102,124 @@ function LoginPage() {
         </div>
       </div>
 
-      <main className="grid min-h-screen grid-cols-1 lg:grid-cols-12 relative z-10">
-        {/* Form Section */}
-        <section className="col-span-1 flex items-center justify-center p-6 lg:col-span-5 lg:p-12 order-2 lg:order-1">
-          <div className="w-full max-w-md">
-            <header className="text-center mb-12">
-              <img src="/logo.png" alt="BolChal Logo" className="mx-auto w-16 h-16 rounded-2xl object-cover shadow-xl shadow-[#a3a6ff]/20 mb-8" />
-              <h1 className="font-extrabold text-4xl tracking-tight italic text-[#a3a6ff] mb-2 [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-                {t.bolChal}
-              </h1>
-              <h2 className="text-3xl font-bold text-[#dee5ff] mb-2 [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-                {t.login.title}
-              </h2>
-              <p className="text-[#a3aac4] text-sm font-medium">
-                {t.login.subtitle}
-              </p>
-            </header>
+      <main className="relative w-full max-w-[480px]">
+        <header className="text-center mb-12">
+          <img src="/logo.png" alt="BolChal Logo" className="mx-auto w-16 h-16 rounded-2xl object-cover shadow-xl shadow-[#a3a6ff]/20 mb-8" />
+          <h1 className="font-extrabold text-4xl tracking-tight italic text-[#a3a6ff] mb-2 [font-family:_'Plus_Jakarta_Sans',sans-serif]">
+            {t.bolChal}
+          </h1>
+          <h2 className="text-3xl font-bold text-[#dee5ff] mb-2 [font-family:_'Plus_Jakarta_Sans',sans-serif]">
+            {t.login.title}
+          </h2>
+          <p className="text-[#a3aac4] text-sm font-medium">
+            {t.login.subtitle}
+          </p>
+        </header>
 
-            <div className="rounded-2xl p-8 md:p-12 shadow-[0px_12px_32px_rgba(25,37,64,0.08)] bg-[rgba(31,43,73,0.6)] backdrop-blur-md border border-[#40485d]/20">
-              <form className="space-y-6" onSubmit={handleSubmit}>
-                <div className="space-y-2">
-                  <label className="ml-4 block text-sm font-semibold text-[#a3aac4]" htmlFor="email">
-                    {t.login.emailLabel}
-                  </label>
-                  <div className="relative">
-                    <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-xl text-[#a3aac4]">
-                      mail
-                    </span>
-                    <input
-                      className="w-full rounded-full border border-[#40485d]/20 bg-[#192540] py-4 pl-14 pr-6 text-[#dee5ff] outline-none transition-all placeholder:text-[#6d758c] focus:ring-2 focus:ring-[#a3a6ff]/40 shadow-inner"
-                      id="email"
-                      name="email"
-                      onChange={handleChange}
-                      placeholder={t.login.emailPlaceholder}
-                      type="text"
-                      value={identifier}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="ml-4 block text-sm font-semibold text-[#a3aac4]" htmlFor="password">
-                    {t.login.passwordLabel}
-                  </label>
-                  <div className="relative">
-                    <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-xl text-[#a3aac4]">
-                      lock
-                    </span>
-                    <input
-                      className="w-full rounded-full border border-[#40485d]/20 bg-[#192540] py-4 pl-14 pr-12 text-[#dee5ff] outline-none transition-all placeholder:text-[#6d758c] focus:ring-2 focus:ring-[#a3a6ff]/40 shadow-inner"
-                      id="password"
-                      name="password"
-                      onChange={handleChange}
-                      placeholder={t.login.passwordPlaceholder}
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                    />
-                    <button
-                      className="absolute right-5 top-1/2 -translate-y-1/2 text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
-                      onClick={() => setShowPassword(!showPassword)}
-                      type="button"
-                    >
-                      <span className="material-symbols-outlined text-[20px]">
-                        {showPassword ? 'visibility_off' : 'visibility'}
-                      </span>
-                    </button>
-                  </div>
-                </div>
-
-                {errorMessage && (
-                  <p className="rounded-xl border border-[#d73357]/40 bg-[#a70138]/20 px-4 py-3 text-sm text-[#ffb2b9]">
-                    {errorMessage}
-                  </p>
-                )}
-
-                <div className="pt-4">
-                  <button
-                    className="w-full rounded-full bg-gradient-to-r from-[#a3a6ff] to-[#6063ee] py-5 text-sm font-extrabold uppercase tracking-widest text-[#000000] shadow-[0_8px_32px_rgba(163,166,255,0.3)] transition-all hover:scale-[1.02] active:scale-95 hover:shadow-[0_12px_48px_rgba(163,166,255,0.4)] [font-family:_'Plus_Jakarta_Sans',sans-serif]"
-                    disabled={isLoading}
-                    type="submit"
-                  >
-                    {isLoading ? t.login.loading : t.login.button}
-                  </button>
-                </div>
-
-                <div className="mt-8 space-y-6 text-center">
-                  <div className="flex items-center gap-4 text-xs uppercase tracking-widest text-[#6d758c]">
-                    <div className="h-px w-full bg-[#40485d]/30" />
-                    <span>{t.login.or}</span>
-                    <div className="h-px w-full bg-[#40485d]/30" />
-                  </div>
-
-                  <button className="flex w-full items-center justify-center gap-3 rounded-full border border-[#40485d]/10 bg-[#141f38] py-4 transition-all hover:bg-[#1f2b49] hover:border-[#a3a6ff]/30 shadow-lg shadow-black/20" type="button">
-                    <img
-                      alt="Google"
-                      className="h-5 w-5"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhU15sdn7QO6dsExyXPm52kG8XXbXVSRMWv54pQWx16bv2dFIrgERWwYa46f7UherTrOJlpMlPv8YgcBLODSQYLmf9-mrAXDY9Mu-LOFRZvPN02fAKc_y4V9_TzeTHjwVRMsGwAw8JemLFw1aVplvsD2uf-FfzLguaQrjWTZ1XQ9P71V3slAum71bdQUXQseh3pKlUzm5U6BXGkO-zjLY7z-gEi0wvp9_UDC5g6h2YV-mpR9QoO6dpNS6G1EsO-u8OfbTxJKntsGs"
-                    />
-                    <span className="text-sm font-bold tracking-tight text-[#dee5ff]">{t.login.google}</span>
-                  </button>
-
-                  <p className="text-sm text-[#a3aac4]">
-                    {t.login.noAccount}
-                    <Link className="ml-1 font-bold text-[#a3a6ff] hover:underline" to="/signup">
-                      {t.login.signUp}
-                    </Link>
-                  </p>
-                </div>
-              </form>
-
-              <div className="mt-12 flex justify-center gap-6 text-[10px] uppercase tracking-[0.2em] text-[#40485d]">
-                <Link className="transition-colors hover:text-[#dee5ff]" to="/privacy">
-                  {t.footer.privacy}
-                </Link>
-                <Link className="transition-colors hover:text-[#dee5ff]" to="/terms">
-                  {t.footer.terms}
-                </Link>
-                <Link className="transition-colors hover:text-[#dee5ff]" to="/support">
-                  {t.footer.support}
-                </Link>
+        <div className="rounded-2xl p-8 md:p-12 shadow-[0px_12px_32px_rgba(25,37,64,0.08)] bg-[rgba(31,43,73,0.6)] backdrop-blur-md border border-[#40485d]/20">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <label className="ml-4 block text-sm font-semibold text-[#a3aac4]" htmlFor="email">
+                {t.login.emailLabel}
+              </label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-xl text-[#a3aac4]">
+                  mail
+                </span>
+                <input
+                  className="w-full rounded-full border border-[#40485d]/20 bg-[#192540] py-4 pl-14 pr-6 text-[#dee5ff] outline-none transition-all placeholder:text-[#6d758c] focus:ring-2 focus:ring-[#a3a6ff]/40 shadow-inner"
+                  id="email"
+                  name="email"
+                  onChange={handleChange}
+                  placeholder={t.login.emailPlaceholder}
+                  type="text"
+                  value={identifier}
+                />
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Image Section */}
-        <section className="relative hidden overflow-hidden p-16 lg:col-span-7 lg:flex lg:flex-col lg:justify-between order-1 lg:order-2">
-          <div className="absolute inset-0 z-0">
-            <img
-              alt="Cinematic Background"
-              className="w-full h-full object-cover opacity-60"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXN8scYnwVV-yMtuPhx9RZmCL8-Y8fyUdwPRs5jZuT85jrxIiGw5WuID0grPyNmdQRZ8afNms2bV7_80w2uTQp_n8zG_P0SZjQJ7qnn05LpzhF3GJvFk8DDn9Bfzceg5TBPsrvHiNnfm5UlXhg-Go-72342VKkQCrBm55jVtpLFc-TU3-eind3hYo6KAZ6ENi_1-mx3pprUl-zTgY8EVqnoNbOdV1nQ90Ntgirw1CbgcvPFagAhoUWP9n9W3AeaXFKtRhONEIGg2c"
-            />
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#000000] via-transparent to-transparent" />
-          </div>
+            <div className="space-y-2">
+              <label className="ml-4 block text-sm font-semibold text-[#a3aac4]" htmlFor="password">
+                {t.login.passwordLabel}
+              </label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-xl text-[#a3aac4]">
+                  lock
+                </span>
+                <input
+                  className="w-full rounded-full border border-[#40485d]/20 bg-[#192540] py-4 pl-14 pr-12 text-[#dee5ff] outline-none transition-all placeholder:text-[#6d758c] focus:ring-2 focus:ring-[#a3a6ff]/40 shadow-inner"
+                  id="password"
+                  name="password"
+                  onChange={handleChange}
+                  placeholder={t.login.passwordPlaceholder}
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                />
+                <button
+                  className="absolute right-5 top-1/2 -translate-y-1/2 text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
+                  onClick={() => setShowPassword(!showPassword)}
+                  type="button"
+                >
+                  <span className="material-symbols-outlined text-[20px]">
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
+            </div>
 
-          <div className="relative z-10">
-            <h1 className="mb-4 text-4xl font-black italic tracking-tighter text-[#a3a6ff] [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-              {t.bolChal}
-            </h1>
-            <p className="max-w-md text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tighter text-[#dee5ff] [font-family:_'Plus_Jakarta_Sans',sans-serif]">
-               {language === 'hi' ? 'जहाँ शब्द जादू बन जाते हैं।' : 'Where words become magic.'}
-            </p>
+            {errorMessage && (
+              <p className="rounded-xl border border-[#d73357]/40 bg-[#a70138]/20 px-4 py-3 text-sm text-[#ffb2b9]">
+                {errorMessage}
+              </p>
+            )}
+
+            <div className="pt-4">
+              <button
+                className="w-full rounded-full bg-gradient-to-r from-[#a3a6ff] to-[#6063ee] py-5 text-sm font-extrabold uppercase tracking-widest text-[#000000] shadow-[0_8px_32px_rgba(163,166,255,0.3)] transition-all hover:scale-[1.02] active:scale-95 hover:shadow-[0_12px_48px_rgba(163,166,255,0.4)] [font-family:_'Plus_Jakarta_Sans',sans-serif]"
+                disabled={isLoading}
+                type="submit"
+              >
+                {isLoading ? t.login.loading : t.login.button}
+              </button>
+            </div>
+
+            <div className="mt-8 space-y-6 text-center">
+              <div className="flex items-center gap-4 text-xs uppercase tracking-widest text-[#6d758c]">
+                <div className="h-px w-full bg-[#40485d]/30" />
+                <span>{t.login.or}</span>
+                <div className="h-px w-full bg-[#40485d]/30" />
+              </div>
+
+              <button className="flex w-full items-center justify-center gap-3 rounded-full border border-[#40485d]/10 bg-[#141f38] py-4 transition-all hover:bg-[#1f2b49] hover:border-[#a3a6ff]/30 shadow-lg shadow-black/20" type="button">
+                <img
+                  alt="Google"
+                  className="h-5 w-5"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhU15sdn7QO6dsExyXPm52kG8XXbXVSRMWv54pQWx16bv2dFIrgERWwYa46f7UherTrOJlpMlPv8YgcBLODSQYLmf9-mrAXDY9Mu-LOFRZvPN02fAKc_y4V9_TzeTHjwVRMsGwAw8JemLFw1aVplvsD2uf-FfzLguaQrjWTZ1XQ9P71V3slAum71bdQUXQseh3pKlUzm5U6BXGkO-zjLY7z-gEi0wvp9_UDC5g6h2YV-mpR9QoO6dpNS6G1EsO-u8OfbTxJKntsGs"
+                />
+                <span className="text-sm font-bold tracking-tight text-[#dee5ff]">{t.login.google}</span>
+              </button>
+
+              <p className="text-sm text-[#a3aac4]">
+                {t.login.noAccount}
+                <Link className="ml-1 font-bold text-[#a3a6ff] hover:underline" to="/signup">
+                  {t.login.signUp}
+                </Link>
+              </p>
+            </div>
+          </form>
+
+          <div className="mt-12 flex justify-center gap-6 text-[10px] uppercase tracking-[0.2em] text-[#40485d]">
+            <Link className="transition-colors hover:text-[#dee5ff]" to="/privacy">
+              {t.footer.privacy}
+            </Link>
+            <Link className="transition-colors hover:text-[#dee5ff]" to="/terms">
+              {t.footer.terms}
+            </Link>
+            <Link className="transition-colors hover:text-[#dee5ff]" to="/support">
+              {t.footer.support}
+            </Link>
           </div>
-        </section>
+        </div>
       </main>
 
       <div className="hidden lg:block fixed right-12 bottom-12 max-w-xs">
