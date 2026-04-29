@@ -15,7 +15,7 @@ router.get('/health', (req, res) => {
 });
 
 // GET /api/rooms/featured — Public list for landing page
-import Room from '../models/room.js';
+import Room from '../models/Room.js';
 router.get('/featured', async (req, res) => {
     try {
         const rooms = await Room.find({ type: 'public' }, '_id name description members')
