@@ -22,6 +22,7 @@ function ChatRoomPage() {
   const [onlineUsers, setOnlineUsers] = useState(new Set())
   const [isMembersOpen, setIsMembersOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [showMembersList, setShowMembersList] = useState(true)
   
   const { language } = useLanguage()
   const t = dashboardTranslations[language] || dashboardTranslations['en']
@@ -311,37 +312,45 @@ function ChatRoomPage() {
             <span>{t.explore.allRooms}</span>
           </button>
 
-          <div className="pt-6 pb-2 px-4">
-            <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-[#a3a6ff] text-[10px] tracking-[0.2em] uppercase opacity-60">
+          <button 
+            onClick={() => setShowMembersList(!showMembersList)}
+            className="w-full flex items-center justify-between pt-6 pb-2 px-4 group/header"
+          >
+            <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-[#a3a6ff] text-[10px] tracking-[0.2em] uppercase opacity-60 group-hover/header:opacity-100 transition-opacity">
               {language === 'hi' ? 'रूम सदस्य' : 'Room Members'}
             </h3>
-          </div>
+            <span className={`material-symbols-outlined text-[#a3a6ff] text-sm transition-transform duration-300 ${showMembersList ? 'rotate-180' : ''}`}>
+              expand_more
+            </span>
+          </button>
 
-          <div className="space-y-1">
-            {roomMembers.map(member => (
-              <div 
-                key={member.userId}
-                className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-[#141f38] transition-colors group cursor-default"
-              >
-                <div className="relative">
-                  <div className="w-8 h-8 rounded-full bg-[#192540] border border-[#40485d]/20 flex items-center justify-center text-[10px] font-bold text-[#a3a6ff]">
-                    {member.username.substring(0, 2).toUpperCase()}
+          {showMembersList && (
+            <div className="space-y-1 animate-in fade-in slide-in-from-top-2 duration-300">
+              {roomMembers.map(member => (
+                <div 
+                  key={member.userId}
+                  className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-[#141f38] transition-colors group cursor-default"
+                >
+                  <div className="relative">
+                    <div className="w-8 h-8 rounded-full bg-[#192540] border border-[#40485d]/20 flex items-center justify-center text-[10px] font-bold text-[#a3a6ff]">
+                      {member.username.substring(0, 2).toUpperCase()}
+                    </div>
+                    {onlineUsers.has(member.userId) && (
+                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#091328] rounded-full animate-pulse"></span>
+                    )}
                   </div>
-                  {onlineUsers.has(member.userId) && (
-                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#091328] rounded-full animate-pulse"></span>
-                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-medium truncate ${onlineUsers.has(member.userId) ? 'text-[#dee5ff]' : 'text-[#a3aac4]'}`}>
+                      {member.username}
+                    </p>
+                    {member.isAdmin && (
+                      <p className="text-[9px] font-black uppercase tracking-widest text-[#a3a6ff]/60">Admin</p>
+                    )}
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium truncate ${onlineUsers.has(member.userId) ? 'text-[#dee5ff]' : 'text-[#a3aac4]'}`}>
-                    {member.username}
-                  </p>
-                  {member.isAdmin && (
-                    <p className="text-[9px] font-black uppercase tracking-widest text-[#a3a6ff]/60">Admin</p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </nav>
       </aside>
 
