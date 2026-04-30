@@ -26,7 +26,7 @@ This file is a quick revision guide for the important engineering concepts used 
 
 ## Full-Stack Architecture
 
-BolChal is a full-stack real-time chat application.
+BolChal is a full-stack real-time chat application based on websocket(ws).
 
 The frontend is built with React and Vite. It handles pages, forms, protected routes, API calls, and WebSocket connections.
 
