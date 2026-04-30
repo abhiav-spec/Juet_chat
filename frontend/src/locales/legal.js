@@ -1,6 +1,7 @@
 export const legalTranslations = {
   en: {
     back: "Back",
+    acceptReturn: "Accept & return",
     support: {
       title: "BolChal Support.",
       subtitle: "Encountered a glitch in the stream? Our dedicated support unit is here to help you navigate back to perfect clarity.",
@@ -18,15 +19,32 @@ export const legalTranslations = {
     },
     privacy: {
       title: "Privacy Policy",
-      subtitle: "Our commitment to your digital sanctuary."
+      subtitle: "Our commitment to your digital sanctuary.",
+      section1Title: "Data we collect",
+      section1Text: "We collect account details you provide, plus basic usage and device data needed to operate the service.",
+      section2Title: "How we use data",
+      section2Text: "We use data to authenticate you, improve the product, and provide real-time messaging features.",
+      section3Title: "Sharing and disclosure",
+      section3Text: "We do not sell your data. We share only with trusted vendors or when required by law.",
+      section4Title: "Delete or export",
+      section4Text: "You can request account deletion or a data export from the support page at any time."
     },
     terms: {
       title: "Terms of Service",
-      subtitle: "The framework of our digital sanctuary."
+      subtitle: "The framework of our digital sanctuary.",
+      section1Title: "Account responsibilities",
+      section1Text: "Keep your credentials secure and use the service only for lawful purposes.",
+      section2Title: "Community conduct",
+      section2Text: "Respect other members. Harassment, abuse, or hate content is not allowed.",
+      section3Title: "Service availability",
+      section3Text: "We may update features, pause service, or perform maintenance to keep the platform healthy.",
+      section4Title: "Prohibited use",
+      section4Text: "No spam, fraud, or attempts to exploit the platform or other users."
     }
   },
   hi: {
     back: "पीछे",
+    acceptReturn: "स्वीकारें और वापस जाएँ",
     support: {
       title: "बोलचाल सहायता।",
       subtitle: "स्ट्रीम में कोई गड़बड़ी मिली? हमारी समर्पित सहायता इकाई आपको पूर्ण स्पष्टता की ओर वापस ले जाने में मदद करने के लिए यहाँ है।",
@@ -44,11 +62,27 @@ export const legalTranslations = {
     },
     privacy: {
       title: "गोपनीयता नीति",
-      subtitle: "आपके डिजिटल अभयारण्य के प्रति हमारी प्रतिबद्धता।"
+      subtitle: "आपके डिजिटल अभयारण्य के प्रति हमारी प्रतिबद्धता।",
+      section1Title: "हम कौन सा डेटा लेते हैं",
+      section1Text: "हम आपके द्वारा दिया गया खाता विवरण और सेवा चलाने के लिए आवश्यक बुनियादी उपयोग व डिवाइस डेटा लेते हैं।",
+      section2Title: "डेटा का उपयोग कैसे करते हैं",
+      section2Text: "हम डेटा का उपयोग लॉगिन, उत्पाद सुधार और रियल-टाइम मैसेजिंग फीचर के लिए करते हैं।",
+      section3Title: "साझाकरण और खुलासा",
+      section3Text: "हम आपका डेटा नहीं बेचते। केवल भरोसेमंद सेवाप्रदाताओं या कानूनी आवश्यकता पर साझा करते हैं।",
+      section4Title: "मिटाना या निर्यात",
+      section4Text: "आप कभी भी सपोर्ट पेज से खाता हटाने या डेटा निर्यात का अनुरोध कर सकते हैं।"
     },
     terms: {
       title: "सेवा की शर्तें",
-      subtitle: "हमारे डिजिटल अभयारण्य की रूपरेखा।"
+      subtitle: "हमारे डिजिटल अभयारण्य की रूपरेखा।",
+      section1Title: "खाते की जिम्मेदारियां",
+      section1Text: "अपने क्रेडेंशियल सुरक्षित रखें और सेवा का उपयोग केवल वैध उद्देश्यों के लिए करें।",
+      section2Title: "समुदाय आचरण",
+      section2Text: "अन्य सदस्यों का सम्मान करें। उत्पीड़न, दुरुपयोग या घृणास्पद सामग्री की अनुमति नहीं है।",
+      section3Title: "सेवा उपलब्धता",
+      section3Text: "प्लेटफॉर्म को स्वस्थ रखने के लिए हम फीचर अपडेट, अस्थायी रोक या मेंटेनेंस कर सकते हैं।",
+      section4Title: "प्रतिबंधित उपयोग",
+      section4Text: "स्पैम, धोखाधड़ी या प्लेटफॉर्म/यूजर्स का दुरुपयोग करने की कोशिशें प्रतिबंधित हैं।"
     }
   }
 };
