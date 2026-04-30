@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { GoogleLogin } from '@react-oauth/google'
-import { apiService } from '../services/api.service'
 import { authTranslations } from '../locales/auth'
 import { useLanguage } from '../hooks/useLanguage'
 
@@ -9,7 +7,6 @@ function LoginPage() {
   const navigate = useNavigate()
   const { language, setLanguage } = useLanguage()
   const t = authTranslations[language] || authTranslations['en']
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
   const [showPassword, setShowPassword] = useState(false)
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
@@ -68,45 +65,6 @@ function LoginPage() {
     }
   }
 
-  const handleGoogleSuccess = async (credentialResponse) => {
-    const token = credentialResponse?.credential
-    if (!token) {
-      setErrorMessage('Google login failed. Please try again.')
-      return
-    }
-
-    setIsLoading(true)
-    setErrorMessage('')
-
-    try {
-      const response = await fetch(`${apiBaseUrl}/api/auth/google`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ token }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Google login failed')
-      }
-
-      const accessToken = data?.user?.accessToken || data?.accessToken || ''
-      if (accessToken) {
-        localStorage.setItem('accessToken', accessToken)
-      }
-      localStorage.removeItem('pendingVerificationEmail')
-
-      navigate('/dashboard')
-    } catch (error) {
-      setErrorMessage(error.message || 'Unable to login with Google.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#000000] p-6 overflow-hidden selection:bg-[#a3a6ff] selection:text-[#0a0081]">
@@ -225,31 +183,7 @@ function LoginPage() {
               </button>
             </div>
 
-            <div className="mt-8 space-y-6 text-center">
-              <div className="flex items-center gap-4 text-xs uppercase tracking-widest text-[#6d758c]">
-                <div className="h-px w-full bg-[#40485d]/30" />
-                <span>{t.login.or}</span>
-                <div className="h-px w-full bg-[#40485d]/30" />
-              </div>
-
-              <div className="flex w-full justify-center rounded-full border border-[#40485d]/10 bg-[#141f38] py-2 shadow-lg shadow-black/20">
-                {googleClientId ? (
-                  <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    onError={() => setErrorMessage('Google login failed. Please try again.')}
-                    text="continue_with"
-                    theme="filled_black"
-                    shape="pill"
-                    size="large"
-                    width="360"
-                  />
-                ) : (
-                  <span className="py-2 text-xs font-semibold uppercase tracking-widest text-[#6d758c]">
-                    Google login unavailable
-                  </span>
-                )}
-              </div>
-
+            <div className="mt-8 text-center">
               <p className="text-sm text-[#a3aac4]">
                 {t.login.noAccount}
                 <Link className="ml-1 font-bold text-[#a3a6ff] hover:underline" to="/signup">

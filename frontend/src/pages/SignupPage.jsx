@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { GoogleLogin } from '@react-oauth/google'
 import { authTranslations } from '../locales/auth'
 import { useLanguage } from '../hooks/useLanguage'
 
 function SignupPage() {
   const navigate = useNavigate()
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -107,45 +105,6 @@ function SignupPage() {
     }
   }
 
-  const handleGoogleSuccess = async (credentialResponse) => {
-    const token = credentialResponse?.credential
-    if (!token) {
-      setErrorMessage('Google signup failed. Please try again.')
-      return
-    }
-
-    setIsLoading(true)
-    setErrorMessage('')
-
-    try {
-      const response = await fetch(`${apiBaseUrl}/api/auth/google`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ token }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Google signup failed')
-      }
-
-      const accessToken = data?.user?.accessToken || data?.accessToken || ''
-      if (accessToken) {
-        localStorage.setItem('accessToken', accessToken)
-      }
-      localStorage.removeItem('pendingVerificationEmail')
-
-      navigate('/dashboard')
-    } catch (error) {
-      setErrorMessage(error.message || 'Unable to sign up with Google.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#060e20] text-[#dee5ff] [font-family:_'Inter',sans-serif] relative">
@@ -404,31 +363,7 @@ function SignupPage() {
                   </button>
                 </div>
 
-                <div className="mt-8 space-y-6 text-center">
-                  <div className="flex items-center gap-4 text-xs uppercase tracking-widest text-[#6d758c]">
-                    <div className="h-px w-full bg-[#40485d]/30" />
-                    <span>{t.login.or}</span>
-                    <div className="h-px w-full bg-[#40485d]/30" />
-                  </div>
-
-                  <div className="flex w-full justify-center rounded-full border border-[#40485d]/10 bg-[#141f38] py-2 shadow-lg shadow-black/20">
-                    {googleClientId ? (
-                      <GoogleLogin
-                        onSuccess={handleGoogleSuccess}
-                        onError={() => setErrorMessage('Google signup failed. Please try again.')}
-                        text="continue_with"
-                        theme="filled_black"
-                        shape="pill"
-                        size="large"
-                        width="360"
-                      />
-                    ) : (
-                      <span className="py-2 text-xs font-semibold uppercase tracking-widest text-[#6d758c]">
-                        Google login unavailable
-                      </span>
-                    )}
-                  </div>
-
+                <div className="mt-8 text-center">
                   <p className="text-sm text-[#a3aac4]">
                     {t.signup.hasAccount}
                     <Link className="ml-1 font-bold text-[#a3a6ff] hover:underline" to="/login">

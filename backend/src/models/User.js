@@ -13,18 +13,11 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: function requiredPassword() {
-            return this.provider !== 'google';
-        },
+        required: [true, 'Password is required'],
     },
     profilePic: {
         type: String,
         default: '',
-    },
-    provider: {
-        type: String,
-        enum: ['local', 'google'],
-        default: 'local',
     },
     verified: {
         type: Boolean,

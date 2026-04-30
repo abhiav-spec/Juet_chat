@@ -13,8 +13,6 @@ export const authTranslations = {
       passwordPlaceholder: "••••••••",
       button: "Sign In",
       loading: "Signing in...",
-      or: "Or",
-      google: "Continue with Google",
       noAccount: "Not part of the stream yet?",
       signUp: "Create Account"
     },
@@ -64,8 +62,6 @@ export const authTranslations = {
       passwordPlaceholder: "••••••••",
       button: "साइन इन करें",
       loading: "साइन इन हो रहा है...",
-      or: "या",
-      google: "Google के साथ जारी रखें",
       noAccount: "अभी तक स्ट्रीम का हिस्सा नहीं बने?",
       signUp: "खाता बनाएं"
     },

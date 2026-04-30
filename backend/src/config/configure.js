@@ -26,11 +26,6 @@ if(!process.env.PORT){
     exit(1);
 }
 
-if(!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.GOOGLE_REFRESH_TOKEN || !process.env.GOOGLE_USER){
-    console.warn('Google OAuth credentials are not fully defined, Google login will not work');
-    exit(1);
-}
-
 const config = {
     PORT: process.env.PORT || 3000,
     MONGODB_URI: mongoUri,
