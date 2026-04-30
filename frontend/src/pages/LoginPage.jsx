@@ -9,6 +9,7 @@ function LoginPage() {
   const navigate = useNavigate()
   const { language, setLanguage } = useLanguage()
   const t = authTranslations[language] || authTranslations['en']
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
   const [showPassword, setShowPassword] = useState(false)
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
@@ -232,15 +233,21 @@ function LoginPage() {
               </div>
 
               <div className="flex w-full justify-center rounded-full border border-[#40485d]/10 bg-[#141f38] py-2 shadow-lg shadow-black/20">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => setErrorMessage('Google login failed. Please try again.')}
-                  text="continue_with"
-                  theme="filled_black"
-                  shape="pill"
-                  size="large"
-                  width="360"
-                />
+                {googleClientId ? (
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => setErrorMessage('Google login failed. Please try again.')}
+                    text="continue_with"
+                    theme="filled_black"
+                    shape="pill"
+                    size="large"
+                    width="360"
+                  />
+                ) : (
+                  <span className="py-2 text-xs font-semibold uppercase tracking-widest text-[#6d758c]">
+                    Google login unavailable
+                  </span>
+                )}
               </div>
 
               <p className="text-sm text-[#a3aac4]">
