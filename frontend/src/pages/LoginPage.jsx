@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { GoogleLogin } from '@react-oauth/google'
 import { apiService } from '../services/api.service'
 import { authTranslations } from '../locales/auth'
 import { useLanguage } from '../hooks/useLanguage'
@@ -61,6 +62,46 @@ function LoginPage() {
       navigate('/dashboard')
     } catch (error) {
       setErrorMessage(error.message || 'Unable to login right now.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    const token = credentialResponse?.credential
+    if (!token) {
+      setErrorMessage('Google login failed. Please try again.')
+      return
+    }
+
+    setIsLoading(true)
+    setErrorMessage('')
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/auth/google`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ token }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Google login failed')
+      }
+
+      const accessToken = data?.user?.accessToken || data?.accessToken || ''
+      if (accessToken) {
+        localStorage.setItem('accessToken', accessToken)
+      }
+      localStorage.removeItem('pendingVerificationEmail')
+
+      navigate('/dashboard')
+    } catch (error) {
+      setErrorMessage(error.message || 'Unable to login with Google.')
     } finally {
       setIsLoading(false)
     }
@@ -190,14 +231,17 @@ function LoginPage() {
                 <div className="h-px w-full bg-[#40485d]/30" />
               </div>
 
-              <button className="flex w-full items-center justify-center gap-3 rounded-full border border-[#40485d]/10 bg-[#141f38] py-4 transition-all hover:bg-[#1f2b49] hover:border-[#a3a6ff]/30 shadow-lg shadow-black/20" type="button">
-                <img
-                  alt="Google"
-                  className="h-5 w-5"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhU15sdn7QO6dsExyXPm52kG8XXbXVSRMWv54pQWx16bv2dFIrgERWwYa46f7UherTrOJlpMlPv8YgcBLODSQYLmf9-mrAXDY9Mu-LOFRZvPN02fAKc_y4V9_TzeTHjwVRMsGwAw8JemLFw1aVplvsD2uf-FfzLguaQrjWTZ1XQ9P71V3slAum71bdQUXQseh3pKlUzm5U6BXGkO-zjLY7z-gEi0wvp9_UDC5g6h2YV-mpR9QoO6dpNS6G1EsO-u8OfbTxJKntsGs"
+              <div className="flex w-full justify-center rounded-full border border-[#40485d]/10 bg-[#141f38] py-2 shadow-lg shadow-black/20">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setErrorMessage('Google login failed. Please try again.')}
+                  text="continue_with"
+                  theme="filled_black"
+                  shape="pill"
+                  size="large"
+                  width="360"
                 />
-                <span className="text-sm font-bold tracking-tight text-[#dee5ff]">{t.login.google}</span>
-              </button>
+              </div>
 
               <p className="text-sm text-[#a3aac4]">
                 {t.login.noAccount}

@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {registerUser, getUserProfile, updateProfile, refreshToken,logout,logoutAll,login,verifyEmail,resendOtp, deleteAccount} from '../controllers/auth.controller.js';
+import {registerUser, getUserProfile, updateProfile, refreshToken,logout,logoutAll,login,googleAuth,verifyEmail,resendOtp, deleteAccount} from '../controllers/auth.controller.js';
 import authenticate from '../middleware/auth.middleware.js';
 import { buildIpEmailKey, createRateLimit } from '../utils/rateLimiter.js';
 
@@ -45,6 +45,7 @@ router.put('/profile', authenticate, updateProfile);
 router.get('/logout', logout);
 router.get('/logout-all', logoutAll);
 router.post('/login', loginIpRateLimit, loginRateLimit, login);
+router.post('/google', loginIpRateLimit, loginRateLimit, googleAuth);
 router.post('/verify-email', otpVerifyRateLimit, verifyEmail);
 router.post('/resend-otp', otpRequestIpRateLimit, otpRequestRateLimit, resendOtp);
 router.delete('/profile', authenticate, deleteAccount);

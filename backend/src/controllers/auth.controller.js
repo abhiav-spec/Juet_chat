@@ -2,10 +2,14 @@ import User from '../models/User.js';
 import Session from '../models/session.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 import sendEmail from '../services/email.service.js';
 import { generateOTP, getOtpHtml } from '../utils/otp.util.js';
 import Otp from '../models/otp.js';
 import Room from '../models/Room.js';
+import { findOrCreateGoogleUser } from '../services/auth.service.js';
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
  const registerUser = async (req, res) => {
     try {
@@ -303,6 +307,68 @@ const login = async (req, res) => {
     }
 }
 
+const googleAuth = async (req, res) => {
+    try {
+        const { token } = req.body;
+
+        if (!token) {
+            return res.status(400).json({ error: 'Google token is required' });
+        }
+
+        const ticket = await googleClient.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        const email = payload?.email;
+        const name = payload?.name || payload?.given_name || '';
+        const picture = payload?.picture || '';
+
+        if (!email) {
+            return res.status(400).json({ error: 'Google account email not found' });
+        }
+
+        const { user } = await findOrCreateGoogleUser({ email, name, picture });
+
+        const refreshtoken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        res.cookie('refreshToken', refreshtoken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        const refreshtokenhash = crypto.createHash('sha256').update(refreshtoken).digest('hex');
+        const session = await Session.create({
+            user: user._id,
+            refreshToken: refreshtokenhash,
+            ip: req.ip,
+            userAgent: req.headers['user-agent'],
+        });
+
+        const accessToken = jwt.sign({
+            id: user._id, session_id: session._id,
+        }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+        return res.status(200).json({
+            message: 'Google login successful',
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                profilePic: user.profilePic,
+                provider: user.provider,
+                verified: user.verified,
+                accessToken,
+            },
+        });
+    } catch (error) {
+        console.error('Error logging in with Google:', error);
+        return res.status(401).json({ error: 'Invalid Google token' });
+    }
+};
+
 const verifyEmail = async (req, res) => {
     try {
         const { email, otp } = req.body;
@@ -403,4 +469,4 @@ export const deleteAccount = async (req, res) => {
     }
 };
 
-export { registerUser, getUserProfile, updateProfile, refreshToken, logout, logoutAll, login, verifyEmail, resendOtp };
+export { registerUser, getUserProfile, updateProfile, refreshToken, logout, logoutAll, login, googleAuth, verifyEmail, resendOtp };
