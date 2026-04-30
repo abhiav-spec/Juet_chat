@@ -23,7 +23,7 @@ function getOtpHtml(otp) {
                         <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color:#ffffff; border-radius:12px; overflow:hidden; border:1px solid #e5e7eb;">
                             <tr>
                                 <td style="padding:24px 28px; background-color:#0f172a; color:#ffffff;">
-                                    <div style="font-size:18px; font-weight:bold; letter-spacing:0.3px;">Auth System</div>
+                                    <div style="font-size:18px; font-weight:bold; letter-spacing:0.3px;">bolchal</div>
                                     <div style="font-size:13px; opacity:0.85; margin-top:4px;">Secure access verification</div>
                                 </td>
                             </tr>
@@ -43,7 +43,7 @@ function getOtpHtml(otp) {
                             </tr>
                             <tr>
                                 <td style="padding:18px 28px; background-color:#f9fafb; font-size:12px; color:#6b7280;">
-                                    This message was sent by Auth System. Please do not reply to this email.
+                                    This message was sent by bolchal. Please do not reply to this email.
                                 </td>
                             </tr>
                         </table>
