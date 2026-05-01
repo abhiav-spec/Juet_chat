@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    image: aabhinavkumar/juet-chat-backend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/juet_chat
+      - JWT_SECRET=your_super_secret_jwt_key # <-- IMPORTANT: Replace with a real secret in your EC2 environment
+      - PORT=3000
+      # Add other necessary environment variables here
+      # For example:
+      # - GOOGLE_CLIENT_ID=your_google_client_id
+      # - GOOGLE_CLIENT_SECRET=your_google_client_secret
+    depends_on:
+      - mongo
+    networks:
+      - chat-network
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - chat-network
+
+networks:
+  chat-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
