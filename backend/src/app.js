@@ -12,7 +12,12 @@ import errorHandler from './middleware/error.middleware.js';
 
 const app = express();
 
-const allowedOrigins = ['http://127.0.0.1:5173', 'http://localhost:5173'];
+const defaultOrigins = ['http://127.0.0.1:5173', 'http://localhost:5173'];
+const envOrigins = (process.env.CORS_ORIGINS || process.env.CLIENT_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+const allowedOrigins = envOrigins.length > 0 ? envOrigins : defaultOrigins;
 
 const corsOptions = {
     origin: (origin, callback) => {
@@ -26,6 +31,10 @@ const corsOptions = {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 };
+
+if (process.env.TRUST_PROXY === '1' || process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+}
 
 app.use(cors(corsOptions));
 app.options(/.*/, cors(corsOptions));

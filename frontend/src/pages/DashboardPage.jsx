@@ -188,7 +188,11 @@ function DashboardPage() {
             BolChal.
           </span>
         </div>
-        <div className="px-6 mb-8 flex items-center gap-3 border-t border-[#40485d]/20 pt-6">
+        <button
+          type="button"
+          onClick={() => setActiveView('settings')}
+          className="px-6 mb-8 flex items-center gap-3 border-t border-[#40485d]/20 pt-6 text-left w-full hover:bg-[#141f38] rounded-lg transition-colors"
+        >
           <div className="w-10 h-10 rounded-full bg-[#192540] flex items-center justify-center border border-[#40485d]/20 text-[#a3a6ff] font-bold">
             {currentUser?.username?.substring(0, 2).toUpperCase() || '??'}
           </div>
@@ -199,7 +203,7 @@ function DashboardPage() {
               <span className="text-[10px] text-[#a3aac4] uppercase tracking-widest font-semibold">Online</span>
             </div>
           </div>
-        </div>
+        </button>
         <nav className="flex-1 space-y-1 px-4">
           <button 
             onClick={() => setActiveView('explore')}

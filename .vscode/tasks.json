@@ -16,6 +16,14 @@
 			"isBackground": true,
 			"problemMatcher": [],
 			"group": "build"
+		},
+		{
+			"label": "Run backend (dev)",
+			"type": "shell",
+			"command": "cd backend && npm run dev",
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
 		}
 	]
 }
