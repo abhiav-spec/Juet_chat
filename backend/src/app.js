@@ -59,13 +59,18 @@ app.use('/api/dms', dmRoutes);
 // Health routes (must be mounted before error handler, no auth required)
 app.use('/api', healthRouter);
 
-// ─── SPA Fallback - Serve index.html for all non-API routes ────────────────────
-app.get('*', (req, res) => {
-    // Don't redirect API routes or static files
-    if (req.path.startsWith('/api/')) {
-        res.status(404).json({ error: 'Not found' });
+// ─── SPA Fallback - Serve index.html for all non-API GET routes ───────────────
+app.use((req, res, next) => {
+    if (req.method !== 'GET') {
+        next();
         return;
     }
+
+    if (req.path.startsWith('/api/')) {
+        next();
+        return;
+    }
+
     res.sendFile(new URL('../public/index.html', import.meta.url).pathname);
 });
 
