@@ -16,7 +16,7 @@ function startRedirect() {
       clearInterval(countdownInterval);
       redirect();
     }
-  }, 1000);
+  }, 100);
 }
 
 // Redirect to main app
