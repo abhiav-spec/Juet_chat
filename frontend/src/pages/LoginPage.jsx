@@ -13,7 +13,8 @@ function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+    || (import.meta.env.PROD ? '' : 'http://localhost:3000')
 
   const handleChange = (e) => {
     const { name, value } = e.target

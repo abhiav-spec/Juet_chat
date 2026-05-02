@@ -49,7 +49,8 @@ function SignupPage() {
     return () => clearTimeout(timer);
   }, [displayText, isDeleting, phraseIndex, language]);
 
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+    || (import.meta.env.PROD ? '' : 'http://localhost:3000')
 
   const handleChange = (event) => {
     const { name, value } = event.target
