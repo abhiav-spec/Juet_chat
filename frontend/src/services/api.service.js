@@ -1,4 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+// In production with single-origin deployment, use relative /api paths
+// In development, use localhost:3000
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL 
     || (import.meta.env.PROD ? '' : 'http://localhost:3000');
 
 if (import.meta.env.PROD && !import.meta.env.VITE_API_BASE_URL) {

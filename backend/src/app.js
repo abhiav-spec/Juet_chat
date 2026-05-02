@@ -47,18 +47,26 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// ─── Routes ───────────────────────────────────────────────────────────────────
+// ─── Serve Static Frontend Files ──────────────────────────────────────────────
+app.use(express.static('public'));
+
+// ─── API Routes ───────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/dms', dmRoutes);
 
 // Health routes (must be mounted before error handler, no auth required)
-app.use('/', healthRouter);
+app.use('/api', healthRouter);
 
-// Root
-app.get('/', (req, res) => {
-    res.send('Welcome to the chat application API');
+// ─── SPA Fallback - Serve index.html for all non-API routes ────────────────────
+app.get('*', (req, res) => {
+    // Don't redirect API routes or static files
+    if (req.path.startsWith('/api/')) {
+        res.status(404).json({ error: 'Not found' });
+        return;
+    }
+    res.sendFile(new URL('../public/index.html', import.meta.url).pathname);
 });
 
 // ─── Centralised Error Handler (must be last) ─────────────────────────────────

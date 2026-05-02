@@ -1,20 +1,43 @@
-# Use an official Node.js runtime as a parent image
+# ─── Stage 1: Build Frontend ──────────────────────────────────────────────────
+FROM node:18-alpine AS frontend-builder
+
+WORKDIR /app/frontend
+
+# Copy frontend package files
+COPY ../frontend/package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy frontend source
+COPY ../frontend/src ./src
+COPY ../frontend/public ./public
+COPY ../frontend/index.html ./
+COPY ../frontend/vite.config.js ./
+COPY ../frontend/eslint.config.js ./
+
+# Build frontend
+RUN npm run build
+
+# ─── Stage 2: Build Backend with Frontend ─────────────────────────────────────
 FROM node:18-alpine
 
-# Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json to the working directory
+# Copy backend package files
 COPY package*.json ./
 
 # Install production dependencies
 RUN npm install --production
 
-# Copy the rest of the application's source code
+# Copy backend source
 COPY . .
 
-# Make port 3000 available to the world outside this container
+# Copy built frontend from stage 1 to backend's public folder
+COPY --from=frontend-builder /app/frontend/dist ./public
+
+# Make port 3000 available
 EXPOSE 3000
 
-# Define the command to run your app
+# Run backend
 CMD [ "npm", "start" ]

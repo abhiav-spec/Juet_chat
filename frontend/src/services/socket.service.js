@@ -14,17 +14,21 @@ export class ChatSocket {
      * @returns {Promise<void>} Resolves when the connection is successfully opened.
      */
     connect(token) {
-        const wsUrl = import.meta.env.VITE_WS_URL
-            || (import.meta.env.PROD ? '' : 'ws://localhost:3000');
-
+        // In production with single-origin deployment, construct wsURL from current location
+        // In dev, use localhost:3000
+        let wsUrl = import.meta.env.VITE_WS_URL;
+        
         if (!wsUrl) {
-            console.error('[WS] VITE_WS_URL is required in production.');
-            return Promise.reject(new Error('Missing VITE_WS_URL'));
+            if (import.meta.env.PROD) {
+                // Same-origin WebSocket in production
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                wsUrl = `${protocol}//${window.location.host}`;
+            } else {
+                // Dev uses localhost
+                wsUrl = 'ws://localhost:3000';
+            }
         }
 
-        if (import.meta.env.PROD && !import.meta.env.VITE_WS_URL) {
-            console.error('[WS] Missing VITE_WS_URL in production environment.');
-        }
         this.ws = new WebSocket(`${wsUrl}?token=${token}`);
 
         this.ws.onmessage = (event) => {

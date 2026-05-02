@@ -19,8 +19,8 @@ function VerifyEmailPage() {
   const { language } = useLanguage()
   const t = authTranslations[language] || authTranslations['en']
 
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
-    || (import.meta.env.PROD ? '' : 'http://localhost:3000')
+  // In single-origin deployment, use relative URLs
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || ''
 
   useEffect(() => {
     if (resendCountdown === 0) {
