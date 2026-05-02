@@ -2,6 +2,8 @@ import express from 'express';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import authRoutes from './routes/auth.routes.js';
 import roomRoutes from './routes/room.routes.js';
@@ -11,6 +13,9 @@ import dmRoutes from './routes/dm.routes.js';
 import errorHandler from './middleware/error.middleware.js';
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const publicDir = path.join(__dirname, '..', 'public');
 
 const defaultOrigins = [
     'http://127.0.0.1:5173',
@@ -48,7 +53,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 // ─── Serve Static Frontend Files ──────────────────────────────────────────────
-app.use(express.static('public'));
+app.use(express.static(publicDir));
 
 // ─── API Routes ───────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
@@ -71,7 +76,17 @@ app.use((req, res, next) => {
         return;
     }
 
-    res.sendFile(new URL('../public/index.html', import.meta.url).pathname);
+    if (path.extname(req.path)) {
+        next();
+        return;
+    }
+
+    if (!req.accepts('html')) {
+        next();
+        return;
+    }
+
+    res.sendFile(path.join(publicDir, 'index.html'));
 });
 
 // ─── Centralised Error Handler (must be last) ─────────────────────────────────
