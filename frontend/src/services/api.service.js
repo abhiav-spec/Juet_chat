@@ -1,5 +1,9 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
+if (import.meta.env.PROD && !import.meta.env.VITE_API_BASE_URL) {
+    console.error('[API] Missing VITE_API_BASE_URL in production environment.');
+}
+
 /**
  * A generalized fetch wrapper that automatically handles authentication headers
  * and parses JSON responses. Throws formatted errors for non-2xx responses.

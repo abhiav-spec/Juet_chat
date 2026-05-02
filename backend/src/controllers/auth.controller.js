@@ -1,11 +1,11 @@
-import User from '../models/User.js';
+import User from '../models/user.js';
 import Session from '../models/session.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import sendEmail from '../services/email.service.js';
 import { generateOTP, getOtpHtml } from '../utils/otp.util.js';
 import Otp from '../models/otp.js';
-import Room from '../models/Room.js';
+import Room from '../models/room.js';
 
 const isProd = process.env.NODE_ENV === 'production';
 const refreshCookieOptions = {

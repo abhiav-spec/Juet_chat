@@ -15,7 +15,7 @@ const startServer = async () => {
         // Attach the WebSocket server to the same HTTP server
         createWebSocketServer(httpServer, app);
 
-        httpServer.listen(config.PORT, () => {
+        httpServer.listen(config.PORT, '0.0.0.0', () => {
             console.log(`Server is running on port ${config.PORT}`);
             console.log(`HTTP: http://localhost:${config.PORT}`);
             console.log(`WebSocket: ws://localhost:${config.PORT}?token=<jwt>`);

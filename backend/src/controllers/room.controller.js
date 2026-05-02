@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import Room from '../models/Room.js';
+import Room from '../models/room.js';
 import Message from '../models/message.js';
 import { ROOM_TYPES, WS_SERVER_EVENTS } from '../utils/constants.js';
 import { notifyUser } from '../websocket/state/users.js';

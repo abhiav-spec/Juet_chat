@@ -15,6 +15,10 @@ export class ChatSocket {
      */
     connect(token) {
         const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:3000';
+
+        if (import.meta.env.PROD && !import.meta.env.VITE_WS_URL) {
+            console.error('[WS] Missing VITE_WS_URL in production environment.');
+        }
         this.ws = new WebSocket(`${wsUrl}?token=${token}`);
 
         this.ws.onmessage = (event) => {

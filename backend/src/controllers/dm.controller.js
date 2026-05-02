@@ -1,6 +1,6 @@
 import Conversation from '../models/Conversation.js';
 import DirectMessage from '../models/DirectMessage.js';
-import User from '../models/User.js';
+import User from '../models/user.js';
 
 export const getOrCreateConversation = async (req, res) => {
     try {
