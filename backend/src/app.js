@@ -20,6 +20,7 @@ const publicDir = path.join(__dirname, '..', 'public');
 const defaultOrigins = [
     'http://127.0.0.1:5173',
     'http://localhost:5173',
+    'http://35.175.213.18:3000',
     'https://bol-chal.netlify.app',
 ];
 const envOrigins = (process.env.CORS_ORIGINS || process.env.CLIENT_ORIGINS || '')
