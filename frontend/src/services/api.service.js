@@ -1,7 +1,8 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+    || (import.meta.env.PROD ? '' : 'http://localhost:3000');
 
 if (import.meta.env.PROD && !import.meta.env.VITE_API_BASE_URL) {
-    console.error('[API] Missing VITE_API_BASE_URL in production environment.');
+    console.warn('[API] VITE_API_BASE_URL not set. Using same-origin /api proxy.');
 }
 
 /**

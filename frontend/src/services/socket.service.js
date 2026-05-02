@@ -14,7 +14,13 @@ export class ChatSocket {
      * @returns {Promise<void>} Resolves when the connection is successfully opened.
      */
     connect(token) {
-        const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:3000';
+        const wsUrl = import.meta.env.VITE_WS_URL
+            || (import.meta.env.PROD ? '' : 'ws://localhost:3000');
+
+        if (!wsUrl) {
+            console.error('[WS] VITE_WS_URL is required in production.');
+            return Promise.reject(new Error('Missing VITE_WS_URL'));
+        }
 
         if (import.meta.env.PROD && !import.meta.env.VITE_WS_URL) {
             console.error('[WS] Missing VITE_WS_URL in production environment.');
