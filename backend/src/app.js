@@ -12,7 +12,11 @@ import errorHandler from './middleware/error.middleware.js';
 
 const app = express();
 
-const defaultOrigins = ['http://127.0.0.1:5173', 'http://localhost:5173'];
+const defaultOrigins = [
+    'http://127.0.0.1:5173',
+    'http://localhost:5173',
+    'https://bol-chal.netlify.app',
+];
 const envOrigins = (process.env.CORS_ORIGINS || process.env.CLIENT_ORIGINS || '')
     .split(',')
     .map((origin) => origin.trim())
